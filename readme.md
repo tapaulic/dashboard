@@ -1,6 +1,6 @@
-progressportal
+dashboard
 ===========
-Describe your app.
+SSHA Performance Dashboard.
 
 Installation
 -
