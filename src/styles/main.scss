@@ -1,0 +1,164 @@
+#searchreset {margin-left: -40px; position: absolute; border:0px; background-color: white; font-size: 1em; margin-top: 3px; color: red;}
+.tpp_measure {display: none;}
+#dashboard_container .tab-pane {display:none;}
+#dashboard_container .tab-pane.active {display: block; border: 0px;}
+#tpp_index nav li {margin-right: 5px;}
+#tpp_index ul, #tpp_index .navbar-collapse {padding: 0px;margin:0px;}
+#tpp_index nav a {text-decoration: none;}
+#tpp_index nav li a {border-top-left-radius:5px; border-top-right-radius:5px;border-bottom: 2px solid #fff;}
+#tpp_index nav li:hover a, #tpp_nav .navbar .active a {background-color: #444 !important; color: white; border-bottom: 2px solid #444;}
+#tpp_search {text-align: center;display: table; width: 100%; text-align: left;}
+#tpp_search input { display: inline-block; max-width: 80%;}
+#tpp_search .btn-primary {margin-left: 5px; border: 1px; font-size: .85em; padding: 5px 10px;}
+#tpp_nav .navbar-brand {display: none; }
+#tpp_nav {border-bottom: 2px solid #444;}
+#tpp_nav nav {border:0px; margin-bottom: 0px;}
+#tpp_nav .navbar {background-color: #fff;}
+#tpp_nav .navbar a {color: #444;}
+.cityperspective, .datasource {text-align: center; width: 70%; margin: auto; font-style: italic; font-size: .9em;}
+.indexreport {text-align: right;}
+.indexreport img {width: 20px;}
+.indexreport .btnbs {font-weight: normal; font-size: .85em; padding: 5px 10px; border-radius: 5px;}
+.modal-body .btn-group {width: 100%;}
+.modal-body .multiselect {width: 100%; text-align: left;}
+
+@media only screen and (max-width : 1000px) {
+  #graphtype {text-align: center !important;}
+  #contexttype {text-align: center !important;}
+  #graphyear {text-align: center !important;}
+  #graphyear label {width: 60px !important;}
+}
+
+@media only screen and (max-width : 769px) {
+  div.col-xs-12.col-md-6.groupbyperiod label {padding-right:0px !important; }
+  div.col-xs-12.col-md-6 #graphtype p {padding-left:0px !important; }
+  #tpp_nav .navbar-brand {display: block;}
+  #tpp_index nav li a {border-top-left-radius:0px; border-top-right-radius:0px;border-bottom: 0px solid #fff;background-color: #fff; margin-bottom:0px;}
+  #tpp_index nav li:hover a {border: 0px;}
+  #tpp_nav nav {border:1px solid #ccc; }
+  #tpp_nav {border-bottom: 1px solid #ccc;}
+  #tpp_indicators .aindicator {width: 100%; }
+
+  div.col-xs-12.col-md-6.groupbyperiod {text-align:center !important;}
+  #graphtype {text-align: center !important;}
+  #contexttype {text-align: center !important;}
+  #graphyear {text-align: center !important;}
+  #graphyear label {width: 60px !important;}
+  img[title="dashboard.jpg"] {display:none !important;}
+  .indexreport {text-align:center;}
+  .indexreport button {margin: 5px;}
+  #tpp_search input {max-width: 75%;}
+}
+
+@media only screen and (min-width : 768px) {
+  #tpp_indicators .aindicator {width: 50%; }
+}
+@media only screen and (min-width : 992px) {
+  #tpp_indicators .aindicator {width: 33%; }
+}
+
+#tpp_indicators .aindicator.active {cursor: auto;}
+#tpp_indicators .aindicator {text-decoration: none; display: inline-block; cursor: pointer; cursor: -webkit-zoom-in;}
+#tpp_indicators .aindicator:hover .indicator {border:3px solid #666;}
+#tpp_indicators .indicator {margin-top: 20px; border:3px solid white; color: white; text-align: center;  border-radius:10px;}
+#tpp_indicators .indicator.POSITIVE {background-color: green;}
+#tpp_indicators .indicator.NEGATIVE {background-color: #CC0000;}
+#tpp_indicators .indicator.STABLE {background-color: orange;}
+#tpp_indicators .indicator {background-color: #999;}
+#tpp_indicators .indicator.POSITIVE .glyphicon {color: green;}
+#tpp_indicators .indicator.NEGATIVE .glyphicon {color: #CC0000;}
+#tpp_indicators .indicator.STABLE .glyphicon {color: orange;}
+#tpp_indicators .measuredetail {opacity: 0;display: block;padding-top: 10px;}
+#tpp_indicators .measure {margin: 4px; background-color:white; color: black; height: 90%;min-height: 135px;}
+#tpp_indicators .indicator h3 {margin: 5px !important;}
+#tpp_indicators .measurevalue {font-size: 1.5em; margin: 0px 0px 0px 0px;}
+#tpp_indicators .measureperiod {font-size: 1em; margin: 0px;}
+#tpp_indicators .measure .glyphicon {font-size: 2em; margin: 10px 0px 0px 0px;}
+#tpp_indicators .measure .direction {color: #666; font-weight: bold; font-size: .9em;}
+.searchTotal {color: #999;font-weight: bold; border-bottom: 2px solid #999;}
+#tpp_indicators #closeDetail {padding: 5px 10px; display: block; margin: auto;}
+#tpp_indicators #closeDetail .glyphicon, #tpp_indicators #closeDetail .btntext {color: white;margin: 2px; padding: 2px; font-size: 1.1em;}
+#tpp_indicators .analysis {display: block; margin: auto; margin-top:10px;}
+
+div.col-xs-12.col-md-6.groupbyperiod {text-align:right; }
+div.col-xs-12.col-md-6.groupbyperiod label {padding-right:10px; }
+div.col-xs-12.col-md-6 #graphtype {text-align: left;}
+div.col-xs-12.col-md-6 #graphtype p {padding-left:25px; }
+
+div.col-xs-12.col-md-6 #contexttype {text-align: right;}
+#graphyear {text-align: center; margin-top: 10px;}
+#graphyear .active, #graphtype .active { background-color: #5bc0de; border-color: #888; color: white; font-weight: bold;}
+#contexttype label { width: 334px;}
+#graphtype .btn { width: 70px;}
+#graphyear label {width: 70px; height:35px; padding-top:7px !important;}
+
+#tpp_indicators .measuredetail div.col-xs-12 { padding: 0px 15px 10px 15px; font-weight: normal !important;}
+h4.controlstitle, h4.charttitle, .tabletitle {border-bottom: 1px solid black; width: 90%; margin:auto; margin-top: 20px !important;}
+h4.narrative {border-bottom: 1px solid black; margin-top: 20px !important;}
+#tpp_indicators #narrative ul li {margin-left: 25px;}
+#tpp_indicators #narrative ul {margin: 10px;}
+#tpp_indicators #narrative {text-align: left !important; width: 90%; margin: auto;}
+.analysis h4 {border-bottom: 1px solid black; margin:auto; margin-top: 20px !important;}
+.tabletitle {border-bottom: 1px solid black; display: table;}
+.tabletitle h4 {width: 70%; display: inline-block; float:left; line-height: 2.4em; display: block; margin-top:0px !important;}
+#excelexport {float: right; font-size: .75em; border-radius: 5px; padding: 5px 10px; border: 1px;}
+#excelexport img {width: 25px;}
+
+
+#tpp_indicators .analysis {width: 90%; margin-bottom: 0px;}
+#tpp_indicators h4 {text-align: left; margin-bottom:0px !important;}
+#tpp_indicators .analysis .glyphicon {font-size: 1.2em; margin-right: 8px;}
+#tpp_indicators .analysis .glyphicon.POSITIVE {color: #3c763d;}
+#tpp_indicators .analysis .glyphicon.NEGATIVE {color:#a94442;}
+#tpp_indicators .analysis .glyphicon.STABLE {color:#8a6d3b;}
+
+#tpp_indicators .measuredetail .context {font-weight: bold;}
+#tpp_indicators .measuredetail .analysis {display: inline-block; margin-top: 10px; clear: both; text-align:left;}
+
+#measurechart {display:  block; clear: both; width: 90%; margin:auto; border: 1px solid #bbb !important; padding: 0px 5px 0px 5px;}
+#measuretable {display:  block; clear: both; margin: auto; width: 90%;  }
+#tpp_indicators .graphtypebutton {background-color: white !important; border: 1px solid #aaa; border-radius: 5px; float: right; margin-right:15px;}
+#chartcontrols {width:90%; margin:auto; display: table; border: 1px solid #bbb; background-color: #eee; padding: 5px; color: #31708f; padding-top: 8px !important;}
+#chartcontrols .col-xs-12 {padding-bottom: 0px !important;}
+#chartcontrols .btn {padding: 2px;}
+#chartcontrols label {display:block; font-size: 1em;}
+#graphtype p, #graphyear p {font-weight: bold; padding-top: 0px; line-height: 1em; margin-bottom: 5px;}
+#graphtype {margin: 0px; padding: 0px !important;}
+#chartcontrols .bootstrap-switch-handle-on, #chartcontrols .bootstrap-switch-handle-off {background-color: #5bc0de; border-color: #888; color: white;}
+#tpp_indicators #chartcontrols h3 {color: #555; border-bottom: 1px solid black; line-height: 1em; margin: 10px 0px 10px 0px !important; padding: 0px; font-size: 1.1em; height: auto !important; }
+.bootstrap-switch-container span {padding-left: 10px !important; padding-right: 10px !important;  white-space: nowrap !important;}
+#tpp_indicators .analysis table {margin-top: 0px; margin-bottom:0px;font-size: .8em}
+#tpp_indicators .analysis table tr th {background-color: #eee; color: black; font-weight:600 !important;}
+#tpp_indicators .analysis table tr td, #tpp_indicators .analysis #tpp_indicators table tr th {padding:4px !important; border:2px groove white; font-weight:500;}
+#tpp_indicators .analysis table tr.NEGATIVE {background-color: #f2dede !important; color: #a94442; }
+#tpp_indicators .analysis table tr.POSITIVE {background-color: #dff0d8 !important; color: #3c763d; }
+#tpp_indicators .analysis table tr.STABLE {background-color: #fcf8e3 !important; color: #8a6d3b; }
+#tpp_indicators .analysis table td .glyphicon {margin:0px 5px 0px 0px !important;}
+#measuretable table {margin: 0px 0px 30px 0px;}
+#measuretable table td {white-space:nowrap; background-color:white;}
+#measuretable table tr:hover td {background-color:#eee;}
+.table-responsive table {}
+@media print {
+  .analysis, #measurechart, #measuretable {width: 100% !important;}
+  .aindicator.nonactive {border: 2px solid #999;}
+  .alert {border: 0px;}
+  .container {width: 100% !important;}
+  #chartcontrols, .measure h4, #tpp_search, button {display: none !important;}
+  .google-visualization-table>div, .table-responsive {width: 100% !important; overflow-x: visible !important;overflow-y: visible !important;}
+  .table-responsive table, .google-visualization-table>div table {width: 100% !important;}
+  .table-responsive table td, .google-visualization-table>div table td {white-space:normal !important;}
+  div.col-xs-12.col-md-6.groupbyperiod label {padding-right:0px !important; }
+  div.col-xs-12.col-md-6 #graphtype p {padding-left:0px !important; }
+  #tpp_nav .navbar-brand {display: block;}
+  #tpp_index nav li a {border-top-left-radius:0px; border-top-right-radius:0px;border-bottom: 0px solid #fff;background-color: #fff; margin-bottom:0px;}
+  #tpp_index nav li:hover a {border: 0px;}
+  #tpp_nav nav {border:1px solid #ccc; }
+  #tpp_nav {border-bottom: 1px solid #ccc;}
+  #tpp_indicators .aindicator {width: 100%; }
+
+  div.col-xs-12.col-md-6.groupbyperiod {text-align:center !important;}
+  #graphtype {text-align: center !important;}
+  #contexttype {text-align: center !important;}
+  #graphyear {text-align: center !important;}
+  #graphyear label {width: 60px !important;}
+}

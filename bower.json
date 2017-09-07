@@ -1,0 +1,11 @@
+{
+  "name": "dashboard",
+  "description": "SSHA Performance Dashboard.",
+  "authors": [
+    "SSHA IT"
+  ],
+  "private": true,
+  "dependencies": {
+    "core": "https://github.com/CityofToronto/corejs.git#3.0.0"
+  }
+}

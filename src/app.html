@@ -1,0 +1,123 @@
+<!--
+IMPORTANT:
+Any resources from this project should be referenced relatively to the domain! (ex: /resources/app_name/img/image.png)
+This is because this app's files will exist on an S3 bucket resources/dashboard
+BUT the app could be loaded on any page in the WCM.
+-->
+
+<!--
+1. HEADER
+When a WCM user places this app's shortcode on their page,
+everything inside the cot-app:head tag will be loaded at the end of the page's HEAD tag.
+It should contain stylesheet references (and possibly other stuff) that this application requires.
+-->
+<!-- cot-app:head -->
+<!-- The useref gulp plugin will concatenate all files inside of this build tag and place the resulting file at the specified path -->
+<!-- build:css /resources/dashboard/styles/main.css -->
+<!-- CoreJS uses the following tag to inject bower_components stylesheet file references: -->
+<!-- core:css -->
+<!-- endinject -->
+
+<!-- place your application stylesheet references here: -->
+<link rel="stylesheet" type="text/css" href="/resources/dashboard/styles/main.css">
+<link rel="stylesheet" type="text/css" href="/resources/dashboard/styles/bootstrap-switch.min.css">
+
+<!-- endbuild -->
+<!-- build:css /resources/dashboard/styles/core_print.css media="print"-->
+<!-- CoreJS uses the following tag to inject bower_components print-only stylesheet file references: -->
+<!-- core_print:css -->
+<!-- endinject -->
+
+<!-- place any application print-only stylesheet references here -->
+
+<!-- endbuild -->
+<!-- cot-app:head end-->
+
+<!--
+2. BODY
+Everything inside the cot-app:body tag will be loaded in place of their shortcode.
+It should contain the HTML elements that make up the visual portion of this application.
+IMPORTANT:
+It is best to avoid the use of IDs on HTML elements because
+- They could collide with other WCM elements if you are not careful.
+- A WCM author could place your application on the same page more than once.
+-->
+<!-- cot-app:body -->
+<!-- @if ENV='local' || ENV='dev' -->
+<strong>You are building in the <!-- @echo ENV --> environment</strong>
+<!-- @endif -->
+<div id="dashboard_container"></div>
+
+<!-- cot-app:body end-->
+
+<!--
+3. FOOTER
+Everything inside the cot-app:footer tag will be loaded at the end of the page's BODY tag.
+It should contain script references that this application requires.
+-->
+<!-- cot-app:footer -->
+
+<script type="text/javascript" src="//www.google.com/jsapi"></script>
+<!-- The useref gulp plugin will concatenate all files inside of this tag and place the resulting file at the specified path -->
+<!-- build:js /resources/dashboard/scripts/main.js -->
+<!-- CoreJS uses the following tag to inject bower_components script file references: -->
+<!-- core:js -->
+<!-- endinject -->
+
+<!-- place your application script references here: -->
+<script type="text/javascript" src="/resources/dashboard/scripts/bootstrap-switch.min.js"></script>
+<!--
+<script type="text/javascript" src="/resources/dashboard/scripts/pdfmake.min.js"></script>
+<script type="text/javascript" src="/resources/dashboard/scripts/vfs_fonts.js"></script>
+-->
+<script type="text/javascript" src="/resources/dashboard/scripts/main.js"></script>
+
+<!-- endbuild -->
+<div class="modal fade" id="modalPDF" tabindex="-1" role="dialog" aria-labelledby="generatePDF" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><button class="close" type="button" data-dismiss="modal"> <span aria-hidden="true">×</span> <span class="sr-only">Close</span></button>
+        <h2 class="modal-title">Create PDF Report</h2>
+      </div>
+      <div class="modal-body">
+        <div class="selectMeasures">
+          <p>Please select the measures to be included in your PDF report.</p>
+          <div id="measureChxBoxPDF"></div>
+          <section id="rptchart" class="hide"></section>
+        </div>
+        <div class="pleaseWait hide">
+          <p>Please wait while your PDF is generated.  Depending on your computer speed this could take up to 60 seconds.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button aria-label="GeneratePDF" class="btn btn-primary" type="button" onclick="window.tppapp.generatePDF('#measureChxBoxPDF')">Create PDF</button>
+        <button aria-label="Close" class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
+        <div class="progress hide" id="pdfprogress">
+          <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+            <span class="sr-only"> </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalExcel" tabindex="-1" role="dialog" aria-labelledby="generateExcel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><button class="close" type="button" data-dismiss="modal"> <span aria-hidden="true">×</span> <span class="sr-only">Close</span></button>
+        <h2 class="modal-title">Export Data</h2>
+      </div>
+      <div class="modal-body">
+        <p>Please select the measures to be included in your data extract.</p>
+        <div id="measureChxBoxExcel"></div>
+        <br/><br/><br/><br/>
+      </div>
+      <div class="modal-footer">
+        <button aria-label="GeneratePDF" class="btn btn-primary" type="button" onclick="window.tppapp.generateExcel('#measureChxBoxExcel')" data-dismiss="modal">Create Data Extract</button>
+        <button aria-label="Close" class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- cot-app:footer end-->
