@@ -166,53 +166,55 @@ App.prototype.paintDetail = function( indicator ) {
   var m = this.measures[$(indicator).attr("id")];
   strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
   var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
-  sHTMLTREND = "<h4>Trend Analysis</h4>";
-  if (m.vt=="p") {
-    sHTMLTREND += "<table class='table table-bordered'><tr><th>Trend</th><th>Current Value</th><th>Comparison Value</th><th>Percentage Point Changed</th><th>Analysis</th></tr>";
-  } else {
-    sHTMLTREND += "<table class='table table-bordered'><tr><th>Trend</th><th>Current Value</th><th>Comparison Value</th><th>% Changed</th><th>Analysis</th></tr>";
-  }
-  m.vs.sort(function(a, b){	return ( ((b.y * 1000) + b.p) - ((a.y *1000) + a.p));});
-  if (m.ytd=="True") {
-    //DRAW YTD ANALYSIS
-    compVal1 = m.ytds[m.ytds.curYear][m.ytds.curPeriod];compVal2 = m.ytds[m.ytds.curYear - 1][m.ytds.curPeriod];
-    sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Year-To-Date vs. Previous Year", false, true, false, false);
-
-    if (m.ht=="True") {
-      //DRAW TARGET YTD ANALYSIS
-      compVal1 = m.ytds[m.vs[0].y][m.vs[0].p]; compVal2 = 0;
-      $.each (this.targets[$(indicator).attr("id")], function(i,item) {if (item.y == m.vs[0].y && item.p <= m.vs[0].p) {compVal2 += item.v;}});
-      if (compVal2 != 0) {sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Year-To-Date vs. Budget/Target", true, true, false, false);}
+  if (m.trend=="True") {
+    sHTMLTREND = "<h4>Trend Analysis</h4>";
+    if (m.vt=="p") {
+      sHTMLTREND += "<table class='table table-bordered'><tr><th>Trend</th><th>Current Value</th><th>Comparison Value</th><th>Percentage Point Changed</th><th>Analysis</th></tr>";
+    } else {
+      sHTMLTREND += "<table class='table table-bordered'><tr><th>Trend</th><th>Current Value</th><th>Comparison Value</th><th>% Changed</th><th>Analysis</th></tr>";
     }
-  }
+    m.vs.sort(function(a, b){	return ( ((b.y * 1000) + b.p) - ((a.y *1000) + a.p));});
+    if (m.ytd=="True") {
+      //DRAW YTD ANALYSIS
+      compVal1 = m.ytds[m.ytds.curYear][m.ytds.curPeriod];compVal2 = m.ytds[m.ytds.curYear - 1][m.ytds.curPeriod];
+      sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Year-To-Date vs. Previous Year", false, true, false, false);
 
-  //DRAW YEARLY PERIOD ANALYSIS
-  if (m.it!="y") {
-    compVal1 = m.vs[0].v;
-    compVal2 = (m.it=="m") ? m.vs[12].v : m.vs[4].v;
-    sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Last Year At This Time", false, false, true, false);
-  }
-
-
-  //DRAW PERIOD ANALYSIS
-  compVal1 = m.vs[0].v;
-  compVal2 = m.vs[1].v;
-  sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Last Period", false, false, false, true);
-
-  //DRAW TARGET PERIOD ANALYSIS
-  if (m.ht=="True") {
-    compVal1 = m.vs[0].v;
-    compVal2 = "";
-    $.each (this.targets[$(indicator).attr("id")], function(i,item) {
-      if (item.y == m.vs[0].y && item.p == m.vs[0].p) {
-        compVal2 = item.v;
+      if (m.ht=="True") {
+        //DRAW TARGET YTD ANALYSIS
+        compVal1 = m.ytds[m.vs[0].y][m.vs[0].p]; compVal2 = 0;
+        $.each (this.targets[$(indicator).attr("id")], function(i,item) {if (item.y == m.vs[0].y && item.p <= m.vs[0].p) {compVal2 += item.v;}});
+        if (compVal2 != 0) {sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Year-To-Date vs. Budget/Target", true, true, false, false);}
       }
-    });
-    if (compVal2 != "") {
-      sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Budget/Target", true, false, false, true);
     }
+
+    //DRAW YEARLY PERIOD ANALYSIS
+    if (m.it!="y") {
+      compVal1 = m.vs[0].v;
+      compVal2 = (m.it=="m") ? m.vs[12].v : m.vs[4].v;
+      sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Last Year At This Time", false, false, true, false);
+    }
+
+
+    //DRAW PERIOD ANALYSIS
+    compVal1 = m.vs[0].v;
+    compVal2 = m.vs[1].v;
+    sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Last Period", false, false, false, true);
+
+    //DRAW TARGET PERIOD ANALYSIS
+    if (m.ht=="True") {
+      compVal1 = m.vs[0].v;
+      compVal2 = "";
+      $.each (this.targets[$(indicator).attr("id")], function(i,item) {
+        if (item.y == m.vs[0].y && item.p == m.vs[0].p) {
+          compVal2 = item.v;
+        }
+      });
+      if (compVal2 != "") {
+        sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Budget/Target", true, false, false, true);
+      }
+    }
+    sHTMLTREND += "</table>";
   }
-  sHTMLTREND += "</table>";
 
   strHTML += "<div class='analysis'>";
   strHTML += "<div class='table-responsive'>" + sHTMLTREND  + "</div>";
