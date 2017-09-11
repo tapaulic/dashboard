@@ -26,24 +26,24 @@ let options = {
   //You can add environment-specific vars or general vars
   preprocessorContext: {
     local: {
-      JSON_MEASURES: '/data/ssha/dashboard/tpp.json',
+      JSON_MEASURES: '/data/ssha/dashboard/dashboard.json',
       JSON_NARRATIVES: '/data/ssha/dashboard/narratives.json',
       HTML_MEASURES: '/resources/progressportal/html/progressportal.html'
     },
     dev: {
-      JSON_MEASURES: '/app_content/tpp_measures/',
-      JSON_NARRATIVES: '/app_content/tpp_narratives/',
-      HTML_MEASURES: '/app_content/tpp_html/'
+      JSON_MEASURES: '/app_content/dashboard_measures/',
+      JSON_NARRATIVES: '/app_content/dashboard_narratives/',
+      HTML_MEASURES: '/app_content/dashboard_html/'
     },
     qa: {
-      JSON_MEASURES: '/app_content/tpp_measures/',
-      JSON_NARRATIVES: '/app_content/tpp_narratives/',
-      HTML_MEASURES: '/app_content/tpp_html/'
+      JSON_MEASURES: '/app_content/dashboard_measures/',
+      JSON_NARRATIVES: '/app_content/dashboard_narratives/',
+      HTML_MEASURES: '/app_content/dashboard_html/'
     },
     prod: {
-      JSON_MEASURES: '/app_content/tpp_measures/',
-      JSON_NARRATIVES: '/app_content/tpp_narratives/',
-      HTML_MEASURES: '/app_content/tpp_html/'
+      JSON_MEASURES: '/app_content/dashboard_measures/',
+      JSON_NARRATIVES: '/app_content/dashboard_narratives/',
+      HTML_MEASURES: '/app_content/dashboard_html/'
     },
     SOME_OTHER_ENV: 'this var will be in the context of any environment'
   },

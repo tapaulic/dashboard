@@ -1,19 +1,19 @@
-<section id="tpp_index">
-	<section id="tpp_search" class="row">
+<section id="dashboard_index">
+	<section id="dashboard_search" class="row">
 		<div class="col-xs-12 col-sm-8">
 			<div class="form-group">
 				<input id="searchtext" type="text" class="form-control" placeholder="Keyword search..."/>
-				<button id="searchreset" title="Clear the search field and the search results below." class="hide" onclick="window.tppapp.resetsearch( '#searchtext');"><span class="glyphicon glyphicon-remove"></span></button>
-				<button type="submit" class="btn btn-primary" onclick="window.tppapp.search( $( '#searchtext' ).val() )">Search</button>
+				<button id="searchreset" title="Clear the search field and the search results below." class="hide" onclick="window.dashboardapp.resetsearch( '#searchtext');"><span class="glyphicon glyphicon-remove"></span></button>
+				<button type="submit" class="btn btn-primary" onclick="window.dashboardapp.search( $( '#searchtext' ).val() )">Search</button>
 			</div>
 			<div id="searcherror" class="alert alert-danger hide" role="alert"><strong>Error: </strong>Please enter a keyword in the search field above in order to perform a search.</div>
 		</div>
 		<div class="col-xs-12 col-sm-4 indexreport">
-			<button class="btnbs btn-primary pdfreport" onclick="window.tppapp.openPDFCreator();"><span><img src="/resources/dashboard/img/pdficon.png"></span> Create PDF Report</button>
-			<button class="btnbs btn-primary excelreport" onclick="window.tppapp.openEXCELCreator();"><span><img src="/resources/dashboard/img/excelicon.png"></span> Export Data</button>
+			<button class="btnbs btn-primary pdfreport" onclick="window.dashboardapp.openPDFCreator();"><span><img src="/resources/dashboard/img/pdficon.png"></span> Create PDF Report</button>
+			<button class="btnbs btn-primary excelreport" onclick="window.dashboardapp.openEXCELCreator();"><span><img src="/resources/dashboard/img/excelicon.png"></span> Export Data</button>
 		</div>
 	</section>
-	<section id="tpp_nav">
+	<section id="dashboard_nav">
 		<nav class="navbar navbar-default">
 			<div class="container-fluid">
 				<div class="navbar-header">
@@ -26,14 +26,14 @@
 					<a class="navbar-brand" href="#">Select a Category: </a>
 				</div>
 				<div class="navbar-collapse collapse in" id="bs-example-navbar-collapse-1" aria-expanded="true">
-					<ul id="tpp_categorytabs" class="nav navbar-nav"></ul>
+					<ul id="dashboard_categorytabs" class="nav navbar-nav"></ul>
 				</div>
 			</div>
 		</nav>
 	</section>
-	<section id="tpp_indicators">
-		<section id="tpp_indicatortabs"></section>
-		<section id="tpp_searchresults" class="hide"></section>
+	<section id="dashboard_indicators">
+		<section id="dashboard_indicatortabs"></section>
+		<section id="dashboard_searchresults" class="hide"></section>
 	</section>
 
 

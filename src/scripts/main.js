@@ -1,4 +1,4 @@
-var tpp; //THIS A GLOBAL VARIABLE TO YOUR FULL APPLICATION
+var dashboard; //THIS A GLOBAL VARIABLE TO YOUR FULL APPLICATION
 var arrMM = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var arrMMM = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var arrColors = [ "", "MidnightBlue", "Gray", "Orange", "Purple", "Brown", "LightCoral", "GreenYellow", "DarkTurquoise", "DarkOliveGreen", "IndianRed", "PaleVioletRed","Pink" ];
@@ -58,13 +58,13 @@ App.prototype.drawIndex = function(d) {
 
   o.targets = d.targets[0];
   $('.aindicator.nonactive').bind('click', function() { o.measureClick( this );});
-  setConsistentHeightTPP("#tpp_indicators", ".indicator h3");
+  setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    setConsistentHeightTPP("#tpp_indicators", ".indicator h3");
-    setConsistentHeightTPP("#tpp_indicators", ".explanation");
+    setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
+    setConsistentHeightDASHBOARD("#dashboard_indicators", ".explanation");
   });
-  setConsistentHeightTPP("#tpp_indicators", ".indicator h3");
-  setConsistentHeightTPP("#tpp_indicators", ".explanation");
+  setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
+  setConsistentHeightDASHBOARD("#dashboard_indicators", ".explanation");
 };
 App.prototype.measureClick = function( m ) {
   if ($( m ).hasClass("active")) {$( m ).removeClass("active"); return;}
@@ -82,13 +82,13 @@ App.prototype.closeDetail = function() {
   delete this.table;
   $( "#measurechart, #measuretable").remove();
   $( ".aindicator.active" ).removeAttr("style");
-  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #tpp_categorytabs, #tpp_search .col-sm-8, #tpp_nav" ).removeAttr("style");
+  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).removeAttr("style");
   $( ".aindicator.active .measuredetail, #measurechart" ).html("");
   $( ".aindicator.active .measuredetail" ).addClass("hide");
   $( ".aindicator.active" ).addClass("nonactive");
   $( ".aindicator.active").bind('click', function() { o.measureClick( this );});
   $( ".aindicator" ).removeClass( "hide" );
-  setConsistentHeightTPP("#tpp_indicators", ".indicator h3");
+  setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
 };
 App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget, blnYTD, blnYear, blnPeriod) {
   var sPOSNEG, sDIRECTION, sCHANGE, sHTML = "",sCURPER, sLASTPER, sCURVAL, sLASTVAL, sCOMMENT="", intDA;
@@ -164,7 +164,7 @@ App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget,
 App.prototype.paintDetail = function( indicator ) {
   var o = this;
   var m = this.measures[$(indicator).attr("id")];
-  strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.tppapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
+  strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
   var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
   sHTMLTREND = "<h4>Trend Analysis</h4>";
   if (m.vt=="p") {
@@ -249,7 +249,7 @@ App.prototype.paintDetail = function( indicator ) {
   }, 1000, function() {
     o.createGraph( m );
   });
-  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #tpp_categorytabs, #tpp_search .col-sm-8, #tpp_nav" ).animate({
+  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
     opacity: 0,
     height: 1
   }, 900 );
@@ -681,29 +681,29 @@ App.prototype.search = function( q ) {
   o = this;
   q = q.toLowerCase();
   var strHTML = "", intCount = 0;
-  $( "#tpp_searchresults" ).html( "" );
+  $( "#dashboard_searchresults" ).html( "" );
   if ( q == "" ) {
     $( "#searcherror" ).removeClass( "hide" );
     return;
   } else {
     $( "#searcherror" ).addClass( "hide" );
     $.each( $("div.aindicator"), function(j,item) {
-      $( "#tpp_indicatortabs, #tpp_nav" ).addClass( 'hide' );
+      $( "#dashboard_indicatortabs, #dashboard_nav" ).addClass( 'hide' );
       if ( $( item ).html().toLowerCase().indexOf(q) >= 0) {
-        $( "#tpp_searchresults" ).append( $( item ).clone() );
+        $( "#dashboard_searchresults" ).append( $( item ).clone() );
         intCount++;
       }
     });
-    $( "#tpp_searchresults" ).html( "<p class='searchTotal'>" + intCount + " Results Found</p>" + $( "#tpp_searchresults" ).html());
-    $( "#tpp_searchresults, #searchreset" ).removeClass( 'hide' );
-    $( "#tpp_searchresults .aindicator.nonactive" ).click(function() {
+    $( "#dashboard_searchresults" ).html( "<p class='searchTotal'>" + intCount + " Results Found</p>" + $( "#dashboard_searchresults" ).html());
+    $( "#dashboard_searchresults, #searchreset" ).removeClass( 'hide' );
+    $( "#dashboard_searchresults .aindicator.nonactive" ).click(function() {
       o.measureClick(this);
     });
   }
 };
 App.prototype.resetsearch = function( oSearch ) {
-  $( "#tpp_searchresults, #searchreset, #searcherror" ).addClass( 'hide' );
-  $( "#tpp_indicatortabs, #tpp_nav" ).removeClass( 'hide' );
+  $( "#dashboard_searchresults, #searchreset, #searcherror" ).addClass( 'hide' );
+  $( "#dashboard_indicatortabs, #dashboard_nav" ).removeClass( 'hide' );
   $( oSearch ).val("");
 };
 App.prototype.generateExcel = function(strID) {
@@ -718,7 +718,7 @@ App.prototype.generateExcel = function(strID) {
   $.each( $(strID + " select"), function(i,item) {
     $.each(item, function(j, subitem) {
       if ($(subitem).is(':checked')) {
-        m = tpp.measures[$(subitem).val()];
+        m = dashboard.measures[$(subitem).val()];
         m.vs.sort(function(a, b){	return ( ((a.y * 1000) + a.p) - ((b.y *1000) + b.p));});
         $.each( m.vs, function (k, vsitem) {
           sPeriod = (m.it=="m") ? arrMM[vsitem.p] : (m.it=="q") ? "Q" + vsitem.p : (m.it=="s") ? arrSeason[vsitem.p] : "";
@@ -807,8 +807,8 @@ App.prototype.generatePDF = function(strID) {
 
   //SORT THE IDS BY CATEGORY
   arrIDS.sort(function(a, b){
-    return ( ((tpp.measures[a].c[0].charCodeAt(0)+tpp.measures[a].c[0].charCodeAt(1)) * 10000 + (Math.round(tpp.measures[a].id *1000)) ) -
-    ((tpp.measures[b].c[0].charCodeAt(0)+tpp.measures[b].c[0].charCodeAt(1)) * 10000 + (Math.round(tpp.measures[b].id *1000)) ) );
+    return ( ((dashboard.measures[a].c[0].charCodeAt(0)+dashboard.measures[a].c[0].charCodeAt(1)) * 10000 + (Math.round(dashboard.measures[a].id *1000)) ) -
+    ((dashboard.measures[b].c[0].charCodeAt(0)+dashboard.measures[b].c[0].charCodeAt(1)) * 10000 + (Math.round(dashboard.measures[b].id *1000)) ) );
   });
 
   //GENERATE A PAGE PER MEASURE
@@ -1047,7 +1047,7 @@ App.prototype.getPeriodChart = function(mm, strPer, strType, w) {
   if (o.contexttype=="val") {
     ret.push({text: mm.ds, alignment: 'center', style: 'datasource', width: w});
     if (o.narratives[mm.id] != null) {
-      var arrHTML = $.parseHTML( tpp.narratives[mm.id] );
+      var arrHTML = $.parseHTML( dashboard.narratives[mm.id] );
       $.each(arrHTML, function(i, item) {
         ret.push({text: $(arrHTML[i]).text(), alignment: 'center', style: 'narrative'});
       });
@@ -1062,7 +1062,7 @@ App.prototype.openPDFCreator = function() {
 };
 App.prototype.openEXCELCreator = function() {
   var arrIDs = [];
-  if (!$("#tpp_searchresults").hasClass("hide")) {$.each($("#tpp_searchresults .aindicator"), function(i, item) {arrIDs.push(item.id);});}
+  if (!$("#dashboard_searchresults").hasClass("hide")) {$.each($("#dashboard_searchresults .aindicator"), function(i, item) {arrIDs.push(item.id);});}
   if ($(".aindicator.active").length> 0) {arrIDs.push($(".aindicator.active")[0].id)}
   $('#excelcat').multiselect('deselectAll', true);
   $('#excelcat').multiselect('select', arrIDs);
@@ -1097,7 +1097,7 @@ function reportIndex( dd, arrIDS ) {
 };
 /*
 function reportMeasure (dd, arrIDS, measure, section, progress, lastCat, scIndex) {
-  var m = tpp.measures[ arrIDS[measure] ];
+  var m = dashboard.measures[ arrIDS[measure] ];
 
   if (m.c[0] != lastCat) {
     //UPDATE SCORECARD WITH NEW CATEGORY TITLE AND TABLE
@@ -1127,17 +1127,17 @@ function reportMeasure (dd, arrIDS, measure, section, progress, lastCat, scIndex
       //MEASURE TITLE & TREND ANALYSIS TITLE
       dd.content.push({text: m.m.replace(/\n/g,' '),style: 'measuretitle', pageBreak: 'before'});
       dd.content.push({text: 'Trend Analysis',style: 'trendtitle'});
-      tpp.getAnalysisTable(dd, m, scIndex);
+      dashboard.getAnalysisTable(dd, m, scIndex);
       dd.content.push({text: m.cp, style: 'cityper'});
       reportMeasure (dd, arrIDS, measure, section + 1, progress, lastCat, scIndex);
       break;
     case 2 :
       //GRAPHS
       if (m.ytd == "True") {
-        dd.content.push( tpp.getPeriodChart(m, strPer, "ytd", 610) );
-        dd.content.push( tpp.getPeriodChart(m, strPer, "val", 610) );
+        dd.content.push( dashboard.getPeriodChart(m, strPer, "ytd", 610) );
+        dd.content.push( dashboard.getPeriodChart(m, strPer, "val", 610) );
       } else {
-        dd.content.push( tpp.getPeriodChart(m, strPer, "val", 610) );
+        dd.content.push( dashboard.getPeriodChart(m, strPer, "val", 610) );
       }
       reportMeasure ( dd, arrIDS, measure, section + 1, progress, lastCat, scIndex );
       break;
@@ -1165,7 +1165,7 @@ function reportMeasure (dd, arrIDS, measure, section, progress, lastCat, scIndex
         $('#modalPDF').modal('toggle');
         $( "#pdfprogress .progress-bar" ).attr( "aria-valuenow", 0 );
         $( "#pdfprogress .progress-bar" ).css( "width", "0%");
-        delete tpp.chart;
+        delete dashboard.chart;
       }, arrIDS.length*50);
     }
   }
@@ -1223,7 +1223,7 @@ function numberWithCommas(x, p) {
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return parts.join(".");
 };
-function setConsistentHeightTPP(strParentSelector, strChildSelector) {
+function setConsistentHeightDASHBOARD(strParentSelector, strChildSelector) {
   var itemsParent = $(strParentSelector);
   var heights = [];
   var tallest;
@@ -1257,12 +1257,12 @@ $(document).ready(function() {
   var sJSONMeasures = '/*@echo JSON_MEASURES*/';
   var sJSONNarratives = '/*@echo JSON_NARRATIVES*/';
   var sHTMLSource = '/resources/dashboard/html/dashboard.html';
-  tpp = new App('#dashboard_container','#tpp_categorytabs','#tpp_indicatortabs','#tpp_index',sHTMLSource, sJSONMeasures, sJSONNarratives);
-  window.tppapp = tpp;
-  tpp.loadHTML();
+  dashboard = new App('#dashboard_container','#dashboard_categorytabs','#dashboard_indicatortabs','#dashboard_index',sHTMLSource, sJSONMeasures, sJSONNarratives);
+  window.dashboardapp = dashboard;
+  dashboard.loadHTML();
   $( window ).resize(function() {
-    setConsistentHeightTPP("#tpp_indicators", ".indicator h3");
-    setConsistentHeightTPP("#tpp_indicators", ".explanation");
+    setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
+    setConsistentHeightDASHBOARD("#dashboard_indicators", ".explanation");
   });
 });
 google.load('visualization', '1', {packages: ['corechart', 'bar', 'table']});
