@@ -164,8 +164,9 @@ App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget,
 App.prototype.paintDetail = function( indicator ) {
   var o = this;
   var m = this.measures[$(indicator).attr("id")];
-  strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.tppapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
+  strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
   var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
+  /*
   sHTMLTREND = "<h4>Trend Analysis</h4>";
   if (m.vt=="p") {
     sHTMLTREND += "<table class='table table-bordered'><tr><th>Trend</th><th>Current Value</th><th>Comparison Value</th><th>Percentage Point Changed</th><th>Analysis</th></tr>";
@@ -183,8 +184,9 @@ App.prototype.paintDetail = function( indicator ) {
       compVal1 = m.ytds[m.vs[0].y][m.vs[0].p]; compVal2 = 0;
       $.each (this.targets[$(indicator).attr("id")], function(i,item) {if (item.y == m.vs[0].y && item.p <= m.vs[0].p) {compVal2 += item.v;}});
       if (compVal2 != 0) {sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Year-To-Date vs. Budget/Target", true, true, false, false);}
-    }
+    }    
   }
+
 
   //DRAW YEARLY PERIOD ANALYSIS
   if (m.it!="y") {
@@ -213,6 +215,7 @@ App.prototype.paintDetail = function( indicator ) {
     }
   }
   sHTMLTREND += "</table>";
+  */
 
   strHTML += "<div class='analysis'>";
   strHTML += "<div class='table-responsive'>" + sHTMLTREND  + "</div>";
@@ -249,7 +252,7 @@ App.prototype.paintDetail = function( indicator ) {
   }, 1000, function() {
     o.createGraph( m );
   });
-  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #tpp_categorytabs, #tpp_search .col-sm-8, #tpp_nav" ).animate({
+  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
     opacity: 0,
     height: 1
   }, 900 );
@@ -667,8 +670,8 @@ App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod
 
   <img src="/resources/dashboard/img/line.png" alt="Line chart icon"/>*/
 
-  //strHTML += '<p class="measurevalue"><span>' + strVal + '</span></p>';
-  //strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
+  strHTML += '<br><p class="measurevalue"><span>' + strVal + '</span></p>';
+  strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
   strHTML += '<div class="row">';
   strHTML += '<div class="col-xs-12 explanation"><div>';
   //strHTML += (strDirection == "Up2") ? '<p><span class="glyphicon glyphicon-arrow-up"></span></p><p class="direction">Increase of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
