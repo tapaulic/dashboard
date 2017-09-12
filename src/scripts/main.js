@@ -164,57 +164,55 @@ App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget,
 App.prototype.paintDetail = function( indicator ) {
   var o = this;
   var m = this.measures[$(indicator).attr("id")];
-  strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
+  strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.tppapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
   var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
-  if (m.trend=="True") {
-    sHTMLTREND = "<h4>Trend Analysis</h4>";
-    if (m.vt=="p") {
-      sHTMLTREND += "<table class='table table-bordered'><tr><th>Trend</th><th>Current Value</th><th>Comparison Value</th><th>Percentage Point Changed</th><th>Analysis</th></tr>";
-    } else {
-      sHTMLTREND += "<table class='table table-bordered'><tr><th>Trend</th><th>Current Value</th><th>Comparison Value</th><th>% Changed</th><th>Analysis</th></tr>";
-    }
-    m.vs.sort(function(a, b){	return ( ((b.y * 1000) + b.p) - ((a.y *1000) + a.p));});
-    if (m.ytd=="True") {
-      //DRAW YTD ANALYSIS
-      compVal1 = m.ytds[m.ytds.curYear][m.ytds.curPeriod];compVal2 = m.ytds[m.ytds.curYear - 1][m.ytds.curPeriod];
-      sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Year-To-Date vs. Previous Year", false, true, false, false);
-
-      if (m.ht=="True") {
-        //DRAW TARGET YTD ANALYSIS
-        compVal1 = m.ytds[m.vs[0].y][m.vs[0].p]; compVal2 = 0;
-        $.each (this.targets[$(indicator).attr("id")], function(i,item) {if (item.y == m.vs[0].y && item.p <= m.vs[0].p) {compVal2 += item.v;}});
-        if (compVal2 != 0) {sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Year-To-Date vs. Budget/Target", true, true, false, false);}
-      }
-    }
-
-    //DRAW YEARLY PERIOD ANALYSIS
-    if (m.it!="y") {
-      compVal1 = m.vs[0].v;
-      compVal2 = (m.it=="m") ? m.vs[12].v : m.vs[4].v;
-      sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Last Year At This Time", false, false, true, false);
-    }
-
-
-    //DRAW PERIOD ANALYSIS
-    compVal1 = m.vs[0].v;
-    compVal2 = m.vs[1].v;
-    sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Last Period", false, false, false, true);
-
-    //DRAW TARGET PERIOD ANALYSIS
-    if (m.ht=="True") {
-      compVal1 = m.vs[0].v;
-      compVal2 = "";
-      $.each (this.targets[$(indicator).attr("id")], function(i,item) {
-        if (item.y == m.vs[0].y && item.p == m.vs[0].p) {
-          compVal2 = item.v;
-        }
-      });
-      if (compVal2 != "") {
-        sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Budget/Target", true, false, false, true);
-      }
-    }
-    sHTMLTREND += "</table>";
+  sHTMLTREND = "<h4>Trend Analysis</h4>";
+  if (m.vt=="p") {
+    sHTMLTREND += "<table class='table table-bordered'><tr><th>Trend</th><th>Current Value</th><th>Comparison Value</th><th>Percentage Point Changed</th><th>Analysis</th></tr>";
+  } else {
+    sHTMLTREND += "<table class='table table-bordered'><tr><th>Trend</th><th>Current Value</th><th>Comparison Value</th><th>% Changed</th><th>Analysis</th></tr>";
   }
+  m.vs.sort(function(a, b){	return ( ((b.y * 1000) + b.p) - ((a.y *1000) + a.p));});
+  if (m.ytd=="True") {
+    //DRAW YTD ANALYSIS
+    compVal1 = m.ytds[m.ytds.curYear][m.ytds.curPeriod];compVal2 = m.ytds[m.ytds.curYear - 1][m.ytds.curPeriod];
+    sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Year-To-Date vs. Previous Year", false, true, false, false);
+
+    if (m.ht=="True") {
+      //DRAW TARGET YTD ANALYSIS
+      compVal1 = m.ytds[m.vs[0].y][m.vs[0].p]; compVal2 = 0;
+      $.each (this.targets[$(indicator).attr("id")], function(i,item) {if (item.y == m.vs[0].y && item.p <= m.vs[0].p) {compVal2 += item.v;}});
+      if (compVal2 != 0) {sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Year-To-Date vs. Budget/Target", true, true, false, false);}
+    }
+  }
+
+  //DRAW YEARLY PERIOD ANALYSIS
+  if (m.it!="y") {
+    compVal1 = m.vs[0].v;
+    compVal2 = (m.it=="m") ? m.vs[12].v : m.vs[4].v;
+    sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Last Year At This Time", false, false, true, false);
+  }
+
+
+  //DRAW PERIOD ANALYSIS
+  compVal1 = m.vs[0].v;
+  compVal2 = m.vs[1].v;
+  sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Last Period", false, false, false, true);
+
+  //DRAW TARGET PERIOD ANALYSIS
+  if (m.ht=="True") {
+    compVal1 = m.vs[0].v;
+    compVal2 = "";
+    $.each (this.targets[$(indicator).attr("id")], function(i,item) {
+      if (item.y == m.vs[0].y && item.p == m.vs[0].p) {
+        compVal2 = item.v;
+      }
+    });
+    if (compVal2 != "") {
+      sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Budget/Target", true, false, false, true);
+    }
+  }
+  sHTMLTREND += "</table>";
 
   strHTML += "<div class='analysis'>";
   strHTML += "<div class='table-responsive'>" + sHTMLTREND  + "</div>";
@@ -225,8 +223,8 @@ App.prototype.paintDetail = function( indicator ) {
   var strCl = (m.ytd=="True") ? "col-xs-12 col-md-4" : "col-xs-12 col-md-6";
 
   var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
-  strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
-  strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
+  strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/progressportal/img/combo.png" alt="Bar chart icon"/></label>';
+  strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/progressportal/img/line.png" alt="Line chart icon"/></label>';
   strType += '</div></div>';
   var strContext = '<div class="' + strCl + ' groupbyperiod"><label for="groupbyperiod">Group by ' + strP + '</label><input type="checkbox" id="groupbyperiod" name="groupbyperiod" data-on-text="Yes" data-off-text="No" data-handle-width="50" checked></div>';
   strContext += (m.ytd=="True") ? '<div class="' + strCl + '"><label for="showytdvalues">Show Year-To-Date Values</label><input type="checkbox" id="showytdvalues" name="showytdvalues" data-on-text="Yes" data-off-text="No"  data-handle-width="50" checked></div>' : '';
@@ -237,7 +235,7 @@ App.prototype.paintDetail = function( indicator ) {
   strHTML += '<h4 class="controlstitle">Chart Options</h4><section id="chartcontrols"><div class="col-xs-12">' + strContext + '</div><div class="col-xs-12">' + strYears + '</div></section>';
   strHTML += "<h4 class='charttitle'>Chart: " + sChartTitle + "</h4><div id='measurechart'></div>";
   strHTML += (m.ds=="") ? "" : "<p class='datasource'>" + m.ds + "</p>";
-  strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle +"</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
+  strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle +"</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/progressportal/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
   strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
   o.charttype="bars";
   if (m.ytd=="True") {o.contexttype="ytd";} else {o.contexttype="period";}
@@ -251,7 +249,7 @@ App.prototype.paintDetail = function( indicator ) {
   }, 1000, function() {
     o.createGraph( m );
   });
-  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
+  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #tpp_categorytabs, #tpp_search .col-sm-8, #tpp_nav" ).animate({
     opacity: 0,
     height: 1
   }, 900 );
