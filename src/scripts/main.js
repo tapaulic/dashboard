@@ -640,7 +640,7 @@ App.prototype.drawMeasure = function(m, cat) {
   }
 
   if (m.dd=="None") {sPOSNEG = "N/A";}
-  sCHANGE = (compVal1/compVal2-1) * 100;
+  sCHANGE = (compVal1/compVal2-1) * 100;  
   sCHANGE = Math.abs(sCHANGE.toFixed(2)) + "%";
   sCHANGE = (m.vt=="p") ? ((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
   sID = m.id;
@@ -665,15 +665,20 @@ App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod
   strHTML += '<h3>' + strTitle.replace(/\n/g,'<br/>') + '</h3>';
   strHTML += '<div class="measure">';
   strHTML += '<section class="measuredetail hide"></section>';
-  strHTML += '<p class="measurevalue"><span>' + strVal + '</span></p>';
-  strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
+  /* hide measure detail section - replace with icon
+
+  <img src="/resources/dashboard/img/line.png" alt="Line chart icon"/>*/
+
+  //strHTML += '<p class="measurevalue"><span>' + strVal + '</span></p>';
+  //strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
   strHTML += '<div class="row">';
   strHTML += '<div class="col-xs-12 explanation"><div>';
-  strHTML += (strDirection == "Up") ? '<p><span class="glyphicon glyphicon-arrow-up"></span></p><p class="direction">Increase of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
-  strHTML += (strDirection == "Down") ? '<p><span class="glyphicon glyphicon-arrow-down"></span></p><p class="direction">Decrease of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
-  strHTML += (strDirection == "Stable") ? '<p><span class="glyphicon glyphicon-minus"></span></p><p class="direction">Stable from previous ' + strInterval + '</p>' : '';
+  //strHTML += (strDirection == "Up2") ? '<p><span class="glyphicon glyphicon-arrow-up"></span></p><p class="direction">Increase of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
+  //strHTML += (strDirection == "Down") ? '<p><span class="glyphicon glyphicon-arrow-down"></span></p><p class="direction">Decrease of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
+  //strHTML += (strDirection == "Stable2") ? '<p><span class="glyphicon glyphicon-minus"></span></p><p class="direction">Stable from previous ' + strInterval + '</p>' : '';
   strHTML += '</div>';
   strHTML += '</div>';
+
   strHTML += '</div>';
   strHTML += '</div>';
   strHTML += '</div></div>';
