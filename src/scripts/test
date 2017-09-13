@@ -1,0 +1,14 @@
+$(document).ready(function() {
+  $.ajaxSetup({ cache: false });
+  var sJSONMeasures = '/*@echo JSON_MEASURES*/';
+  var sJSONNarratives = '/*@echo JSON_NARRATIVES*/';
+  var sHTMLSource = '/resources/dashboard/html/dashboard.html';
+  tpp = new App('#dashboard_container','#tpp_categorytabs','#tpp_indicatortabs','#tpp_index',sHTMLSource, sJSONMeasures, sJSONNarratives);
+  window.tppapp = tpp;
+  tpp.loadHTML();
+  $( window ).resize(function() {
+    setConsistentHeightTPP("#tpp_indicators", ".indicator h3");
+    setConsistentHeightTPP("#tpp_indicators", ".explanation");
+  });
+});
+#dashboard_container.load('/resources/dashboard/html/dashboard.html #tpp_index')
