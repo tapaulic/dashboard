@@ -4,8 +4,11 @@ SSHA Performance Dashboard.
 
 Installation
 -
-Give instructions on how to get started with it.
+1. git clone https://github.com/tapaulic/dashboard.git
+2. cd dashboard
+3. npm install
+4. bower install
 
 Usage
 -
-Give documentation on how to use it.
+5. gulp run
