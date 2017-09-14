@@ -1,0 +1,79 @@
+{
+ "LSD":{ 
+ "LSD_MXGRAPH":{
+  "vertexes": [
+  {"id": "v1", "value": "Waiting</br><strong>88</strong>", "left": 150, "top": 80, "width": 120, "height":60, "style": "fillColor=#F5A352;editable=0;fontColor=#423c40", "secondLabel": {}},
+  {"id": "v2", "value": "Admitted</br><strong>95</strong>", "left": 150, "top": 250, "width": 120, "height":60, "style": "fillColor=#79BFA1;editable=0;fontColor=#423c40", "secondLabel": {}},
+  {"id": "v3", "value": "Bed Held</br><strong>25</strong>", "left": 530, "top": 80, "width": 120, "height":60, "style": "myshape;fillColor=#A3CBF1;editable=0;fontColor=#423c40", "secondLabel": {}},
+  {"id": "v4", "value": "No Show</br><strong>32</strong>", "left": 880, "top": 0, "width": 120, "height":60, "style": "myshape;fillColor=#C5AAF5;editable=0;fontColor=#423c40", "secondLabel": {}},
+  {"id": "v5", "value": "Admitted</br><strong>90</strong>", "left": 880, "top": 80, "width": 120, "height":60, "style": "myshape;fillColor=#79BFA1;editable=0;fontColor=#423c40", "secondLabel": {}},
+  {"id": "v6", "value": "Rejected</br><strong>91</strong>", "left": 880, "top": 160, "width": 120, "height":60, "style": "myshape;fillColor=#FB7374;editable=0;fontColor=#423c40", "secondLabel": {}}], "edges": [
+  {"id": "e1", "value": "1", "from": "v1", "to": "v2", "style": "edgeStyle=elbowConnector;ROUNDED=true;fontColor=#000000;spacingRight=2;align=right;fontStyle=0;"},
+  {"id": "e2", "value": "2", "from": "v1", "to": "v3", "style": "edgeStyle=elbowConnector;"},
+  {"id": "e3", "value": "3", "from": "v3", "to": "v4", "style": "edgeStyle=elbowConnector;"},
+  {"id": "e4", "value": "4", "from": "v3", "to": "v5", "style": "edgeStyle=elbowConnector;"},
+  {"id": "e5", "value": "5", "from": "v3", "to": "v6", "style": "edgeStyle=elbowConnector;"}]
+  },
+ "LSD_DATATABLE":{ 
+  "cols": [{
+    "id": "",
+    "label": "Status",
+    "pattern": "",
+    "type": "string"
+  }, {
+    "id": "",
+    "label": "Count",
+    "pattern": "",
+    "type": "number"
+  }
+],
+"rows": [
+         {"c":[{"v":"Waiting","f":null},{"v":88,"f":null}]},
+         {"c":[{"v":"Admitted","f":null},{"v":95,"f":null}]},
+         {"c":[{"v":"Bed Held","f":null},{"v":25,"f":null}]},
+         {"c":[{"v":"No Show","f":null},{"v":32,"f":null}]},
+         {"c":[{"v":"Admitted","f":null},{"v":90,"f":null}]},
+         {"c":[{"v":"Rejected","f":null},{"v":91,"f":null}]}
+        ]
+},
+ "LSD_RAWDATA":{ 
+  
+  }
+},
+  "OccupancyBySector":{
+  "cols": [{
+    "id": "Time",
+    "name": "Time",
+    "label": "Time",
+    "pattern": "",
+    "type": "string"
+  }, {
+    "id": "Men",
+    "name": "Men",
+    "label": "Men",
+    "pattern": "",
+    "type": "number"
+  }, {
+    "id": "Women",
+    "label": "Women",
+    "pattern": "",
+    "type": "number"
+  }, {
+    "id": "Families",
+    "label": "Families",
+    "pattern": "",
+    "type": "number"
+  }, {
+    "id": "Youth",
+    "label": "Youth",
+    "pattern": "",
+    "type": "number"
+  }, {
+    "id": "Co Ed",
+    "label": "Co Ed",
+    "pattern": "",
+    "type": "number"
+  }],
+  "rows": [{"c":[{"v":"10","f":null},{"v":"94","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"97","f":null},{"v":"72","f":null}]},{"c":[{"v":"11","f":null},{"v":"94","f":null},{"v":"98","f":null},{"v":"99","f":null},{"v":"98","f":null},{"v":"72","f":null}]},{"c":[{"v":"12","f":null},{"v":"94","f":null},{"v":"98","f":null},{"v":"99","f":null},{"v":"98","f":null},{"v":"72","f":null}]},{"c":[{"v":"13","f":null},{"v":"94","f":null},{"v":"98","f":null},{"v":"99","f":null},{"v":"97","f":null},{"v":"72","f":null}]},{"c":[{"v":"14","f":null},{"v":"95","f":null},{"v":"98","f":null},{"v":"99","f":null},{"v":"98","f":null},{"v":"72","f":null}]},{"c":[{"v":"15","f":null},{"v":"95","f":null},{"v":"98","f":null},{"v":"99","f":null},{"v":"98","f":null},{"v":"72","f":null}]},{"c":[{"v":"16","f":null},{"v":"95","f":null},{"v":"98","f":null},{"v":"99","f":null},{"v":"98","f":null},{"v":"72","f":null}]},{"c":[{"v":"17","f":null},{"v":"95","f":null},{"v":"98","f":null},{"v":"99","f":null},{"v":"98","f":null},{"v":"72","f":null}]},{"c":[{"v":"18","f":null},{"v":"95","f":null},{"v":"99","f":null},{"v":"99","f":null},{"v":"99","f":null},{"v":"72","f":null}]},{"c":[{"v":"19","f":null},{"v":"96","f":null},{"v":"99","f":null},{"v":"99","f":null},{"v":"99","f":null},{"v":"72","f":null}]},{"c":[{"v":"20","f":null},{"v":"96","f":null},{"v":"99","f":null},{"v":"99","f":null},{"v":"99","f":null},{"v":"72","f":null}]},{"c":[{"v":"21","f":null},{"v":"96","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"99","f":null},{"v":"72","f":null}]},{"c":[{"v":"22","f":null},{"v":"96","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"99","f":null},{"v":"72","f":null}]},{"c":[{"v":"23","f":null},{"v":"96","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"99","f":null},{"v":"72","f":null}]},{"c":[{"v":"00","f":null},{"v":"97","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"98","f":null},{"v":"72","f":null}]},{"c":[{"v":"01","f":null},{"v":"97","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"99","f":null},{"v":"72","f":null}]},{"c":[{"v":"02","f":null},{"v":"97","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"99","f":null},{"v":"70","f":null}]},{"c":[{"v":"03","f":null},{"v":"97","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"98","f":null},{"v":"72","f":null}]},{"c":[{"v":"04","f":null},{"v":"97","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"98","f":null},{"v":"74","f":null}]},{"c":[{"v":"05","f":null},{"v":"97","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"98","f":null},{"v":"74","f":null}]},{"c":[{"v":"06","f":null},{"v":"97","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"98","f":null},{"v":"74","f":null}]},{"c":[{"v":"07","f":null},{"v":"94","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"98","f":null},{"v":"74","f":null}]},{"c":[{"v":"08","f":null},{"v":"94","f":null},{"v":"99","f":null},{"v":"100","f":null},{"v":"98","f":null},{"v":"74","f":null}]},{"c":[{"v":"09","f":null},{"v":"95","f":null},{"v":"99","f":null},{"v":"99","f":null},{"v":"97","f":null},{"v":"74","f":null}]}]
+  }
+}

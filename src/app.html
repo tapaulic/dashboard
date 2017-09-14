@@ -22,6 +22,7 @@ It should contain stylesheet references (and possibly other stuff) that this app
 <link rel="stylesheet" type="text/css" href="/resources/dashboard/styles/main.css">
 <link rel="stylesheet" type="text/css" href="/resources/dashboard/styles/bootstrap-switch.min.css">
 
+
 <!-- endbuild -->
 <!-- build:css /resources/dashboard/styles/core_print.css media="print"-->
 <!-- CoreJS uses the following tag to inject bower_components print-only stylesheet file references: -->
@@ -31,6 +32,8 @@ It should contain stylesheet references (and possibly other stuff) that this app
 <!-- place any application print-only stylesheet references here -->
 
 <!-- endbuild -->
+<script type="text/javascript">mxBasePath = '/resources/dashboard/scripts/mxgraph';</script>
+<script type="text/javascript" src="/resources/dashboard/scripts/mxgraph/js/mxClient.js"></script>
 <!-- cot-app:head end-->
 
 <!--
@@ -66,11 +69,24 @@ It should contain script references that this application requires.
 
 <!-- place your application script references here: -->
 <script type="text/javascript" src="/resources/dashboard/scripts/bootstrap-switch.min.js"></script>
+
+
+
+
+
+
 <!--
 <script type="text/javascript" src="/resources/dashboard/scripts/pdfmake.min.js"></script>
 <script type="text/javascript" src="/resources/dashboard/scripts/vfs_fonts.js"></script>
 -->
+<!--mxgraph
+<script type="text/javascript"> mxBasePath = '/resources/dashboard/scripts/mxgraph';</script>
+-->
+
 <script type="text/javascript" src="/resources/dashboard/scripts/main.js"></script>
+
+
+
 
 <!-- endbuild -->
 <div class="modal fade" id="modalPDF" tabindex="-1" role="dialog" aria-labelledby="generatePDF" aria-hidden="true">
