@@ -83,16 +83,15 @@ App.prototype.measureClick = function( m ) {
   $( ".aindicator" ).addClass("hide");
   $( ".aindicator.active, .aindicator.active .measuredetail" ).removeClass("hide");
   var row = this.measures[$(m).attr("id")];
-  if (row.chartType!="mxgraph" && row.chartType!="trafficLight") {
-      o.paintDetail.call(o, m );
-  }
-  else if (row.chartType=="mxgraph"){
+  if (row.chartType=="mxgraph"){
        o.drawlivedemandstream.call(o, m ,o.liveData['LSD']);
   }
   else if (row.chartType=="trafficLight"){
         o.drawtrafficlight(o, m );
+      }
+  else {
+      o.paintDetail.call(o, m );
   }
-
 };
 App.prototype.closeDetail = function() {
   var o = this;
@@ -422,7 +421,7 @@ App.prototype.drawlivedemandstream = function( indicator,data ) {
             "</table>"+
             "</div>";
       
-$( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #tpp_categorytabs, #tpp_search .col-sm-8, #tpp_nav" ).animate({
+$( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
     opacity: 0,
     height: 1
  }, 900 );
@@ -557,28 +556,34 @@ App.prototype.paintDetail = function( indicator ) {
   for (var x = 0; x < intLoop; x++) {
     m.activeYears[new Date().getFullYear() - x] = true;
   }
+  
   $( ".aindicator.active" ).animate({
     width: "100%"
   }, 1000, function() {
     o.createGraph( m );
   });
+  
   $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
     opacity: 0,
     height: 1
   }, 900 );
+  
   $( ".aindicator.active .measuredetail" ).html( strHTML );
   $( ".aindicator.active .measuredetail" ).animate({
     opacity: 1
   }, 1000 );
- 
+  
   //ACTIVATE SWITCHES
   $("#groupbyperiod, #showytdvalues").bootstrapSwitch();
+  
   $('#groupbyperiod').on('switchChange.bootstrapSwitch', function(event, state) {
     o.selectGroupByPeriod();
   });
+  
   $('#showytdvalues').on('switchChange.bootstrapSwitch', function(event, state) {
     o.selectYTD();
   });
+  
 };
 function getType(measure) {
   return (measure.it=="m") ? "MONTHLY" : (measure.it=="q") ? "QUARTERLY" : (measure.it=="y") ? "YEARLY" : "SEASONAL";
