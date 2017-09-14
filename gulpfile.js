@@ -28,6 +28,7 @@ let options = {
     local: {
       JSON_MEASURES: '/data/ssha/dashboard/dashboard.json',
       JSON_NARRATIVES: '/data/ssha/dashboard/narratives.json',
+      JSON_SSHA_LiveData: '/data/ssha/dashboard/live.json',
       HTML_MEASURES: '/resources/progressportal/html/progressportal.html'
     },
     dev: {
@@ -80,5 +81,12 @@ core.embeddedApp.createTasks(gulp, options);
  gulp.task('_data', () => {
    let myDataPath = '/data/ssha/dashboard'; //On S3, this will be something like /data/division/my_app
                              //On WP, this will be something different
-   return gulp.src(['src/data/**/*']).pipe(gulp.dest('dist' + myDataPath));
+
+   //return gulp.src(['src/data/**/*']).pipe(gulp.dest('dist' + myDataPath));
+   gulp.src(['src/data/**/*']).pipe(gulp.dest('dist' + myDataPath));
+   let myJsPath = '/resources/dashboard/scripts'; //On S3, this will be something like /data/division/my_app
+   //On WP, this will be something different
+    return gulp.src(['src/scripts/**/*']).pipe(gulp.dest('dist' + myJsPath));
  });
+
+
