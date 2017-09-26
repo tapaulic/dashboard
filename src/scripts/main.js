@@ -401,7 +401,7 @@ App.prototype.drawlivedemandstream = function( indicator,data ) {
             "<div class='table-responsive'>"+
             "<table class='table table-bordered'>"+
 		      "<tr>"+
-              "<td>"+"<h4>"+"Chart:Live Demand Stream"+"</h4>"+
+              "<td>"+"<h4>"+"Chart: Live Demand Stream"+"</h4>"+
               "</td>"+
               "</tr>"+
             "<tr>"+
@@ -990,7 +990,7 @@ App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod
 
   }else {
     //strHTML += '<br><p class="measurevalue"><span class="' + strIcon + '"/></p>';
-    strHTML += '<br><p class="measurevalue"><img src="/resources/dashboard/img/'+strIcon+'" alt="An icon"/></p>';
+    strHTML += '<br><p class="measurevalue"><img src="/resources/dashboard/img/'+strIcon+'" alt="An icon"/></p><br>';
   }
 
   strHTML += '<div class="row">';
