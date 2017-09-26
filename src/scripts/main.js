@@ -876,11 +876,11 @@ App.prototype.drawSymbol = function(sPOSNEG, sDIRECTION) {
 };
 App.prototype.drawMeasure = function(m, cat) {
   var o = this;
-  var sKEYWORDS, sMEASURE, sVALUE, sINTERVAL, sPOSNEG, sPERIOD, sDIRECTION, sCHANGE, sID, lastVal, lastYear, lastPeriod, intDA;
+  var sKEYWORDS, sMEASURE, sVALUE, sINTERVAL, sPOSNEG, sPERIOD, sDIRECTION, sCHANGE, sID,sIcon, lastVal, lastYear, lastPeriod, intDA;
   var compVal1, compVal2;
   sMEASURE = m.m;
   sKEYWORDS = m.kw;
-
+  sIcon=m.icon;
   intDA = (m.da=="") ? 0 : parseInt(m.da);
 
   //CREATE YTD VALUES FOR NUMERIC AND CURRENCY MEASURES
@@ -960,8 +960,7 @@ App.prototype.drawMeasure = function(m, cat) {
   sCHANGE = Math.abs(sCHANGE.toFixed(2)) + "%";
   sCHANGE = (m.vt=="p") ? ((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
   sID = m.id;
- 
-  $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID) );
+  $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID, sIcon) );
 };
 App.prototype.createTab = function (sTabName, index){
   var o = this;
@@ -973,7 +972,7 @@ App.prototype.createTab = function (sTabName, index){
     $( o.selectors.indicators ).append( '<section class="tab-pane" id="cat' + sTabName.replace(/\W+/g, '') + '"></section>' );
   }
 };
-App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod, strDirection, strInterval, strChangeVal, strID ) {
+App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod, strDirection, strInterval, strChangeVal, strID,strIcon ) {
   var strHTML = "";
   strHTML += '<div class="aindicator nonactive" href="#" id="' + strID + '"><div class="indicator ' + strPSN + '">';
   strHTML += '<div class="hide keywords">' + strKW + '</div>';
@@ -984,8 +983,16 @@ App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod
    /* hide measure detail section - replace with icon
 
   <img src="/resources/dashboard/img/line.png" alt="Line chart icon"/>*/
-  strHTML += '<br><p class="measurevalue"><span>' + strVal + '</span></p>';
-  strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
+
+  if(!strIcon || 0 === strIcon.length){
+    strHTML += '<br><p class="measurevalue"><span>' + strVal + '</span></p>';
+    strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
+
+  }else {
+    //strHTML += '<br><p class="measurevalue"><span class="' + strIcon + '"/></p>';
+    strHTML += '<br><p class="measurevalue"><img src="/resources/dashboard/img/'+strIcon+'" alt="An icon"/></p>';
+  }
+
   strHTML += '<div class="row">';
   strHTML += '<div class="col-xs-12 explanation"><div>';
 //  strHTML += (strDirection == "Up") ? '<p><span class="glyphicon glyphicon-arrow-up"></span></p><p class="direction">Increase of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
