@@ -1,33 +1,39 @@
 var dashboard; //THIS A GLOBAL VARIABLE TO YOUR FULL APPLICATION
+var secondLabelVisible = false;
 var arrMM = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var arrMMM = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var arrColors = [ "", "MidnightBlue", "Gray", "Orange", "Purple", "Brown", "LightCoral", "GreenYellow", "DarkTurquoise", "DarkOliveGreen", "IndianRed", "PaleVioletRed","Pink" ];
 var arrSeason = [ "", "Winter", "Spring", "Summer", "Fall" ];
-var App = function(sDisplaySel,sCategoryTabsSel,sIndicatorSel,sSourceListSel,sHTMLSource,sJSONMeasures,sJSONNarratives) {
+var App = function(sDisplaySel,sCategoryTabsSel,sIndicatorSel,sSourceListSel,sHTMLSource,sJSONMeasures,sJSONNarratives,sJSON_SSHA_LiveData) {
   this.selectors = { 'display': sDisplaySel, 'indicators': sIndicatorSel, 'sourcelist': sSourceListSel, 'tabs': sCategoryTabsSel};
-  this.urls = { 'jsonmeasures': sJSONMeasures, 'jsonnarratives': sJSONNarratives};
+  this.urls = { 'jsonmeasures': sJSONMeasures, 'jsonnarratives': sJSONNarratives,'jsonliveData':sJSON_SSHA_LiveData};
   this.htmlsource = sHTMLSource;
   this.icons = { 'up' : '<span class="glyphicon glyphicon-arrow-up"></span>', 'down' : '<span class="glyphicon glyphicon-arrow-down"></span>', 'stable' : '<span class="glyphicon glyphicon-minus"></span>' };
 };
+
 App.prototype.loadHTML = function() {
   var o = this;
   $( o.selectors.display ).load( o.htmlsource + ' ' + o.selectors.sourcelist, function() { o.loadData(); } );
 };
+
+
 App.prototype.loadData = function() {
   var o = this;
   $.ajax({ type: "GET", url: o.urls.jsonmeasures,  dataType: "json", success: function(data) { o.drawIndex(data); } });
   $.ajax({ type: "GET", url: o.urls.jsonnarratives,  dataType: "json", success: function(data) { o.narratives = data; } });
+  /*loading Live data from Json File*/
+  $.ajax({ type: "GET", url: o.urls.jsonliveData,  dataType: "json", success: function(data) {
+    o.liveData=data;} });
 };
 App.prototype.drawIndex = function(d) {
   var o = this;
-
   $('#searchtext').keydown( function(e) {
     var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
     if(key == 13) { o.search( $( '#searchtext' ).val() ); }
     if(key == 27) { o.resetsearch( '#searchtext' ); }
   });
 
-
+  //key as measures from jsonfile
   o.measures = d.measures;
   $.each( d.categories, function(i,citem) {
     o.measures[citem] = [];
@@ -43,8 +49,8 @@ App.prototype.drawIndex = function(d) {
     $.each( mitem.c, function(j,ditem) {
       o.measures[ ditem ].push( m );
       o.drawMeasure( m, ditem );
-    });
-  });
+  });//inner loop end
+  });//out loop end
 
   $( "#measureChxBoxPDF" ).append( '<select id="pdfcat" multiple="multiple" style="display: none;"></select>' );
   $( "#measureChxBoxExcel" ).append( '<select id="excelcat" multiple="multiple" style="display: none;"></select>' );
@@ -57,6 +63,8 @@ App.prototype.drawIndex = function(d) {
   $( "#pdfcat, #excelcat").multiselect({includeSelectAllOption: true, numberDisplayed:1, enableClickableOptGroups: true, enableCollapsibleOptGroups: true});
 
   o.targets = d.targets[0];
+  //alert(JSON.stringify(o.targets));
+
   $('.aindicator.nonactive').bind('click', function() { o.measureClick( this );});
   setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -74,7 +82,16 @@ App.prototype.measureClick = function( m ) {
   $( m ).addClass("active");
   $( ".aindicator" ).addClass("hide");
   $( ".aindicator.active, .aindicator.active .measuredetail" ).removeClass("hide");
-  o.paintDetail.call(o, m );
+  var row = this.measures[$(m).attr("id")];
+  if (row.chartType=="mxgraph"){
+       o.drawlivedemandstream.call(o, m ,o.liveData['LSD']);
+  }
+  else if (row.chartType=="trafficLight"){
+        o.drawtrafficlight(o, m );
+      }
+  else {
+      o.paintDetail.call(o, m );
+  }
 };
 App.prototype.closeDetail = function() {
   var o = this;
@@ -161,7 +178,301 @@ App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget,
   sHTML += "</tr>";
   return sHTML;
 };
+/*drawmxgraph*/
+//App.prototype.drawmxgraph = function (container,dataSource){
+function drawmxgraph (container,dataSource){
+    if (!mxClient.isBrowserSupported()){
+      mxUtils.error('Browser is not supported!', 200, false);
+    }
+    else{
+      mxEvent.disableContextMenu(container);
+      var graph = new mxGraph(container);
+      var parent = graph.getDefaultParent();
+      var data=dataSource;
+      graph.getSecondLabel = function(cell){
+        if (!this.model.isEdge(cell)&&secondLabelVisible==true){
+          var value=getSecondLableValueByID(cell.getId(),data.vertexes);
+          return  value;
+        }
+        return null;
+      };
+      var relativeChildVerticesVisible = true;
+      graph.isCellVisible = function(cell){
+        return !this.model.isVertex(cell) || cell.geometry == null ||
+          !cell.geometry.relative ||
+          cell.geometry.relative == relativeChildVerticesVisible;
+      };
+      var redrawShape = graph.cellRenderer.redrawShape;
+      graph.cellRenderer.redrawShape = function(state, force, rendering){
+        var result = redrawShape.apply(this, arguments);
+        if (result && secondLabelVisible && state.cell.geometry != null && !state.cell.geometry.relative){
+          var secondLabel = graph.getSecondLabel(state.cell);
+          if (secondLabel != null && state.shape != null && state.secondLabel == null){
+            state.secondLabel = new mxText(secondLabel, new mxRectangle(),
+              mxConstants.ALIGN_LEFT, mxConstants.ALIGN_BOTTOM);
+            //state.secondLabel.color = 'black';
+            state.secondLabel.color = getSecondLabelColorByID(state.cell.getId(),data.vertexes);
+            //state.secondLabel.family = 'Verdana';
+            state.secondLabel.family =getSecondLabelFontNameByID(state.cell.getId(),data.vertexes);
+            //state.secondLabel.size = 10;
+            state.secondLabel.size = getSecondLabelFontSizeByID(state.cell.getId(),data.vertexes);
+            //state.secondLabel.fontStyle = mxConstants.FONT_ITALIC;
+            //state.secondLabel.background = 'lightgreen';
+            state.secondLabel.background = getSecondLabelBackGroundColorByID(state.cell.getId(),data.vertexes);
+            //state.secondLabel.valign = 'top';
+            state.secondLabel.valign = getSecondLabelValignByID(state.cell.getId(),data.vertexes);
+            state.secondLabel.dialect = state.shape.dialect;
+            state.secondLabel.dialect = mxConstants.DIALECT_STRICTHTML;
+            state.secondLabel.wrap = true;
+            graph.cellRenderer.initializeLabel(state, state.secondLabel);
+          }
+        }
+
+        if (state.secondLabel != null)
+        {
+          var scale = graph.getView().getScale();
+          var bounds = new mxRectangle(state.x + state.width - 8 * scale, state.y + 8 * scale, 35, 0);
+          state.secondLabel.state = state;
+          state.secondLabel.value = graph.getSecondLabel(state.cell);
+          state.secondLabel.scale = scale;
+          state.secondLabel.bounds = bounds;
+          state.secondLabel.redraw();
+        }
+
+        return result;
+      };
+
+      // Destroys the shape number
+      var destroy = graph.cellRenderer.destroy;
+      graph.cellRenderer.destroy = function(state){
+        destroy.apply(this, arguments);
+        if (state.secondLabel != null){
+          state.secondLabel.destroy();
+          state.secondLabel = null;
+        }
+      };
+      graph.cellRenderer.getShapesForState = function(state){
+        return [state.shape, state.text, state.secondLabel, state.control];
+      };
+      /*end */
+      /*start of font size change*/
+      graph.processChange = function(change){
+        if (change instanceof mxGeometryChange) {
+          this.view.removeState(change.cell);
+        }
+        mxGraph.prototype.processChange.apply(this, arguments);
+      };
+      // Returns dynamic fontsize based on geometry
+      graph.model.getStyle = function(cell){
+        var geometry = this.getGeometry(cell);
+        var fs = mxConstants.DEFAULT_FONTSIZE;
+        if (geometry != null)  {
+          fs = Math.max(fs, geometry.width/10);
+        }
+        return mxGraphModel.prototype.getStyle.apply(this, arguments) + ';fontSize=' + fs;
+      };
+
+      /*end of font size change*/
+      new mxRubberband(graph);
+      //graph.isCellMoveable(true);
+      graph.setEnabled(true);
+      graph.setHtmlLabels(true);
+      graph.setCellsLocked(true);
+      graph.setConnectable(true);
+      graph.setTooltips(true);
+      graph.setAllowDanglingEdges(false);
+      //graph.setAllowDanglingEdges(true);
+      graph.setMultigraph(false);
+      graph.setAutoSizeCells(true);
+      graph.setCellsResizable(false);
+      graph.setCellsMovable(false);
+
+      //	graph.setCellsMovable(true);
+      //graph.centerZoom = false;
+      graph.centerZoom = true;
+      graph.setCellsSelectable(false);
+
+      var style_cell = new Object();
+      style_cell[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
+      style_cell[mxConstants.STYLE_CURVED] = '1';
+      graph.getStylesheet().putCellStyle('myshape', style_cell);
+      var style =graph.getStylesheet().getDefaultEdgeStyle();
+      //style[mxConstants.STYLE_EDGE] = mxEdgeStyle.TopToBottom;
+      //style[mxConstants.STYLE_CURVED] = true;
+      style[mxConstants.STYLE_ROUNDED] = true;
+      //style[mxConstants.STYLE_ROUNDED]=true;
+      //style[mxConstants.STYLE_EDGE]=mxConstants.EDGESTYLE_ENTITY_RELATION;
+      //style[mxConstants.STYLE_SHAPE]=mxConstants.SHAPE_ELLIPSE;
+      //mxCoordinateAssignment.prototype.edgeStyle = mxHierarchicalEdgeStyle.CURVE;
+      style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+      graph.getStylesheet().putDefaultEdgeStyle(style);
+      //graph.alternateEdgeStyle = 'elbow=vertical';
+      graph.getModel().beginUpdate();
+      try
+      {
+
+        //get vertexes
+        var X2={}; //my namespace:)
+        // var v_tmp={};
+        ;                  X2.Eval=function(code){
+        if(!!(window.attachEvent && !window.opera)){//ie
+          execScript(code);
+        }else{
+          window.eval(code);
+        }
+      }
+        var vertexes=data['vertexes'];
+        var vertext_name='';
+        var model=graph.getModel();
+        var vertex_data_array=new Array();
+        for (var key in vertexes) {
+          if (vertexes.hasOwnProperty(key)) {
+            var id= vertexes[key].id;
+            var value=vertexes[key].value;
+            var left=vertexes[key].left;
+            var top=vertexes[key].top;
+            var width=vertexes[key].width;
+            var height=vertexes[key].height;
+            var style=vertexes[key].style;
+            //var parentCell=graph.insertVertex(parent, '1000', '',0,0,400,400,style,true);
+            v_tmp=graph.insertVertex(parent, id, value,left,top,width,height,style,false);
+            //v_tmp=graph.insertVertex(parentCell, id, value,left,top,width,height,style,true);
+            vertext_name=vertexes[key].id;
+            X2.Eval('var '+ vertext_name+'='+'v_tmp'+';');
+            vertex_data_array.push({'id':id,'vertex':v_tmp});
+            model.setValue(v_tmp,value);//update model
+          }
+        }//end loop vertexes
+
+        /*get edges*/
+        var edges=data['edges'];
+        var edge_name='';
+        //start to loop edge
+        for (var key in edges) {
+          if (edges.hasOwnProperty(key)) {
+            var id= edges[key].id;
+            var value=edges[key].value;
+            var from=getVertexByID(vertex_data_array,edges[key].from);
+            var to=getVertexByID(vertex_data_array,edges[key].to);
+            //var style=edges[key].style;
+            var style=graph.getStylesheet().getDefaultEdgeStyle();
+            // e_tmp=graph.insertEdge(parent, null, '', from,to,'edgeStyle=elbowConnector;');
+            e_tmp=graph.insertEdge(parent, null, '', from,to,style);
+            //e_tmp=graph.insertEdge(parentCell, null, '', from,to,'edgeStyle=elbowConnector;');
+            edge_name=edges[key].id;
+            X2.Eval('var '+ edge_name+'='+'e_tmp'+';');
+          }
+
+        }//end loop edges
+      }
+      finally
+      {
+        // Updates the display
+        graph.getModel().endUpdate();
+      }
+
+    }
+};
+function getVertexByID(vertexes_array,vertexID){
+  for (var i = 0; i < vertexes_array.length; i++) {
+    if (vertexes_array[i].id==vertexID){
+      var v=vertexes_array[i].vertex;
+      return  v;
+    }
+  }
+}
+
+function drawtabledata(container,data){
+  var datatable = new google.visualization.DataTable(data);
+  var table = new google.visualization.Table(container);
+  table.draw(datatable,{showRowNumber: false, width: '100%', height: '100%'});
+}
+/*drawlivedemandstream*/
+App.prototype.drawlivedemandstream = function( indicator,data ) {
+  var o = this;
+  var m = this.measures[$(indicator).attr("id")];
+ //alert(JSON.stringify(data));
+  var data_mxgraph=data['LSD_MXGRAPH'];
+  var data_datatable=data['LSD_DATATABLE'];
+  var data_rawdata=data['LSD_RAWDATA'];
+  var strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
+  //"<div class='analysis'></div>
+  strHTML +="<br/>"+
+            "<div class='table-responsive'>"+
+            "<table class='table table-bordered'>"+
+		      "<tr>"+
+              "<td>"+"<h4>"+"Chart:Live Demand Stream"+"</h4>"+
+              "</td>"+
+              "</tr>"+
+            "<tr>"+
+            "<td>"+
+             "<div class='table-responsive' id='div_livedemandstream_mxgraph'></div>"+
+             "</td>"+
+             "</tr>"+
+             "<tr>"+
+             "<td>"+"<h4>"+"Data Table:Live Demand Stream"+"</h4>"+
+             "</td>"+
+             "</tr>"+
+             "<tr>"+
+             "<td>"+
+             "<div class='table-responsive' id='div_livedemandstream_datatable'></div>"+
+             "</td>"+
+              "</tr>"+
+            "</table>"+
+            "</div>";
+      
+$( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
+    opacity: 0,
+    height: 1
+ }, 900 );
+
+ $( ".aindicator.active .measuredetail" ).html( strHTML );
+ $( ".aindicator.active .measuredetail" ).animate({
+    opacity: 1
+  }, 1000 );
+  $( ".aindicator.active" ).animate({
+    width: "100%"
+  }, 1000, function(){
+      var container_mxgraph =document.getElementById('div_livedemandstream_mxgraph');
+      drawmxgraph(container_mxgraph,data_mxgraph);
+      var container_table =document.getElementById('div_livedemandstream_datatable');
+      drawtabledata(container_table,data_datatable);
+   }
+  );
+};
+
+App.prototype.drawtrafficlight = function( indicator ) {
+  var o = this;
+  var m = this.measures[$(indicator).attr("id")];
+  var strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.tppapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
+//  var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
+  //DRAW TARGET PERIOD ANALYSIS
+  strHTML += "<table class='table table-bordered' width='100%' border-'1'>"+
+    "<tr><td>This is the traffic light>>></td></tr>"+
+    "</table>";
+
+  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #tpp_categorytabs, #tpp_search .col-sm-8, #tpp_nav" ).animate({
+    opacity: 0,
+    height: 1
+  }, 900 );
+  $( ".aindicator.active" ).animate(
+  {
+    width: "100%"
+  }, 1000, function() {
+    //  o.createGraph( m );
+  });
+  $( ".aindicator.active .measuredetail" ).html( strHTML );
+  $( ".aindicator.active .measuredetail" ).animate({
+    opacity: 1
+  }, 1000 );
+
+
+
+
+
+};
 App.prototype.paintDetail = function( indicator ) {
+
   var o = this;
   var m = this.measures[$(indicator).attr("id")];
   strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
@@ -184,9 +495,8 @@ App.prototype.paintDetail = function( indicator ) {
       compVal1 = m.ytds[m.vs[0].y][m.vs[0].p]; compVal2 = 0;
       $.each (this.targets[$(indicator).attr("id")], function(i,item) {if (item.y == m.vs[0].y && item.p <= m.vs[0].p) {compVal2 += item.v;}});
       if (compVal2 != 0) {sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Year-To-Date vs. Budget/Target", true, true, false, false);}
-    }    
+    }
   }
-
 
   //DRAW YEARLY PERIOD ANALYSIS
   if (m.it!="y") {
@@ -215,8 +525,7 @@ App.prototype.paintDetail = function( indicator ) {
     }
   }
   sHTMLTREND += "</table>";
-  */
-
+*/
   strHTML += "<div class='analysis'>";
   strHTML += "<div class='table-responsive'>" + sHTMLTREND  + "</div>";
   strHTML += (m.cp == "") ? "" : "<p class='cityperspective'>" + m.cp + "</p>";
@@ -247,28 +556,34 @@ App.prototype.paintDetail = function( indicator ) {
   for (var x = 0; x < intLoop; x++) {
     m.activeYears[new Date().getFullYear() - x] = true;
   }
+  
   $( ".aindicator.active" ).animate({
     width: "100%"
   }, 1000, function() {
     o.createGraph( m );
   });
+  
   $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
     opacity: 0,
     height: 1
   }, 900 );
+  
   $( ".aindicator.active .measuredetail" ).html( strHTML );
   $( ".aindicator.active .measuredetail" ).animate({
     opacity: 1
   }, 1000 );
-
+  
   //ACTIVATE SWITCHES
   $("#groupbyperiod, #showytdvalues").bootstrapSwitch();
+  
   $('#groupbyperiod').on('switchChange.bootstrapSwitch', function(event, state) {
     o.selectGroupByPeriod();
   });
+  
   $('#showytdvalues').on('switchChange.bootstrapSwitch', function(event, state) {
     o.selectYTD();
   });
+  
 };
 function getType(measure) {
   return (measure.it=="m") ? "MONTHLY" : (measure.it=="q") ? "QUARTERLY" : (measure.it=="y") ? "YEARLY" : "SEASONAL";
@@ -641,12 +956,11 @@ App.prototype.drawMeasure = function(m, cat) {
   }
 
   if (m.dd=="None") {sPOSNEG = "N/A";}
-  sCHANGE = (compVal1/compVal2-1) * 100;  
+  sCHANGE = (compVal1/compVal2-1) * 100;
   sCHANGE = Math.abs(sCHANGE.toFixed(2)) + "%";
   sCHANGE = (m.vt=="p") ? ((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
   sID = m.id;
-
-  $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID,sIcon) );
+  $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID, sIcon) );
 };
 App.prototype.createTab = function (sTabName, index){
   var o = this;
@@ -666,9 +980,10 @@ App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod
   strHTML += '<h3>' + strTitle.replace(/\n/g,'<br/>') + '</h3>';
   strHTML += '<div class="measure">';
   strHTML += '<section class="measuredetail hide"></section>';
-  /* hide measure detail section - replace with icon
+   /* hide measure detail section - replace with icon
 
   <img src="/resources/dashboard/img/line.png" alt="Line chart icon"/>*/
+
   if(!strIcon || 0 === strIcon.length){
     strHTML += '<br><p class="measurevalue"><span>' + strVal + '</span></p>';
     strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
@@ -676,21 +991,19 @@ App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod
   }else {
     //strHTML += '<br><p class="measurevalue"><span class="' + strIcon + '"/></p>';
     strHTML += '<br><p class="measurevalue"><img src="/resources/dashboard/img/'+strIcon+'" alt="An icon"/></p>';
-
   }
- 
+
   strHTML += '<div class="row">';
   strHTML += '<div class="col-xs-12 explanation"><div>';
-  //strHTML += (strDirection == "Up2") ? '<p><span class="glyphicon glyphicon-arrow-up"></span></p><p class="direction">Increase of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
-  //strHTML += (strDirection == "Down") ? '<p><span class="glyphicon glyphicon-arrow-down"></span></p><p class="direction">Decrease of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
-  //strHTML += (strDirection == "Stable2") ? '<p><span class="glyphicon glyphicon-minus"></span></p><p class="direction">Stable from previous ' + strInterval + '</p>' : '';
+//  strHTML += (strDirection == "Up") ? '<p><span class="glyphicon glyphicon-arrow-up"></span></p><p class="direction">Increase of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
+ // strHTML += (strDirection == "Down") ? '<p><span class="glyphicon glyphicon-arrow-down"></span></p><p class="direction">Decrease of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
+ // strHTML += (strDirection == "Stable") ? '<p><span class="glyphicon glyphicon-minus"></span></p><p class="direction">Stable from previous ' + strInterval + '</p>' : '';
   strHTML += '</div>';
   strHTML += '</div>';
-
   strHTML += '</div>';
   strHTML += '</div>';
   strHTML += '</div></div>';
-  return strHTML;
+ return strHTML;
 };
 App.prototype.search = function( q ) {
   o = this;
@@ -822,7 +1135,7 @@ App.prototype.generatePDF = function(strID) {
 
   //SORT THE IDS BY CATEGORY
   arrIDS.sort(function(a, b){
-    return ( ((dashboard.measures[a].c[0].charCodeAt(0)+dashboard.measures[a].c[0].charCodeAt(1)) * 10000 + (Math.round(dashboard.measures[a].id *1000)) ) -
+   return ( ((dashboard.measures[a].c[0].charCodeAt(0)+dashboard.measures[a].c[0].charCodeAt(1)) * 10000 + (Math.round(dashboard.measures[a].id *1000)) ) -
     ((dashboard.measures[b].c[0].charCodeAt(0)+dashboard.measures[b].c[0].charCodeAt(1)) * 10000 + (Math.round(dashboard.measures[b].id *1000)) ) );
   });
 
@@ -1271,8 +1584,9 @@ $(document).ready(function() {
   $.ajaxSetup({ cache: false });
   var sJSONMeasures = '/*@echo JSON_MEASURES*/';
   var sJSONNarratives = '/*@echo JSON_NARRATIVES*/';
+  var sJSON_SSHA_LiveData = '/*@echo JSON_SSHA_LiveData*/';
   var sHTMLSource = '/resources/dashboard/html/dashboard.html';
-  dashboard = new App('#dashboard_container','#dashboard_categorytabs','#dashboard_indicatortabs','#dashboard_index',sHTMLSource, sJSONMeasures, sJSONNarratives);
+  dashboard = new App('#dashboard_container','#dashboard_categorytabs','#dashboard_indicatortabs','#dashboard_index',sHTMLSource, sJSONMeasures, sJSONNarratives,sJSON_SSHA_LiveData);
   window.dashboardapp = dashboard;
   dashboard.loadHTML();
   $( window ).resize(function() {
