@@ -63,7 +63,7 @@ App.prototype.loadTrafficLightData= function(urlOfTrafficLight){
     } else {
         msg = 'Uncaught Error.\n' + jqXHR.responseText;
     }
-    $('#post').html("<font size='2' color='red'>"+msg+"</font>");
+    $('#post').html("<font size='2' color='#cc0000'>"+msg+"</font>");
     },
    success: function(data) {
     trafficlightData=data;
@@ -98,7 +98,7 @@ App.prototype.loadLiveData= function(){
     } else {
         msg = 'Uncaught Error.\n' + jqXHR.responseText;
     }
-    $('#post').html("<font size='2' color='red'>"+msg+"</font>");
+    $('#post').html("<font size='2' color='#cc0000'>"+msg+"</font>");
     },
    success: function(data) {
      liveData=data;
@@ -1329,9 +1329,9 @@ App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod
        var value_Y=dataset['Y'];
        var value_G=dataset['G'];
        strHTML += '<br><p class="measurevalue">' +
-                  '<font color="red">'+value_R+'</font>'+'&nbsp;/'+
+                  '<font color="#cc0000">'+value_R+'</font>'+'&nbsp;/'+
                   '<font color="#FFA500">'+'&nbsp;'+value_Y+'</font>'+'&nbsp;/'+
-                  '<font color="green">'+'&nbsp;'+value_G+'</font>'+'</p>'+
+                  '<font color="#008000">'+'&nbsp;'+value_G+'</font>'+'</p>'+
                   '<p class="measureperiod">' + 'Red / Yellow / Green'+'</p>';
      }else {   
         strHTML += '<br><p class="measurevalue"><span>' + strVal + '</span></p>';
