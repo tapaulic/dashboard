@@ -1,15 +1,32 @@
+var inter_handle_livedemandstream=null;
 var dashboard; //THIS A GLOBAL VARIABLE TO YOUR FULL APPLICATION
-var secondLabelVisible = false;
+var secondLabelVisible = true;
 var arrMM = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var arrMMM = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var arrColors = [ "", "MidnightBlue", "Gray", "Orange", "Purple", "Brown", "LightCoral", "GreenYellow", "DarkTurquoise", "DarkOliveGreen", "IndianRed", "PaleVioletRed","Pink" ];
 var arrSeason = [ "", "Winter", "Spring", "Summer", "Fall" ];
-var App = function(sDisplaySel,sCategoryTabsSel,sIndicatorSel,sSourceListSel,sHTMLSource,sJSONMeasures,sJSONNarratives,sJSON_SSHA_LiveData) {
+var App = function(sDisplaySel,
+  sCategoryTabsSel,
+  sIndicatorSel,
+  sSourceListSel,
+  sHTMLSource,
+  sJSONMeasures,
+  sJSONNarratives,
+  sJSON_SSHA_LiveData,
+  sJSON_SSHA_HistoricalDemandTrafficlightData,
+  sJSON_SSHA_NightlySummaryTrafficlightData
+) {
   this.selectors = { 'display': sDisplaySel, 'indicators': sIndicatorSel, 'sourcelist': sSourceListSel, 'tabs': sCategoryTabsSel};
-  this.urls = { 'jsonmeasures': sJSONMeasures, 'jsonnarratives': sJSONNarratives,'jsonliveData':sJSON_SSHA_LiveData};
+  this.urls = { 'jsonmeasures': sJSONMeasures, 'jsonnarratives': sJSONNarratives,
+                'jsonliveData':sJSON_SSHA_LiveData,//livedemandstreamData
+                'jsonlhistoricaldemandtrafficlightData':sJSON_SSHA_HistoricalDemandTrafficlightData,
+                'jsonlnightlysummarytrafficlightData':sJSON_SSHA_NightlySummaryTrafficlightData
+};
   this.htmlsource = sHTMLSource;
   this.icons = { 'up' : '<span class="glyphicon glyphicon-arrow-up"></span>', 'down' : '<span class="glyphicon glyphicon-arrow-down"></span>', 'stable' : '<span class="glyphicon glyphicon-minus"></span>' };
 };
+var liveData={};
+var trafficlightData={};
 
 App.prototype.loadHTML = function() {
   var o = this;
@@ -21,10 +38,75 @@ App.prototype.loadData = function() {
   var o = this;
   $.ajax({ type: "GET", url: o.urls.jsonmeasures,  dataType: "json", success: function(data) { o.drawIndex(data); } });
   $.ajax({ type: "GET", url: o.urls.jsonnarratives,  dataType: "json", success: function(data) { o.narratives = data; } });
-  /*loading Live data from Json File*/
-  $.ajax({ type: "GET", url: o.urls.jsonliveData,  dataType: "json", success: function(data) {
-    o.liveData=data;} });
 };
+
+/*load traffic light data*/
+App.prototype.loadTrafficLightData= function(urlOfTrafficLight){
+  var o = this;
+  trafficlightData={};
+   $.ajax({ type: "GET", url: urlOfTrafficLight, async:false, dataType: "json", 
+   error:function(jqXHR, exception){
+    var msg = '';
+    if (jqXHR.status === 0) {
+        msg = 'Due to network issues, the live stream is currently unavailable.';
+    } else if (jqXHR.status == 404) {
+        //msg = 'Requested page not found. [404]'+jqXHR.responseText.toString();
+        msg = 'Requested page not found. [404]'
+    } else if (jqXHR.status == 500) {
+        msg = 'Internal Server Error [500].';
+    } else if (exception === 'parsererror') {
+        msg = 'Error reading data file.';
+    } else if (exception === 'timeout') {
+        msg = 'Time out error.';
+    } else if (exception === 'abort') {
+        msg = 'Ajax request aborted.';
+    } else {
+        msg = 'Uncaught Error.\n' + jqXHR.responseText;
+    }
+    $('#post').html("<font size='2' color='red'>"+msg+"</font>");
+    },
+   success: function(data) {
+    trafficlightData=data;
+
+     $('#post').html("");
+   }
+  });
+};
+
+
+
+/*load live data*/
+App.prototype.loadLiveData= function(){
+  var o = this;
+  liveData={};
+   $.ajax({ type: "GET", url: o.urls.jsonliveData, async:false, dataType: "json", 
+   error:function(jqXHR, exception){
+    var msg = '';
+    if (jqXHR.status === 0) {
+        msg = 'Due to network issues, the live stream is currently unavailable.';
+    } else if (jqXHR.status == 404) {
+        //msg = 'Requested page not found. [404]'+jqXHR.responseText.toString();
+        msg = 'Requested page not found. [404]'
+    } else if (jqXHR.status == 500) {
+        msg = 'Internal Server Error [500].';
+    } else if (exception === 'parsererror') {
+        msg = 'Error reading data file.';
+    } else if (exception === 'timeout') {
+        msg = 'Time out error.';
+    } else if (exception === 'abort') {
+        msg = 'Ajax request aborted.';
+    } else {
+        msg = 'Uncaught Error.\n' + jqXHR.responseText;
+    }
+    $('#post').html("<font size='2' color='red'>"+msg+"</font>");
+    },
+   success: function(data) {
+     liveData=data;
+     $('#post').html("");
+   }
+  });
+};
+ 
 App.prototype.drawIndex = function(d) {
   var o = this;
   $('#searchtext').keydown( function(e) {
@@ -83,17 +165,35 @@ App.prototype.measureClick = function( m ) {
   $( ".aindicator" ).addClass("hide");
   $( ".aindicator.active, .aindicator.active .measuredetail" ).removeClass("hide");
   var row = this.measures[$(m).attr("id")];
-  if (row.chartType=="mxgraph"){
-       o.drawlivedemandstream.call(o, m ,o.liveData['LSD']);
+  var category = row.c[0];
+  if (row.chartType=="mxgraph" && category=="Live Stream"){
+       o.loadLiveData();
+       o.drawlivedemandstream.call(o,liveData['LSD']);
+       inter_handle_livedemandstream=setInterval(function() {dashboard.reloadLiveData();}, 1000 * 6 * 1);
+       return;
   }
-  else if (row.chartType=="trafficLight"){
-        o.drawtrafficlight(o, m );
+  else if (row.chartType=="RYG"){
+        //nightlysummarytrafficlight
+       if (category=='Nightly Summary'){
+        o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
+        o.drawtrafficlight.call(o,trafficlightData['RYG']);
+        return;
       }
+      // historicaldemandtrafficlight
+       else if (category=='Historical Demand'){
+        o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
+        o.drawtrafficlight.call(o,trafficlightData['RYG']);
+        return;
+        }
+    }
   else {
       o.paintDetail.call(o, m );
+      return;
   }
 };
 App.prototype.closeDetail = function() {
+  if (inter_handle_livedemandstream!=null)
+     clearInterval(inter_handle_livedemandstream);
   var o = this;
   delete this.chart;
   delete this.table;
@@ -107,6 +207,18 @@ App.prototype.closeDetail = function() {
   $( ".aindicator" ).removeClass( "hide" );
   setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
 };
+/*
+reload Live data and show on screen
+
+*/ 
+App.prototype.reloadLiveData = function() {
+  $('#div_loading_1').css("display","block");
+  var o = this;
+  o.loadLiveData();
+  data_LSD=liveData['LSD'];
+  o.drawlivedemandstream.call(o,data_LSD);
+};
+
 App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget, blnYTD, blnYear, blnPeriod) {
   var sPOSNEG, sDIRECTION, sCHANGE, sHTML = "",sCURPER, sLASTPER, sCURVAL, sLASTVAL, sCOMMENT="", intDA;
 
@@ -279,7 +391,7 @@ function drawmxgraph (container,dataSource){
       graph.setHtmlLabels(true);
       graph.setCellsLocked(true);
       graph.setConnectable(true);
-      graph.setTooltips(true);
+      graph.setTooltips(false);
       graph.setAllowDanglingEdges(false);
       //graph.setAllowDanglingEdges(true);
       graph.setMultigraph(false);
@@ -381,95 +493,261 @@ function getVertexByID(vertexes_array,vertexID){
     }
   }
 }
+function getSecondLableValueByID(vertexID,vertexList){
+  for (var key in vertexList){
+      if (vertexList.hasOwnProperty(key)){
+          var  cellID= vertexList[key].id;
+  if  (cellID==vertexID)
+       return vertexList[key].secondLabel.value; 
+  }
+  }
+}
+
+
+function getSecondLabelColorByID(vertexID,vertexList){
+for (var key in vertexList){
+      if (vertexList.hasOwnProperty(key)){
+          var  cellID= vertexList[key].id;
+  if  (cellID==vertexID)
+       return vertexList[key].secondLabel.color; 
+  }
+  }
+
+}
+
+function getSecondLabelFontNameByID(vertexID,vertexList){
+for (var key in vertexList){
+      if (vertexList.hasOwnProperty(key)){
+          var  cellID= vertexList[key].id;
+  if  (cellID==vertexID)
+       return vertexList[key].secondLabel.family; 
+  }
+  }
+
+
+
+}
+
+function getSecondLabelFontSizeByID(vertexID,vertexList){
+for (var key in vertexList){
+      if (vertexList.hasOwnProperty(key)){
+          var  cellID= vertexList[key].id;
+  if  (cellID==vertexID)
+       return vertexList[key].secondLabel.size; 
+  }
+  }
+}
+
+function getSecondLabelFontSizeByID(vertexID,vertexList){
+for (var key in vertexList){
+      if (vertexList.hasOwnProperty(key)){
+          var  cellID= vertexList[key].id;
+  if  (cellID==vertexID)
+       return vertexList[key].secondLabel.size; 
+  }
+  }
+}
+
+
+
+
+function getSecondLabelBackGroundColorByID(vertexID,vertexList){
+for (var key in vertexList){
+      if (vertexList.hasOwnProperty(key)){
+          var  cellID= vertexList[key].id;
+  if  (cellID==vertexID)
+       return vertexList[key].secondLabel.background; 
+  }
+  }
+}
+
+function getSecondLabelValignByID(vertexID,vertexList){
+for (var key in vertexList){
+      if (vertexList.hasOwnProperty(key)){
+          var  cellID= vertexList[key].id;
+  if  (cellID==vertexID)
+       return vertexList[key].secondLabel.valign; 
+  }
+  }
+}
 
 function drawtabledata(container,data){
   var datatable = new google.visualization.DataTable(data);
   var table = new google.visualization.Table(container);
-  table.draw(datatable,{showRowNumber: false, width: '100%', height: '100%'});
+  table.draw(datatable,{showRowNumber: false, width: '90%', height: '100%',page:'enable',pageSize:'20'});
+  return datatable;
+}
+function drawtabledata_1(container,data){
+  var datatable = new google.visualization.DataTable(data);
+  var table = new google.visualization.Table(container);
+  table.draw(datatable,{showRowNumber: false, width: '75%', height: '90%',page:'enable',pageSize:'20'});
+  return datatable;
 }
 /*drawlivedemandstream*/
-App.prototype.drawlivedemandstream = function( indicator,data ) {
+App.prototype.drawlivedemandstream= function(data ) {
   var o = this;
-  var m = this.measures[$(indicator).attr("id")];
- //alert(JSON.stringify(data));
   var data_mxgraph=data['LSD_MXGRAPH'];
   var data_datatable=data['LSD_DATATABLE'];
-  var data_rawdata=data['LSD_RAWDATA'];
-  var strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
-  //"<div class='analysis'></div>
-  strHTML +="<br/>"+
-            "<div class='table-responsive'>"+
-            "<table class='table table-bordered'>"+
-		      "<tr>"+
-              "<td>"+"<h4>"+"Chart: Live Demand Stream"+"</h4>"+
-              "</td>"+
-              "</tr>"+
-            "<tr>"+
-            "<td>"+
-             "<div class='table-responsive' id='div_livedemandstream_mxgraph'></div>"+
-             "</td>"+
-             "</tr>"+
-             "<tr>"+
-             "<td>"+"<h4>"+"Data Table:Live Demand Stream"+"</h4>"+
-             "</td>"+
-             "</tr>"+
-             "<tr>"+
-             "<td>"+
-             "<div class='table-responsive' id='div_livedemandstream_datatable'></div>"+
-             "</td>"+
-              "</tr>"+
-            "</table>"+
-            "</div>";
-      
+  var strHTML =""+
+  "<div  class='btn-group'>"+
+  "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>"+
+   "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>"+
+   "</div>"+
+  "</div>"+
+  "<font size='2'><strong><div id='div_loading_1'>"+
+  //"<img src='/resources/dashboard/img/Preloader_1.gif' width=32 height=32/>"+
+  "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
+  "</div></strong></font>"+
+  "<h4 class='tabletitle'>"+"Chart:Live Demand Stream"+"</h4>"+
+  //"<section id='chartcontrols'>"+
+  "<section id='chartcontrols_1'>"+
+  //"<img id='loading1' src='/resources/dashboard/img/Preloader_1.gif' width=32 height=32/>"+
+  "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
+  "</section>"+
+ "<div class='tabletitle'><h4>"+"Data Table:Live Demand Stream"+"</h4>"+
+ "<button id='excelexport' disabled disabled  class='btnbs btn-primary popoverbs' type='button' onclick='' data-placement='top'  title='Export this data into an excel spreadsheet'>"+
+ "<img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/>"+
+  "Export Data</button>"+
+ "</div>"+
+ "<section id='chartcontrols_2' class='chartcontrols'>"+
+ //"<img id='loading2' src='/resources/dashboard/img/Preloader_1.gif' width=32 height=32/>"+
+ "<img id='loading2' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
+ "<div id='div_livedemandstream_datatable'></div>";
+ "</section>"
+ strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";    
+
 $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
     opacity: 0,
     height: 1
  }, 900 );
-
+ 
  $( ".aindicator.active .measuredetail" ).html( strHTML );
  $( ".aindicator.active .measuredetail" ).animate({
     opacity: 1
-  }, 1000 );
+  }, 1 );
   $( ".aindicator.active" ).animate({
     width: "100%"
   }, 1000, function(){
-      var container_mxgraph =document.getElementById('div_livedemandstream_mxgraph');
+    $('#chartcontrols_1').append("<div  id='div_livedemandstream_mxgraph' style='display: table; margin: 0 auto;'></div>");
+    $('#chartcontrols_1').append("<br/>");
+    $('#chartcontrols_1').append("<br/>");
+    $('#div_livedemandstream_mxgraph').html("");
+    $('#div_livedemandstream_datatable').html("");
+    $('#div_loading_1').css("display","block");
+      var container_mxgraph =$('#div_livedemandstream_mxgraph').get(0);
       drawmxgraph(container_mxgraph,data_mxgraph);
-      var container_table =document.getElementById('div_livedemandstream_datatable');
-      drawtabledata(container_table,data_datatable);
+       $('#chartcontrols_1').children("#loading1").remove();
+      var container_table=$('#div_livedemandstream_datatable')[0];
+      var dataTable=new google.visualization.DataTable();
+      dataTable=drawtabledata(container_table,data_datatable);
+      $('#chartcontrols_2').children("#loading2").remove();
+      $('#div_loading_1').text("As of: "+getCurrentTime());
+      $('#closeDetail').prop('disabled', false);
+      $('#excelexport').prop('disabled', false);
+      $("#excelexport").click(function(){
+        o.downloadLiveCSV(dataTable);
+    });
+
    }
   );
 };
 
-App.prototype.drawtrafficlight = function( indicator ) {
-  var o = this;
-  var m = this.measures[$(indicator).attr("id")];
-  var strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.tppapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
-//  var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
-  //DRAW TARGET PERIOD ANALYSIS
-  strHTML += "<table class='table table-bordered' width='100%' border-'1'>"+
-    "<tr><td>This is the traffic light>>></td></tr>"+
-    "</table>";
+ /*draw RBG*/
+ function drawRYG(dataset,options){
+var options_M=options['M'];
+var options_R=options['R'];
+var options_Y=options['Y'];
+var options_G=options.G;
+var options_R_V=options.R_V;
+var options_Y_V=options.Y_V;
+var options_G_V=options.G_V;
+var value_R=dataset.R;
+var value_Y=dataset.Y;
+var value_G=dataset.G;
+$("#ryg_div").css(options_M);
+$("#r_div").css(options_R);
+$("#y_div").css(options_Y);
+$("#g_div").css(options_G);
+$("#r_value_div").css(options_R_V);
+$("#y_value_div").css(options_Y_V);
+$("#g_value_div").css(options_G_V);
+$('#r_value_div').html(value_R);
+$('#y_value_div').html(value_Y);
+$('#g_value_div').html(value_G);
+};
 
-  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #tpp_categorytabs, #tpp_search .col-sm-8, #tpp_nav" ).animate({
+App.prototype.drawtrafficlight = function(data) {
+  var o = this;
+  var dataset=data["dataset"];
+  var options=data["options"];
+  var data_datatable=data['RYG_DATATABLE'];
+  var data_datatable_1=data['RYG_DATATABLE_1'];
+  var strHTML =""+
+  "<div  class='btn-group'>"+
+  "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>"+
+   "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>"+
+   "</div>"+
+  "</div>"+
+  "<font size='2'><strong><div id='div_loading_1'>"+
+  "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
+  "</div></strong></font>"+
+  "<h4 class='tabletitle'>"+"Chart:R.Y.G"+"</h4>"+
+  "<section id='chartcontrols_3'>"+
+  "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
+  "<div id='trafficLight_div' style='display: table;  margin: 0 auto;border:none; text-align: center;'>"+
+  "<div id='ryg_div' style='display:inline;border:none;vertical-align: middle;text-align:center;'>"+
+  "<div id='r_div'><div id='r_value_div' style='color:white'></div></div>"+
+  "<div id='y_div'><div id='y_value_div' style='color:white'></div></div>"+
+  "<div id='g_div'><div id='g_value_div' style='color:white'></div></div>"+
+   "</div>"+
+   "<div id='div_RYG_datatable_1' style='display:inline;'></div>"+ 
+  //"<div id='div_RYG_datatable_1'></div>"+ 
+   "</div>"+
+  "</section>"+
+ "<div class='tabletitle'><h4>"+"Data Table:R.Y.G"+"</h4>"+
+ "<button id='excelexport' disabled disabled  class='btnbs btn-primary popoverbs' type='button' onclick='' data-placement='top'  title='Export this data into an excel spreadsheet'>"+
+ "<img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/>"+
+  "Export Data</button>"+
+ "</div>"+
+ "<section id='chartcontrols_2' class='chartcontrols'>"+
+ "<img id='loading2'  src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
+ "<div id='div_RYG_datatable'></div>"+
+ "</section>";
+ strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
+ $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
     opacity: 0,
     height: 1
-  }, 900 );
-  $( ".aindicator.active" ).animate(
-  {
-    width: "100%"
-  }, 1000, function() {
-    //  o.createGraph( m );
-  });
-  $( ".aindicator.active .measuredetail" ).html( strHTML );
-  $( ".aindicator.active .measuredetail" ).animate({
+ }, 900 );
+ 
+ $( ".aindicator.active .measuredetail" ).html( strHTML );
+ $( ".aindicator.active .measuredetail" ).animate({
     opacity: 1
-  }, 1000 );
+  }, 1 );
+  $( ".aindicator.active" ).animate({
+    width: "100%"
+  }, 1000, function(){
+    $('#div_RYG_datatable').html("");
+    $('#div_loading_1').css("display","block");
+      var container_mxgraph =$('#ryg_div').get(0);
+      drawRYG(dataset,options);
+       $('#chartcontrols_3').children("#loading1").remove();
+      var container_table=$('#div_RYG_datatable')[0];
+      var container_table_1=$('#div_RYG_datatable_1')[0];
+      var dataTable_1=new google.visualization.DataTable();
+      var dataTable_1=drawtabledata_1(container_table_1,data_datatable_1);
+      var dataTable=new google.visualization.DataTable();
+      dataTable=drawtabledata(container_table,data_datatable);
+      $('#chartcontrols_2').children("#loading2").remove();
+      $('#div_loading_1').text("As of: "+getCurrentTime());
+      $('#closeDetail').prop('disabled', false);
+      $('#excelexport').prop('disabled', false);
+      $("#excelexport").click(function(){
+        o.downloadLiveCSV(dataTable);
+    });
 
-
-
-
-
+   }
+  );
+  
 };
 App.prototype.paintDetail = function( indicator ) {
 
@@ -572,6 +850,7 @@ App.prototype.paintDetail = function( indicator ) {
   $( ".aindicator.active .measuredetail" ).animate({
     opacity: 1
   }, 1000 );
+  
   
   //ACTIVATE SWITCHES
   $("#groupbyperiod, #showytdvalues").bootstrapSwitch();
@@ -827,6 +1106,33 @@ App.prototype.dataTableToCSV = function () {
   }
   return csv_out;
 };
+
+App.prototype.dataTableLiveToCSV = function (dataTable) {
+  //  alert(dataTable.toString);
+    var dt_cols = dataTable.getNumberOfColumns();
+    var dt_rows = dataTable.getNumberOfRows();
+    var csv_cols = [];
+    var csv_out;
+  
+    for (var i=0; i<dt_cols; i++) {
+      csv_cols.push(dataTable.getColumnLabel(i).replace(/,/g,""));
+    }
+  
+    csv_out = csv_cols.join(",")+"\r\n";
+    for (i=0; i<dt_rows; i++) {
+      var raw_col = [];
+      for (var j=0; j<dt_cols; j++) {
+        raw_col.push(dataTable.getFormattedValue(i, j, 'label').replace(/,/g,""));
+      }
+      csv_out += raw_col.join(",")+"\r\n";
+    }
+    return csv_out;
+  };
+
+
+
+
+
 App.prototype.downloadCSV = function() {
   var csv_out = this.dataTableToCSV();
 
@@ -846,6 +1152,28 @@ App.prototype.downloadCSV = function() {
     link.dispatchEvent(event);
   }
 };
+
+App.prototype.downloadLiveCSV = function(dataTable) {
+  //var csv_out = this.dataTableToCSV();
+  var csv_out = this.dataTableLiveToCSV(dataTable);
+  var browser = navigator.userAgent;
+  var IEversion = 99;
+  if (browser.indexOf("MSIE") > 1) {IEversion = parseInt(browser.substr(browser.indexOf("MSIE")+5, 5));}
+  if (IEversion < 10) {
+
+  } else {
+    var blob = new Blob([csv_out], {type: 'text/csv;charset=utf-8'});
+    var url  = window.URL || window.webkitURL;
+    var link = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
+    link.href = url.createObjectURL(blob);
+    link.download = this.mTitle + ".csv";
+    var event = document.createEvent("MouseEvents");
+    event.initEvent("click", true, false);
+    link.dispatchEvent(event);
+  }
+};
+
+
 App.prototype.selectGroupByPeriod = function() {
 
   if (!$('#groupbyperiod').bootstrapSwitch('state')) {
@@ -960,7 +1288,9 @@ App.prototype.drawMeasure = function(m, cat) {
   sCHANGE = Math.abs(sCHANGE.toFixed(2)) + "%";
   sCHANGE = (m.vt=="p") ? ((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
   sID = m.id;
-  $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID, sIcon) );
+ 
+  $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID, m) );
+
 };
 App.prototype.createTab = function (sTabName, index){
   var o = this;
@@ -972,22 +1302,37 @@ App.prototype.createTab = function (sTabName, index){
     $( o.selectors.indicators ).append( '<section class="tab-pane" id="cat' + sTabName.replace(/\W+/g, '') + '"></section>' );
   }
 };
-App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod, strDirection, strInterval, strChangeVal, strID,strIcon ) {
+App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod, strDirection, strInterval, strChangeVal, strID, strIcon, m) {
+  var o = this;
   var strHTML = "";
   strHTML += '<div class="aindicator nonactive" href="#" id="' + strID + '"><div class="indicator ' + strPSN + '">';
   strHTML += '<div class="hide keywords">' + strKW + '</div>';
   //strHTML += '<h3>' + strTitle.replace(/\n/g,'<br/>').replace(/\Percentage/g,'%').replace(/\Number/g,'#') + '</h3>';
   strHTML += '<h3>' + strTitle.replace(/\n/g,'<br/>') + '</h3>';
   strHTML += '<div class="measure">';
+  //strHTML += 'strPSN:'+strPSN+'strKW:'+ strKW+'strTitle:'+strTitle+'strVal:'+ strVal+
+    //         'strPeriod:'+strPeriod, 'strDirection:'+strDirection+'strInterval:'+ strInterval+'strChangeVal:'+strChangeVal+'strID:'+ strID;
   strHTML += '<section class="measuredetail hide"></section>';
-   /* hide measure detail section - replace with icon
-
-  <img src="/resources/dashboard/img/line.png" alt="Line chart icon"/>*/
-
+   /* hide measure detail section - replace with icon */
+  
   if(!strIcon || 0 === strIcon.length){
-    strHTML += '<br><p class="measurevalue"><span>' + strVal + '</span></p>';
-    strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
-
+     if (m.chartType=='RYG'){
+      var category = m.c[0];
+      if (category=='Nightly Summary')
+          o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
+      else if (category=='Historical Demand')
+          o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
+       var data=trafficlightData["RYG"];
+       var dataset=data["dataset"];
+       var value_R=dataset['R'];
+       var value_Y=dataset['Y'];
+       var value_G=dataset['G'];
+       strHTML += '<br><p class="measurevalue">' +value_R+'/'+value_Y+'/'+value_G+'</p>'+
+                  '<p class="measureperiod">' + 'Red/Yellow/Green'+'</p>';                  
+     }else {   
+        strHTML += '<br><p class="measurevalue"><span>' + strVal + '</span></p>';
+        strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
+     }
   }else {
     //strHTML += '<br><p class="measurevalue"><span class="' + strIcon + '"/></p>';
     strHTML += '<br><p class="measurevalue"><img src="/resources/dashboard/img/'+strIcon+'" alt="An icon"/></p><br>';
@@ -1579,19 +1924,34 @@ function transpose(a) {
   }
   return t;
 };
+function AddZero(num) {
+  return (num >= 0 && num < 10) ? "0" + num : num + "";
+};
+function getCurrentTime(){
+  var now = new Date();
+  var hour = now.getHours() - (now.getHours() >= 12 ? 12 : 0);
+  return [[now.getFullYear(),AddZero(now.getMonth() + 1),AddZero(now.getDate())].join("/"), [AddZero(hour), AddZero(now.getMinutes()),AddZero(now.getSeconds())].join(":"), now.getHours() >= 12 ? "PM" : "AM"].join(" ");
+};
 //****************************************  MAIN RUN **********************************************************************
 $(document).ready(function() {
   $.ajaxSetup({ cache: false });
   var sJSONMeasures = '/*@echo JSON_MEASURES*/';
   var sJSONNarratives = '/*@echo JSON_NARRATIVES*/';
   var sJSON_SSHA_LiveData = '/*@echo JSON_SSHA_LiveData*/';
+  var sJSON_SSHA_HistoricalDemandTrafficlightData='/*@echo JSON_SSHA_HistoricalDemandTrafficLightData*/';
+  var sJSON_SSHA_NightlySummaryTrafficlightData='/*@echo JSON_SSHA_NightlySummaryTrafficLightData*/';
   var sHTMLSource = '/resources/dashboard/html/dashboard.html';
-  dashboard = new App('#dashboard_container','#dashboard_categorytabs','#dashboard_indicatortabs','#dashboard_index',sHTMLSource, sJSONMeasures, sJSONNarratives,sJSON_SSHA_LiveData);
+  dashboard = new App('#dashboard_container','#dashboard_categorytabs','#dashboard_indicatortabs','#dashboard_index',sHTMLSource, sJSONMeasures, sJSONNarratives,
+  sJSON_SSHA_LiveData,
+  sJSON_SSHA_HistoricalDemandTrafficlightData,
+  sJSON_SSHA_NightlySummaryTrafficlightData
+);
   window.dashboardapp = dashboard;
   dashboard.loadHTML();
   $( window ).resize(function() {
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".explanation");
   });
-});
+  
+  });
 google.load('visualization', '1', {packages: ['corechart', 'bar', 'table']});

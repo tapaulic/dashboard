@@ -1,0 +1,109 @@
+{
+"RYG":{
+    "dataset":{"R":83,"Y":53,"G":53},"options":{"M":{"height":"500px","width": "200px","float": "left","background-color":"#333","border-radius": "40px","margin":"30px 0","padding": "20px"},
+    "R":{"height": "120px","width": "120px","background-color": "red","border-radius": "50%", "margin": "25px auto","transition": "background 500ms"},
+    "Y":{"height": "120px","width": "120px","background-color": "yellow","border-radius": "50%","margin": "25px auto","transition": "background 500ms"},
+    "G":{"height": "120px","width": "120px","background-color": "#79BFA1","border-radius": "50%","margin": "25px auto","transition": "background 500ms"},
+    "R_V":{"text-align":"center","height":"35px","line-height":"35px","padding":"44px","width":"125px","font-size":"26px","font-weight":"bold","color":"black"},
+    "Y_V":{"text-align":"center","height":"35px","line-height":"35px","padding":"44px","width":"125px","font-size":"26px","font-weight":"bold","color":"black"},
+    "G_V":{"text-align":"center","height":"35px","line-height":"35px","padding":"44px","width":"125px","font-size":"26px","font-weight":"bold","color":"black"}
+  },
+  "RYG_DATATABLE":{ 
+    "cols": [
+      {
+      "id": "",
+      "label": "Status",
+      "pattern": "",
+      "type": "string"
+     },
+     {
+      "id": "",
+      "label": "Count",
+      "pattern": "",
+      "type": "number"
+    }
+  ],
+  "rows":[
+           {"c":[{"v":"RED","f":null},{"v":83,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53,"f":null}]}
+  ]},
+  "RYG_DATATABLE_1":{ 
+    "cols": [
+      {
+      "id": "",
+      "label": "Status",
+      "pattern": "",
+      "type": "string"
+     },
+     {
+      "id": "",
+      "label": "Count",
+      "pattern": "",
+      "type": "number"
+    }
+  ],
+  "rows":[
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"RED","f":null},{"v":83000,"f":null}]},
+           {"c":[{"v":"YELLOW","f":null},{"v":53000,"f":null}]},
+           {"c":[{"v":"GREEN","f":null},{"v":53000,"f":null}]}
+]}
+}
+}
