@@ -14,10 +14,8 @@ let options = {
   //What is the name of this app? This is used to create build and distribution folders.
   //This is REQUIRED
   appName: pkg['name'],
-
   //The core configuration options (see gulp_helper for docs), should be a javascript object of key value pairs
   config: pkg['coreConfig'],
-
   //How this app should be embedded in the simulator. Options are: 'full', 'left', or 'right'
   //This is optional, and the default value is 'full'
   embedArea: 'full',
@@ -28,7 +26,10 @@ let options = {
     local: {
       JSON_MEASURES: '/data/ssha/dashboard/dashboard.json',
       JSON_NARRATIVES: '/data/ssha/dashboard/narratives.json',
-      JSON_SSHA_LiveData: '/data/ssha/dashboard/live.json',
+      JSON_SSHA_LiveData: '/data/ssha/dashboard/live/live.json',
+      //JSON_SSHA_LiveData: 'http://137.15.134.133:8081/sshaDashBoard/data/ssha/dashboard/live/live.json',
+      JSON_SSHA_HistoricalDemandTrafficLightData: '/data/ssha/dashboard/historicaldemand/trafficlight.json',
+      JSON_SSHA_NightlySummaryTrafficLightData: '/data/ssha/dashboard/nightlysummary/trafficlight.json',
       HTML_MEASURES: '/resources/progressportal/html/progressportal.html'
     },
     dev: {
@@ -56,13 +57,13 @@ let options = {
   //'dev' when calling gulp deploy:dev
   //'qa' when calling gulp deploy:qa
   //'prod' when calling gulp deploy:prod
-  environmentOverride: null
+ // environmentOverride: null
+ environmentOverride: null
 };
 
 //This creates several gulp tasks to use during development:
 //default, clean, build, build_with_simulator, run, deploy:dev, deploy:qa, deploy:prod
 core.embeddedApp.createTasks(gulp, options);
-
 
 //Note that you can override any task that createTasks added, by redefining it after the call to createTasks
 //ex:
