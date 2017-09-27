@@ -28,8 +28,8 @@ let options = {
       JSON_NARRATIVES: '/data/ssha/dashboard/narratives.json',
       JSON_SSHA_LiveData: '/data/ssha/dashboard/live/live.json',
       //JSON_SSHA_LiveData: 'http://137.15.134.133:8081/sshaDashBoard/data/ssha/dashboard/live/live.json',
-      JSON_SSHA_HistoricalDemandTrafficLightData: '/data/ssha/dashboard/historicaldemand/trafficlight.json',
-      JSON_SSHA_NightlySummaryTrafficLightData: '/data/ssha/dashboard/nightlysummary/trafficlight.json',
+      JSON_SSHA_HistoricalDemandTrafficLightData: '/data/ssha/dashboard/historical/trafficlight_historicaldemand.json',
+      JSON_SSHA_NightlySummaryTrafficLightData: '/data/ssha/dashboard/historical/trafficlight_nightlysummary.json',
       HTML_MEASURES: '/resources/progressportal/html/progressportal.html'
     },
     dev: {
