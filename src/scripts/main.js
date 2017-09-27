@@ -67,6 +67,7 @@ App.prototype.loadTrafficLightData= function(urlOfTrafficLight){
     },
    success: function(data) {
     trafficlightData=data;
+
      $('#post').html("");
    }
   });
@@ -579,7 +580,7 @@ function drawtabledata(container,data){
 function drawtabledata_1(container,data){
   var datatable = new google.visualization.DataTable(data);
   var table = new google.visualization.Table(container);
-  table.draw(datatable,{showRowNumber: false, width: '75%', height: '100%',page:'enable',pageSize:'20'});
+  table.draw(datatable,{showRowNumber: false, width: '75%', height: '90%',page:'enable',pageSize:'20'});
   return datatable;
 }
 /*drawlivedemandstream*/
@@ -1287,7 +1288,7 @@ App.prototype.drawMeasure = function(m, cat) {
   sCHANGE = (m.vt=="p") ? ((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
   sID = m.id;
  
-  $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID) );
+  $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID,m) );
 };
 App.prototype.createTab = function (sTabName, index){
   var o = this;
@@ -1299,19 +1300,41 @@ App.prototype.createTab = function (sTabName, index){
     $( o.selectors.indicators ).append( '<section class="tab-pane" id="cat' + sTabName.replace(/\W+/g, '') + '"></section>' );
   }
 };
-App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod, strDirection, strInterval, strChangeVal, strID ) {
+App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod, strDirection, strInterval, strChangeVal, strID,m) {
+  var o = this;
   var strHTML = "";
   strHTML += '<div class="aindicator nonactive" href="#" id="' + strID + '"><div class="indicator ' + strPSN + '">';
   strHTML += '<div class="hide keywords">' + strKW + '</div>';
   //strHTML += '<h3>' + strTitle.replace(/\n/g,'<br/>').replace(/\Percentage/g,'%').replace(/\Number/g,'#') + '</h3>';
   strHTML += '<h3>' + strTitle.replace(/\n/g,'<br/>') + '</h3>';
   strHTML += '<div class="measure">';
+  //strHTML += 'strPSN:'+strPSN+'strKW:'+ strKW+'strTitle:'+strTitle+'strVal:'+ strVal+
+    //         'strPeriod:'+strPeriod, 'strDirection:'+strDirection+'strInterval:'+ strInterval+'strChangeVal:'+strChangeVal+'strID:'+ strID;
   strHTML += '<section class="measuredetail hide"></section>';
    /* hide measure detail section - replace with icon
 
   <img src="/resources/dashboard/img/line.png" alt="Line chart icon"/>*/
-  strHTML += '<br><p class="measurevalue"><span>' + strVal + '</span></p>';
-  strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
+   if (m.chartType=='RYG'){
+      var category = m.c[0];
+      if (category=='Nightly Summary')
+          o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
+      else if (category=='Historical Demand')
+          o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
+       var data=trafficlightData["RYG"];
+       var dataset=data["dataset"];
+       var value_R=dataset['R'];
+       var value_Y=dataset['Y'];
+       var value_G=dataset['G'];
+       strHTML += '<br><p class="measurevalue">' +value_R+'/'+value_Y+'/'+value_G+'</p>'+
+                  '<p class="measureperiod">' + 'Red/Yellow/Green'+'</p>';
+                  
+                  
+   }
+   else {
+    strHTML += '<br><p class="measurevalue"><span>' + strVal + '</span></p>';
+    strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
+   }
+  
   strHTML += '<div class="row">';
   strHTML += '<div class="col-xs-12 explanation"><div>';
 //  strHTML += (strDirection == "Up") ? '<p><span class="glyphicon glyphicon-arrow-up"></span></p><p class="direction">Increase of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
