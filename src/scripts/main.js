@@ -1204,7 +1204,7 @@ App.prototype.drawSymbol = function(sPOSNEG, sDIRECTION) {
 };
 App.prototype.drawMeasure = function(m, cat) {
   var o = this;
-  var sKEYWORDS, sMEASURE, sVALUE, sINTERVAL, sPOSNEG, sPERIOD, sDIRECTION, sCHANGE, sID,sIcon, lastVal, lastYear, lastPeriod, intDA;
+  var sKEYWORDS, sMEASURE, sVALUE, sINTERVAL, sPOSNEG, sPERIOD, sDIRECTION, sCHANGE, sID, sIcon, lastVal, lastYear, lastPeriod, intDA;
   var compVal1, compVal2;
   sMEASURE = m.m;
   sKEYWORDS = m.kw;
@@ -1289,7 +1289,7 @@ App.prototype.drawMeasure = function(m, cat) {
   sCHANGE = (m.vt=="p") ? ((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
   sID = m.id;
  
-  $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID, m) );
+  $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID, sIcon, m) );
 
 };
 App.prototype.createTab = function (sTabName, index){
@@ -1327,8 +1327,8 @@ App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod
        var value_R=dataset['R'];
        var value_Y=dataset['Y'];
        var value_G=dataset['G'];
-       strHTML += '<br><p class="measurevalue">' +value_R+'/'+value_Y+'/'+value_G+'</p>'+
-                  '<p class="measureperiod">' + 'Red/Yellow/Green'+'</p>';                  
+       strHTML += '<br><p class="measurevalue">' +value_R+' / '+value_Y+' / '+value_G+'</p>'+
+                  '<p class="measureperiod">' + 'Red / Yellow / Green'+'</p>';                  
      }else {   
         strHTML += '<br><p class="measurevalue"><span>' + strVal + '</span></p>';
         strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
