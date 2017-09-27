@@ -1327,8 +1327,11 @@ App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod
        var value_R=dataset['R'];
        var value_Y=dataset['Y'];
        var value_G=dataset['G'];
-       strHTML += '<br><p class="measurevalue">' +value_R+' / '+value_Y+' / '+value_G+'</p>'+
-                  '<p class="measureperiod">' + 'Red / Yellow / Green'+'</p>';                  
+       strHTML += '<br><p class="measurevalue">' +
+                  '<font color="red">'+value_R+'</font>'+'&nbsp;/'+
+                  '<font color="#FFA500">'+'&nbsp;'+value_Y+'</font>'+'&nbsp;/'+
+                  '<font color="green">'+'&nbsp;'+value_G+'</font>'+'</p>'+
+                  '<p class="measureperiod">' + 'Red / Yellow / Green'+'</p>';
      }else {   
         strHTML += '<br><p class="measurevalue"><span>' + strVal + '</span></p>';
         strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
