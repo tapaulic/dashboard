@@ -36,8 +36,50 @@ App.prototype.loadHTML = function() {
 
 App.prototype.loadData = function() {
   var o = this;
-  $.ajax({ type: "GET", url: o.urls.jsonmeasures,  dataType: "json", success: function(data) { o.drawIndex(data); } });
-  $.ajax({ type: "GET", url: o.urls.jsonnarratives,  dataType: "json", success: function(data) { o.narratives = data; } });
+  $.ajax({ type: "GET", url: o.urls.jsonmeasures,  dataType: "json",
+  error:function(jqXHR, exception){
+    var msg = '';
+    if (jqXHR.status === 0) {
+        msg = 'Due to network issues, the live stream is currently unavailable.';
+    } else if (jqXHR.status == 404) {
+        //msg = 'Requested page not found. [404]'+jqXHR.responseText.toString();
+        msg = 'Requested page not found. [404]'
+    } else if (jqXHR.status == 500) {
+        msg = 'Internal Server Error [500].';
+    } else if (exception === 'parsererror') {
+        msg = 'Error reading data file.';
+    } else if (exception === 'timeout') {
+        msg = 'Time out error.';
+    } else if (exception === 'abort') {
+        msg = 'Ajax request aborted.';
+    } else {
+        msg = 'Uncaught Error.\n' + jqXHR.responseText;
+    }
+    $('#post').html("<font size='2' color='#cc0000'>"+msg+"</font>");
+    },
+   success: function(data) { o.drawIndex(data); } });
+  $.ajax({ type: "GET", url: o.urls.jsonnarratives,  dataType: "json",
+  error:function(jqXHR, exception){
+    var msg = '';
+    if (jqXHR.status === 0) {
+        msg = 'Due to network issues, the live stream is currently unavailable.';
+    } else if (jqXHR.status == 404) {
+        //msg = 'Requested page not found. [404]'+jqXHR.responseText.toString();
+        msg = 'Requested page not found. [404]'
+    } else if (jqXHR.status == 500) {
+        msg = 'Internal Server Error [500].';
+    } else if (exception === 'parsererror') {
+        msg = 'Error reading data file.';
+    } else if (exception === 'timeout') {
+        msg = 'Time out error.';
+    } else if (exception === 'abort') {
+        msg = 'Ajax request aborted.';
+    } else {
+        msg = 'Uncaught Error.\n' + jqXHR.responseText;
+    }
+    $('#post').html("<font size='2' color='#cc0000'>"+msg+"</font>");
+    },
+   success: function(data) { o.narratives = data; } });
 };
 
 /*load traffic light data*/
@@ -168,21 +210,29 @@ App.prototype.measureClick = function( m ) {
   var category = row.c[0];
   if (row.chartType=="mxgraph" && category=="Live Stream"){
        o.loadLiveData();
-       o.drawlivedemandstream.call(o,liveData['LSD']);
-       inter_handle_livedemandstream=setInterval(function() {dashboard.reloadLiveData();}, 1000 * 6 * 1);
+       o.drawlivedemandstream.call(o,liveData['LSD'],m);
+       //var intervalTime = parseInt(row.intervalTime.toString(), 10)
+       //inter_handle_livedemandstream=setInterval(function() {dashboard.reloadLiveData(m);},intervalTime);
+       inter_handle_livedemandstream=setInterval(function() {dashboard.reloadLiveData(m);},1000*6*1);//6 seconds
        return;
   }
+  /*
+  else if (row.chartType!="mxgraph" && row.chartType!="RYG" && category=="Live Stream"){
+             o.paintDetail.call(o, m );
+
+  }
+  */
   else if (row.chartType=="RYG"){
         //nightlysummarytrafficlight
        if (category=='Nightly Summary'){
         o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
-        o.drawtrafficlight.call(o,trafficlightData['RYG']);
+        o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
         return;
       }
       // historicaldemandtrafficlight
        else if (category=='Historical Demand'){
         o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
-        o.drawtrafficlight.call(o,trafficlightData['RYG']);
+        o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
         return;
         }
     }
@@ -211,12 +261,14 @@ App.prototype.closeDetail = function() {
 reload Live data and show on screen
 
 */ 
-App.prototype.reloadLiveData = function() {
+App.prototype.reloadLiveData = function(m) {
   $('#div_loading_1').css("display","block");
   var o = this;
   o.loadLiveData();
+  //LSD
   data_LSD=liveData['LSD'];
-  o.drawlivedemandstream.call(o,data_LSD);
+  o.drawlivedemandstream.call(o,data_LSD,m);
+  //
 };
 
 App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget, blnYTD, blnYear, blnPeriod) {
@@ -571,20 +623,26 @@ for (var key in vertexList){
   }
 }
 
-function drawtabledata(container,data){
+function drawtabledata(container,data,swidth,sheight){
+  var cssClassNames = {
+    'headerRow': '',
+    'tableRow': '',
+    'oddTableRow': '',
+    'selectedTableRow': '',
+    'hoverTableRow': '',
+    'headerCell': 'bold_column_font',
+    'tableCell': 'data_cell_font',
+    'rowNumberCell': ''};
   var datatable = new google.visualization.DataTable(data);
   var table = new google.visualization.Table(container);
-  table.draw(datatable,{showRowNumber: false, width: '90%', height: '100%',page:'enable',pageSize:'20'});
-  return datatable;
-}
-function drawtabledata_1(container,data){
-  var datatable = new google.visualization.DataTable(data);
-  var table = new google.visualization.Table(container);
-  table.draw(datatable,{showRowNumber: false, width: '75%', height: '90%',page:'enable',pageSize:'20'});
+  //table.draw(datatable,{showRowNumber: false, width: '90%', height: '100%', allowHtml: true,
+  //cssClassNames:cssClassNames});
+  table.draw(datatable,{page:'enable',pageSize:'18',showRowNumber: false, width: swidth.toString(), height:sheight.toString(), allowHtml: true,
+  cssClassNames:cssClassNames});
   return datatable;
 }
 /*drawlivedemandstream*/
-App.prototype.drawlivedemandstream= function(data ) {
+App.prototype.drawlivedemandstream= function(data,m ) {
   var o = this;
   var data_mxgraph=data['LSD_MXGRAPH'];
   var data_datatable=data['LSD_DATATABLE'];
@@ -639,7 +697,7 @@ $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .
        $('#chartcontrols_1').children("#loading1").remove();
       var container_table=$('#div_livedemandstream_datatable')[0];
       var dataTable=new google.visualization.DataTable();
-      dataTable=drawtabledata(container_table,data_datatable);
+      dataTable=drawtabledata(container_table,data_datatable,'90%','100%');
       $('#chartcontrols_2').children("#loading2").remove();
       $('#div_loading_1').text("As of: "+getCurrentTime());
       $('#closeDetail').prop('disabled', false);
@@ -676,7 +734,7 @@ $('#y_value_div').html(value_Y);
 $('#g_value_div').html(value_G);
 };
 
-App.prototype.drawtrafficlight = function(data) {
+App.prototype.drawtrafficlight = function(data,m) {
   var o = this;
   var dataset=data["dataset"];
   var options=data["options"];
@@ -694,14 +752,14 @@ App.prototype.drawtrafficlight = function(data) {
   "<h4 class='tabletitle'>"+"Chart:R.Y.G"+"</h4>"+
   "<section id='chartcontrols_3'>"+
   "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
-  "<div id='trafficLight_div' style='display: table;  margin: 0 auto;border:none; text-align: center;'>"+
+ // "<div id='trafficLight_div' style='display: table;  margin:auto;border:none; text-align: center;'>"+
+ "<div id='trafficLight_div'>"+
   "<div id='ryg_div' style='display:inline;border:none;vertical-align: middle;text-align:center;'>"+
   "<div id='r_div'><div id='r_value_div' style='color:white'></div></div>"+
   "<div id='y_div'><div id='y_value_div' style='color:white'></div></div>"+
   "<div id='g_div'><div id='g_value_div' style='color:white'></div></div>"+
    "</div>"+
    "<div id='div_RYG_datatable_1' style='display:inline;'></div>"+ 
-  //"<div id='div_RYG_datatable_1'></div>"+ 
    "</div>"+
   "</section>"+
  "<div class='tabletitle'><h4>"+"Data Table:R.Y.G"+"</h4>"+
@@ -734,9 +792,9 @@ App.prototype.drawtrafficlight = function(data) {
       var container_table=$('#div_RYG_datatable')[0];
       var container_table_1=$('#div_RYG_datatable_1')[0];
       var dataTable_1=new google.visualization.DataTable();
-      var dataTable_1=drawtabledata_1(container_table_1,data_datatable_1);
+      var dataTable_1=drawtabledata(container_table_1,data_datatable_1,'70%','80%');
       var dataTable=new google.visualization.DataTable();
-      dataTable=drawtabledata(container_table,data_datatable);
+      dataTable=drawtabledata(container_table,data_datatable,'90%','100%');
       $('#chartcontrols_2').children("#loading2").remove();
       $('#div_loading_1').text("As of: "+getCurrentTime());
       $('#closeDetail').prop('disabled', false);
@@ -811,11 +869,42 @@ App.prototype.paintDetail = function( indicator ) {
 
   var strP = (getType(m)=="MONTHLY") ? "Month" : (getType(m)=="QUARTERLY") ? "Quarter" : (getType(m)=="SEASONAL") ? "Season" : "Year";
   var strCl = (m.ytd=="True") ? "col-xs-12 col-md-4" : "col-xs-12 col-md-6";
-
-  var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
-  strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
-  strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
-  //strType += '<label onclick="o.changegraphtype(\'pie\')" class="btn btn-default" title="Change the chart below to a Pie Chart"><input type="radio" name="options" id="piechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
+//need loop from 'chartSerial' property of 'm'
+var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
+   if ($.isEmptyObject(m.chartTypeSerial)){
+       strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
+       strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
+   }
+   else {
+    strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
+    strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
+     var dataArray=m.chartTypeSerial;
+     $.each(dataArray, function() {
+      var type,icon;
+       $.each(this, function(key, value){
+         if (key=='type')
+             //type=JSON.stringify(value);
+             type=value;
+         else if (key=='icon')
+              //icon=JSON.stringify(value);
+              icon=value;
+          
+       });
+       strType += '<label onclick="o.changegraphtype('+'\''+type+'\')'+'" '+
+       'class="btn btn-default"'+
+       ' title="Change the chart below to a '+type+
+        ' Chart"><input type="radio" name="options" id="linechart" autocomplete="off">'+
+       '<img src="'+
+        icon+'"'+
+       ' alt="'+
+       type+
+       ' chart icon"/></label>';
+     });
+   }
+  //var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
+  //strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
+  //strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
+  
   strType += '</div></div>';
   var strContext = '<div class="' + strCl + ' groupbyperiod"><label for="groupbyperiod">Group by ' + strP + '</label><input type="checkbox" id="groupbyperiod" name="groupbyperiod" data-on-text="Yes" data-off-text="No" data-handle-width="50" checked></div>';
   strContext += (m.ytd=="True") ? '<div class="' + strCl + '"><label for="showytdvalues">Show Year-To-Date Values</label><input type="checkbox" id="showytdvalues" name="showytdvalues" data-on-text="Yes" data-off-text="No"  data-handle-width="50" checked></div>' : '';
@@ -1043,12 +1132,26 @@ App.prototype.createGraph = function(mm) {
   }
   dt.addRows(o.datarows);
   dtChart.addRows(o.chartrows);
-
-  //CREATE THE CHART AND TABLE
-  if (!this.chart) {this.chart = new google.visualization.ComboChart(document.getElementById("measurechart"))};
+ //CREATE THE CHART AND TABLE
+  //if (!this.chart) {
+     if (o.charttype=='pie')
+         this.chart = new google.visualization.PieChart(document.getElementById("measurechart"));
+     else if (o.charttype=='pie3D')
+     this.chart = new google.visualization.PieChart(document.getElementById("measurechart"));
+     else   
+         this.chart = new google.visualization.ComboChart(document.getElementById("measurechart"));
+  //};
   if (!this.table) {this.table = new google.visualization.Table(document.getElementById("measuretable"));}
   var strYTD = (this.contexttype=="ytd") ? " (Year-To-Date) " : " ";
-  var chartoptions = {animation: {duration: 1000, easing: 'linear' },seriesType: o.charttype, series: oSeries, height: 400,width: "100%",hAxis: { title: (mm.it=="m") ? "Month" : "Quarter" },vAxes:oAxes};
+  var chartoptions = {};
+  if (o.charttype=='pie'){
+      chartoptions={};
+  }
+   else if (o.charttype=='pie3D')
+   chartoptions={is3D: true};
+   else 
+   chartoptions = {animation: {duration: 1000, easing: 'linear' },seriesType: o.charttype, series: oSeries, height: 400,width: "100%",hAxis: { title: (mm.it=="m") ? "Month" : "Quarter" },vAxes:oAxes};
+  //var chartoptions = {animation: {duration: 1000, easing: 'linear' },seriesType: o.charttype, series: oSeries, height: 400,width: "100%",hAxis: { title: (mm.it=="m") ? "Month" : "Quarter" },vAxes:oAxes};
   var tableoptions = {title: mm.m, showRowNumber: false, width: '100%', height: '100%'};
   this.mTitle = mm.m.replace(/\n/g,' ');
 

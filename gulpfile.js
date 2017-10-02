@@ -25,11 +25,15 @@ let options = {
   preprocessorContext: {
     local: {
       JSON_MEASURES: '/data/ssha/dashboard/dashboard.json',
+      //JSON_MEASURES: 'http://137.15.134.133:8081/sshaDashBoard/data/ssha/dashboard/dashboard.json',
       JSON_NARRATIVES: '/data/ssha/dashboard/narratives.json',
+      //JSON_NARRATIVES: 'http://137.15.134.133:8081/sshaDashBoard/data/ssha/dashboard/narratives.json',
       JSON_SSHA_LiveData: '/data/ssha/dashboard/live/live.json',
       //JSON_SSHA_LiveData: 'http://137.15.134.133:8081/sshaDashBoard/data/ssha/dashboard/live/live.json',
+      //JSON_SSHA_HistoricalDemandTrafficLightData: 'http://137.15.134.133:8081/sshaDashBoard/data/ssha/dashboard/historical/trafficlight_historicaldemand.json',
       JSON_SSHA_HistoricalDemandTrafficLightData: '/data/ssha/dashboard/historical/trafficlight_historicaldemand.json',
       JSON_SSHA_NightlySummaryTrafficLightData: '/data/ssha/dashboard/historical/trafficlight_nightlysummary.json',
+      //JSON_SSHA_NightlySummaryTrafficLightData: 'http://137.15.134.133:8081/sshaDashBoard/data/ssha/dashboard/historical/trafficlight_nightlysummary.json',
       HTML_MEASURES: '/resources/progressportal/html/progressportal.html'
     },
     dev: {
