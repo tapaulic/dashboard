@@ -5,6 +5,15 @@ var arrMM = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", 
 var arrMMM = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var arrColors = [ "", "MidnightBlue", "Gray", "Orange", "Purple", "Brown", "LightCoral", "GreenYellow", "DarkTurquoise", "DarkOliveGreen", "IndianRed", "PaleVioletRed","Pink" ];
 var arrSeason = [ "", "Winter", "Spring", "Summer", "Fall" ];
+var arrDD = [""];
+
+for(i=1;i<=366;i++){
+  arrDD.push(i.toString());
+}
+var arrHH=[""];
+for(i=0;i<=23;i++){
+  arrHH.push(i.toString());
+}
 var App = function(sDisplaySel,
   sCategoryTabsSel,
   sIndicatorSel,
@@ -297,17 +306,19 @@ App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget,
 
   if (blnYTD) {
     sCURPER = m.ytds.curYear + " ";
-    sCURPER += (m.it=="m") ? arrMMM[m.ytds.curPeriod] : (m.it=="q") ? "Q" + m.ytds.curPeriod : (m.it=="s") ? arrSeason[m.ytds.curPeriod] : "";
+    sCURPER += (m.it=="m") ? arrMMM[m.ytds.curPeriod] : (m.it=="q") ? "Q" + m.ytds.curPeriod : (m.it=="s") ? arrSeason[m.ytds.curPeriod] :(m.it=="h") ? arrHH[m.ytds.curPeriod] :(m.it=="d") ? arrDD[m.ytds.curPeriod] : "";
+    
+    
     sCURPER += (blnYTD) ? " YTD" : "";
   } else {
     sCURPER = m.vs[0].y + " ";
-    sCURPER += (m.it=="m") ? arrMMM[m.vs[0].p] : (m.it=="q") ? "Q" + m.vs[0].p : (m.it=="s") ? arrSeason[m.vs[0].p] : "";
+    sCURPER += (m.it=="m") ? arrMMM[m.vs[0].p] : (m.it=="q") ? "Q" + m.vs[0].p : (m.it=="s") ? arrSeason[m.vs[0].p] : (m.it=="h") ? arrHH[m.vs[0].p] :(m.it=="d") ? arrDD[m.vs[0].p] :"";
   }
 
   if (blnTarget) {
     sLASTPER = "Budget/Target";
   } else {
-    sLASTPER = (blnYear || blnYTD) ? "Previous Year" : (blnPeriod && m.it=="m") ? "Previous Month" : (blnPeriod && m.it=="q") ? "Previous Quarter" : (blnPeriod && m.it=="s") ? "Previous Season" : "Previous Year";
+    sLASTPER = (blnYear || blnYTD) ? "Previous Year" : (blnPeriod && m.it=="m") ? "Previous Month" : (blnPeriod && m.it=="q") ? "Previous Quarter" : (blnPeriod && m.it=="s") ? "Previous Season" : (blnPeriod && m.it=="h") ? "Previous Hour" :(blnPeriod && m.it=="d") ? "Previous Day" :"Previous Year";
   }
 
   sCURVAL = (m.vt=="n") ? numberWithCommasAbbr(compVal1, intDA) : (m.vt=="c") ? "$" + numberWithCommasAbbr(compVal1, intDA) : (compVal1 * 100).toFixed(intDA) + "%";
@@ -811,6 +822,7 @@ App.prototype.paintDetail = function( indicator ) {
 
   var o = this;
   var m = this.measures[$(indicator).attr("id")];
+  var isDailyChart=(m.it==="d")?true:false;
   strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
   var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
   /*
@@ -867,10 +879,10 @@ App.prototype.paintDetail = function( indicator ) {
   strHTML += (m.cp == "") ? "" : "<p class='cityperspective'>" + m.cp + "</p>";
   strHTML += "</div>";
 
-  var strP = (getType(m)=="MONTHLY") ? "Month" : (getType(m)=="QUARTERLY") ? "Quarter" : (getType(m)=="SEASONAL") ? "Season" : "Year";
-  var strCl = (m.ytd=="True") ? "col-xs-12 col-md-4" : "col-xs-12 col-md-6";
+  var strP = (getType(m)=="MONTHLY") ? "Month" : (getType(m)=="QUARTERLY") ? "Quarter" : (getType(m)=="SEASONAL") ? "Season" :(getType(m)=="HOURLY") ? "Hour" :(getType(m)=="DAILY") ? "Day" : "Year";
+  var strCl = isDailyChart?"col-xs-12 col-md-12":((m.ytd=="True") ? "col-xs-12 col-md-4" : "col-xs-12 col-md-6");
 //need loop from 'chartSerial' property of 'm'
-var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
+  var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
    if ($.isEmptyObject(m.chartTypeSerial)){
        strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
        strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
@@ -904,10 +916,14 @@ var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-grou
   //var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
   //strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
   //strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
-  
+
   strType += '</div></div>';
-  var strContext = '<div class="' + strCl + ' groupbyperiod"><label for="groupbyperiod">Group by ' + strP + '</label><input type="checkbox" id="groupbyperiod" name="groupbyperiod" data-on-text="Yes" data-off-text="No" data-handle-width="50" checked></div>';
-  strContext += (m.ytd=="True") ? '<div class="' + strCl + '"><label for="showytdvalues">Show Year-To-Date Values</label><input type="checkbox" id="showytdvalues" name="showytdvalues" data-on-text="Yes" data-off-text="No"  data-handle-width="50" checked></div>' : '';
+  var strContext = "";
+  if(!isDailyChart){
+
+    strContext += '<div class="' + strCl + ' groupbyperiod"><label for="groupbyperiod">Group by ' + strP + '</label><input type="checkbox" id="groupbyperiod" name="groupbyperiod" data-on-text="Yes" data-off-text="No" data-handle-width="50" checked></div>';
+    strContext += (m.ytd=="True") ? '<div class="' + strCl + '"><label for="showytdvalues">Show Year-To-Date Values</label><input type="checkbox" id="showytdvalues" name="showytdvalues" data-on-text="Yes" data-off-text="No"  data-handle-width="50" checked></div>' : '';
+  }
   strContext += '<div class="' + strCl + '">' + strType + '</div>';
   var strYears = '<div id="graphyear"><p>Years to Display on Chart</p><div class="btn-group" data-toggle="buttons"></div></div>';
 
@@ -918,7 +934,11 @@ var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-grou
   strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle +"</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
   strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
   o.charttype="bars";
-  if (m.ytd=="True") {o.contexttype="ytd";} else {o.contexttype="period";}
+  if(isDailyChart){
+    o.contexttype="seq";
+  }else{
+    if (m.ytd=="True") {o.contexttype="ytd";} else {o.contexttype="period";}
+  }
   m.activeYears = {};
   var intLoop = (getType(m)=="YEARLY" || o.contexttype=="seq") ? 15 : 3;
   for (var x = 0; x < intLoop; x++) {
@@ -955,7 +975,8 @@ var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-grou
   
 };
 function getType(measure) {
-  return (measure.it=="m") ? "MONTHLY" : (measure.it=="q") ? "QUARTERLY" : (measure.it=="y") ? "YEARLY" : "SEASONAL";
+  return  (measure.it=="m") ? "MONTHLY" : (measure.it=="q") ? "QUARTERLY" : (measure.it=="y") ? "YEARLY" :(measure.it=="h") ? "HOURLY":(measure.it=="d") ? "DAILY":"SEASONAL";
+  
 };
 function hasTarget(measure) {
   return (measure.ht=="True") ? true : false;
@@ -975,6 +996,12 @@ function getPeriodName(measure, period) {
       break;
     case "SEASONAL":
       strReturn = arrSeason[period];
+      break;
+     case "HOULY":
+      strReturn = arrHH[period];
+      break;
+    case "DAILY":
+      strReturn = arrDD[period];
       break;
     default:
       strReturn = period;
@@ -1077,6 +1104,9 @@ App.prototype.setChartRows = function( mm ) {
   arrRows.splice(0, 1);
   if (getType(mm)=="MONTHLY" && this.contexttype != "seq") {for (var z = 0; z <= 11; z++) {arrRows[z].unshift(arrMM[z+1]);}}
   if (getType(mm)=="QUARTERLY" && this.contexttype != "seq") {for (var z = 0; z <= 3; z++) {arrRows[z].unshift("Q" + (z+1));}}
+  if (getType(mm)=="HOURLY" && this.contexttype != "seq") {for (var z = 0; z <= 23; z++) {arrRows[z].unshift(arrHH[z+1]);}}
+  if (getType(mm)=="DAILY" && this.contexttype != "seq") {for (var z = 0; z < arrRows.length; z++) {arrRows[z].unshift(arrDD[z+1]);}}
+ 
   if (getType(mm)=="SEASONAL" && this.contexttype != "seq") {arrRows[0].unshift("Winter");arrRows[1].unshift("Spring");arrRows[2].unshift("Summer");arrRows[3].unshift("Fall");}
   if (getType(mm)=="YEARLY" || this.contexttype == "seq") {arrRows[0].unshift("Year");}
   this.chartrows = arrRows;
@@ -1095,6 +1125,8 @@ App.prototype.createGraph = function(mm) {
   dtChart.addColumn( 'string', 'Period' );
   if (getType(mm)=="MONTHLY" && this.contexttype != "seq") {for (var x = 1; x <= 12; x++) {dt.addColumn('number', arrMM[x]);}}
   if (getType(mm)=="QUARTERLY" && this.contexttype != "seq") {for (var x = 1; x <= 4; x++) {dt.addColumn('number', "Q" + x);}}
+  if (getType(mm)=="HOURLY" && this.contexttype != "seq") {for (var z = 0; z <= 23; z++) {dt.addColumn('number',arrHH[z+1]);}}
+  if (getType(mm)=="DAILY" && this.contexttype != "seq") {for (var z = 0; z <= 365; z++) {dt.addColumn('number',arrDD[z+1]);}}
   if (getType(mm)=="YEARLY" || o.contexttype=="seq") {dt.addColumn('number', mm.m.replace(/\n/g,' '));}
   if (getType(mm)=="SEASONAL" && this.contexttype != "seq") {dt.addColumn('number', "Winter");dt.addColumn('number', "Spring");dt.addColumn('number', "Summer");dt.addColumn('number', "Fall");}
 
@@ -1148,10 +1180,10 @@ App.prototype.createGraph = function(mm) {
       chartoptions={};
   }
    else if (o.charttype=='pie3D')
-   chartoptions={is3D: true};
+      chartoptions={is3D: true};
    else 
-   chartoptions = {animation: {duration: 1000, easing: 'linear' },seriesType: o.charttype, series: oSeries, height: 400,width: "100%",hAxis: { title: (mm.it=="m") ? "Month" : "Quarter" },vAxes:oAxes};
-  //var chartoptions = {animation: {duration: 1000, easing: 'linear' },seriesType: o.charttype, series: oSeries, height: 400,width: "100%",hAxis: { title: (mm.it=="m") ? "Month" : "Quarter" },vAxes:oAxes};
+      chartoptions = {animation: {duration: 1000, easing: 'linear' },seriesType: o.charttype, series: oSeries, height: 400,width: "100%",hAxis: { title: (mm.it=="m") ? "Month" :(mm.it=="d") ? "Day":(mm.it=="h") ? "Hour": "Quarter" },vAxes:oAxes};
+
   var tableoptions = {title: mm.m, showRowNumber: false, width: '100%', height: '100%'};
   this.mTitle = mm.m.replace(/\n/g,' ');
 
@@ -1365,6 +1397,14 @@ App.prototype.drawMeasure = function(m, cat) {
       sPERIOD = m.vs[0].y + " " + arrSeason[m.vs[0].p] + " Result";
       sINTERVAL = "year";
     }
+    if (m.it=="h") {
+      sPERIOD = m.vs[0].y + " " + arrHH[m.vs[0].p] + " Result";
+      sINTERVAL = "year";
+    }
+    if (m.it=="d") {
+      sPERIOD = m.vs[0].y + " " + arrDD[m.vs[0].p] + " Result";
+      sINTERVAL = "year";
+    }
 
   }
 
@@ -1501,7 +1541,8 @@ App.prototype.generateExcel = function(strID) {
         m = dashboard.measures[$(subitem).val()];
         m.vs.sort(function(a, b){	return ( ((a.y * 1000) + a.p) - ((b.y *1000) + b.p));});
         $.each( m.vs, function (k, vsitem) {
-          sPeriod = (m.it=="m") ? arrMM[vsitem.p] : (m.it=="q") ? "Q" + vsitem.p : (m.it=="s") ? arrSeason[vsitem.p] : "";
+          sPeriod = (m.it=="m") ? arrMM[vsitem.p] : (m.it=="q") ? "Q" + vsitem.p : (m.it=="s") ? arrSeason[vsitem.p] :          sPeriod = (m.it=="m") ? arrMM[vsitem.p] : (m.it=="q") ? "Q" + vsitem.p : (m.it=="s") ? arrSeason[vsitem.p] : (m.it=="h") ? arrHH[vsitem.p]:(m.it=="d") ? arrDD[vsitem.p]:"";
+          "";
 
           csv_cols = [];
           csv_cols.push( m.m.replace(/\n/g,' ').replace(/,/g,"") );
@@ -1685,17 +1726,20 @@ App.prototype.getTrendRow = function(m, compVal1, compVal2, strTitle, blnTarget,
 
   if (blnYTD) {
     sCURPER = m.ytds.curYear + " ";
-    sCURPER += (m.it=="m") ? arrMMM[m.ytds.curPeriod] : (m.it=="q") ? "Q" + m.ytds.curPeriod : (m.it=="s") ? arrSeason[m.ytds.curPeriod] : "";
+    sCURPER += (m.it=="m") ? arrMMM[m.ytds.curPeriod] : (m.it=="q") ? "Q" + m.ytds.curPeriod : (m.it=="s") ? arrSeason[m.ytds.curPeriod] :     sCURPER += (m.it=="m") ? arrMMM[m.ytds.curPeriod] : (m.it=="q") ? "Q" + m.ytds.curPeriod : (m.it=="s") ? arrSeason[m.ytds.curPeriod] : (m.it=="h") ? arrHH[m.ytds.curPeriod] :(m.it=="d") ? arrDD[m.ytds.curPeriod] :"";
+    "";
     sCURPER += (blnYTD) ? " YTD" : "";
   } else {
     sCURPER = m.vs[0].y + " ";
-    sCURPER += (m.it=="m") ? arrMMM[m.vs[0].p] : (m.it=="q") ? "Q" + m.vs[0].p : (m.it=="s") ? arrSeason[m.vs[0].p] : "";
+    sCURPER += (m.it=="m") ? arrMMM[m.vs[0].p] : (m.it=="q") ? "Q" + m.vs[0].p : (m.it=="s") ? arrSeason[m.vs[0].p] :     sCURPER += (m.it=="m") ? arrMMM[m.vs[0].p] : (m.it=="q") ? "Q" + m.vs[0].p : (m.it=="s") ? arrSeason[m.vs[0].p] : (m.it=="h") ? arrHH[m.vs[0].p] :(m.it=="d") ? arrDD[m.vs[0].p] :"";
+    "";
   }
 
   if (blnTarget) {
     sLASTPER = "Budget/Target";
   } else {
-    sLASTPER = (blnYear || blnYTD) ? "Previous Year" : (blnPeriod && m.it=="m") ? "Previous Month" : (blnPeriod && m.it=="q") ? "Previous Quarter" : (blnPeriod && m.it=="s") ? "Previous Season" : "Previous Year";
+    sLASTPER = (blnYear || blnYTD) ? "Previous Year" : (blnPeriod && m.it=="m") ? "Previous Month" : (blnPeriod && m.it=="q") ? "Previous Quarter" : (blnPeriod && m.it=="s") ? "Previous Season" :    sLASTPER = (blnYear || blnYTD) ? "Previous Year" : (blnPeriod && m.it=="m") ? "Previous Month" : (blnPeriod && m.it=="q") ? "Previous Quarter" : (blnPeriod && m.it=="s") ? "Previous Season" : (blnPeriod && m.it=="h") ? "Previous Hour" :(blnPeriod && m.it=="d") ? "Previous Day" :"Previous Year";
+    "Previous Year";
   }
 
   sCURVAL = (m.vt=="n") ? numberWithCommasAbbr(compVal1, intDA) : (m.vt=="c") ? "$" + numberWithCommasAbbr(compVal1, intDA) : (compVal1 * 100).toFixed(intDA) + "%";
@@ -1735,7 +1779,9 @@ App.prototype.getPeriodChart = function(mm, strPer, strType, w) {
   dtChart.addColumn( 'string', 'Period' );
   if (getType(mm)=="MONTHLY" && this.contexttype != "seq") {for (var x = 1; x <= 12; x++) {dt.addColumn('number', arrMM[x]);}}
   if (getType(mm)=="QUARTERLY" && this.contexttype != "seq") {for (var x = 1; x <= 4; x++) {dt.addColumn('number', "Q" + x);}}
-  if (getType(mm)=="YEARLY" || o.contexttype=="seq") {dt.addColumn('number', mm.m.replace(/\n/g,' '));}
+  if (getType(mm)=="HOURLY" && this.contexttype != "seq") {for (var x = 1; x <= 24; x++) {dt.addColumn('number', arrHH[x]);}}
+  if (getType(mm)=="DAILY" && this.contexttype != "seq") {for (var x = 1; x <= 366; x++) {dt.addColumn('number', arrDD[x]);}}
+   if (getType(mm)=="YEARLY" || o.contexttype=="seq") {dt.addColumn('number', mm.m.replace(/\n/g,' '));}
   if (getType(mm)=="SEASONAL" && this.contexttype != "seq") {dt.addColumn('number', "Winter");dt.addColumn('number', "Spring");dt.addColumn('number', "Summer");dt.addColumn('number', "Fall");}
 
   //SETUP THE GRAPH SERIES, AXES, CONTROLS/////////////////////////////////////////////////////////////////////////////
