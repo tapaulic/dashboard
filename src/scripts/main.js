@@ -1111,6 +1111,15 @@ App.prototype.setChartRows = function( mm ) {
   if (getType(mm)=="YEARLY" || this.contexttype == "seq") {arrRows[0].unshift("Year");}
   this.chartrows = arrRows;
 };
+function getGraphOptionsByType(type,List){
+  for (var key in List){
+      if (List.hasOwnProperty(key)){
+          var  cellType= List[key].type;
+      if  (cellType==type)
+           return List[key].options
+  }
+  }
+}
 App.prototype.createGraph = function(mm) {
   var o = this;
   var arrRows = [];
@@ -1170,6 +1179,8 @@ App.prototype.createGraph = function(mm) {
          this.chart = new google.visualization.PieChart(document.getElementById("measurechart"));
      else if (o.charttype=='pie3D')
      this.chart = new google.visualization.PieChart(document.getElementById("measurechart"));
+     else if (o.charttype=='gauge')
+     this.chart = new google.visualization.Gauge(document.getElementById("measurechart"));
      else   
          this.chart = new google.visualization.ComboChart(document.getElementById("measurechart"));
   //};
@@ -1181,6 +1192,9 @@ App.prototype.createGraph = function(mm) {
   }
    else if (o.charttype=='pie3D')
       chartoptions={is3D: true};
+   else if (o.charttype=='gauge'){
+      chartoptions=getGraphOptionsByType("gauge",mm["chartTypeSerial"]);
+        }    
    else 
       chartoptions = {animation: {duration: 1000, easing: 'linear' },seriesType: o.charttype, series: oSeries, height: 400,width: "100%",hAxis: { title: (mm.it=="m") ? "Month" :(mm.it=="d") ? "Day":(mm.it=="h") ? "Hour": "Quarter" },vAxes:oAxes};
 
@@ -1201,7 +1215,11 @@ App.prototype.createGraph = function(mm) {
     this.table.draw(dt, tableoptions);
     this.dt = dt;
   }
-  $( "" ).html("<img src='" + this.chart.getImageURI() + "'/>");
+  //gauge not support on getImageURI()
+  if (o.charttype!='gauge'){
+    $( "" ).html("<img src='" + this.chart.getImageURI() + "'/>");
+  }
+  
 };
 App.prototype.yearselect = function(o, v) {
   var m = this.measures[$(".aindicator.active").attr("id")];
@@ -2107,4 +2125,4 @@ $(document).ready(function() {
   });
   
   });
-google.load('visualization', '1', {packages: ['corechart', 'bar', 'table']});
+google.load('visualization', '1', {packages: ['gauge','corechart', 'bar', 'table']});
