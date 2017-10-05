@@ -24,9 +24,9 @@ let options = {
   //You can add environment-specific vars or general vars
   preprocessorContext: {
     local: {
-      JSON_MEASURES: '/data/ssha/dashboard/dashboard.json',
+      JSON_MEASURES: '/data/ssha/dashboard/historical/dashboard.json',
       //JSON_MEASURES: 'http://137.15.134.133:8081/sshaDashBoard/data/ssha/dashboard/dashboard.json',
-      JSON_NARRATIVES: '/data/ssha/dashboard/narratives.json',
+      JSON_NARRATIVES: '/data/ssha/dashboard/historical/narratives.json',
       //JSON_NARRATIVES: 'http://137.15.134.133:8081/sshaDashBoard/data/ssha/dashboard/narratives.json',
       JSON_SSHA_LiveData: '/data/ssha/dashboard/live/live.json',
       //JSON_SSHA_LiveData: 'http://137.15.134.133:8081/sshaDashBoard/data/ssha/dashboard/live/live.json',
