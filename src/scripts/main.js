@@ -225,12 +225,6 @@ App.prototype.measureClick = function( m ) {
        inter_handle_livedemandstream=setInterval(function() {dashboard.reloadLiveData(m);},1000*6*1);//6 seconds
        return;
   }
-  /*
-  else if (row.chartType!="mxgraph" && row.chartType!="RYG" && category=="Live Stream"){
-             o.paintDetail.call(o, m );
-
-  }
-  */
   else if (row.chartType=="RYG"){
         //nightlysummarytrafficlight
        if (category=='Nightly Summary'){
@@ -246,8 +240,14 @@ App.prototype.measureClick = function( m ) {
         }
     }
   else {
-      o.paintDetail.call(o, m );
-      return;
+    if (row.byPassPeriod=="True"){
+        o.paintDetailByPassPeriod.call(o, m );
+        return;
+      }
+      else {
+       o.paintDetail.call(o, m );
+       return;
+      }
   }
 };
 App.prototype.closeDetail = function() {
@@ -279,7 +279,7 @@ App.prototype.reloadLiveData = function(m) {
   o.drawlivedemandstream.call(o,data_LSD,m);
   //
 };
-
+/*
 App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget, blnYTD, blnYear, blnPeriod) {
   var sPOSNEG, sDIRECTION, sCHANGE, sHTML = "",sCURPER, sLASTPER, sCURVAL, sLASTVAL, sCOMMENT="", intDA;
 
@@ -353,6 +353,7 @@ App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget,
   sHTML += "</tr>";
   return sHTML;
 };
+*/
 /*drawmxgraph*/
 //App.prototype.drawmxgraph = function (container,dataSource){
 function drawmxgraph (container,dataSource){
@@ -818,6 +819,169 @@ App.prototype.drawtrafficlight = function(data,m) {
   );
   
 };
+/*
+by pass Period
+
+App.prototype.paintDetailByPassPeriod = function( indicator ) {
+  var o = this;
+  var m = this.measures[$(indicator).attr("id")];
+  var isDailyChart=(m.it==="d")?true:false;
+  strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
+  var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
+  strHTML += "<div class='analysis'>";
+  strHTML += "<div class='table-responsive'>" + sHTMLTREND  + "</div>";
+  strHTML += (m.cp == "") ? "" : "<p class='cityperspective'>" + m.cp + "</p>";
+  strHTML += "</div>";
+  var strCl = "col-xs-12 col-md-12";
+  //need loop from 'chartSerial' property of 'm'
+  var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
+   if ($.isEmptyObject(m.chartTypeSerial)){
+//       strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
+//       strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
+   }
+   else {
+  //  strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
+  //  strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
+     var dataArray=m.chartTypeSerial;
+     $.each(dataArray, function() {
+      var type,icon;
+       $.each(this, function(key, value){
+         if (key=='type')
+             //type=JSON.stringify(value);
+             type=value;
+         else if (key=='icon')
+              //icon=JSON.stringify(value);
+              icon=value;
+          
+       });
+       strType += '<label onclick="o.changegraphtypeByPassPeriod('+'\''+type+'\')'+'" '+
+       'class="btn btn-default"'+
+       ' title="Change the chart below to a '+type+
+        ' Chart"><input type="radio" name="options" id="linechart" autocomplete="off">'+
+       '<img src="'+
+        icon+'"'+
+       ' alt="'+
+       type+
+       ' chart icon"/></label>';
+     });
+   }
+  strType += '</div></div>';
+  var strContext = "";
+ 
+  strContext += '<div class="' + strCl + '">' + strType + '</div>';
+  var sChartTitle = properCase(getType(m));
+  strHTML += '<h4 class="controlstitle">Chart Options</h4><section id="chartcontrols"><div class="col-xs-12">' + strContext + '</div><div class="col-xs-12">' + ''+ '</div></section>';
+  strHTML += "<h4 class='charttitle'>Chart: " + sChartTitle + "</h4><div id='measurechart'></div>";
+  strHTML += (m.ds=="") ? "" : "<p class='datasource'>" + m.ds + "</p>";
+  strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle +"</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
+  strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
+  o.charttype="pie";
+  $( ".aindicator.active" ).animate({
+    width: "100%"
+  }, 1000, function() {
+    o.createGraphByPassPeriod( m );
+  });
+  
+  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
+    opacity: 0,
+    height: 1
+  }, 900 );
+  alert(strHTML);
+  $( ".aindicator.active .measuredetail" ).html( strHTML );
+  $( ".aindicator.active .measuredetail" ).animate({
+    opacity: 1
+  }, 1000 );
+  //ACTIVATE SWITCHES
+  $("#groupbyperiod, #showytdvalues").bootstrapSwitch();
+  
+  $('#groupbyperiod').on('switchChange.bootstrapSwitch', function(event, state) {
+    o.selectGroupByPeriod();
+  });
+  
+  $('#showytdvalues').on('switchChange.bootstrapSwitch', function(event, state) {
+    o.selectYTD();
+  });
+};
+  {"type":"pie","icon":"/resources/dashboard/img/pie.png",
+                                "options":{
+                                "titlePosition": "top",
+                                "legend": "yes",
+                                "is3D": "false",
+                                "height": 360,
+                                "width": 360,
+                                "chartArea": {
+                                    "left": 30,
+                                    "top": 30,
+                                    "width": "100%",
+                                    "height": "100%"
+                                  },
+                                "pieSliceText": "percentage",
+                                 "pieSliceTextStyle ": {"fontSize":34},
+                                 "fontSize":16
+                             }},
+                     
+*/
+App.prototype.paintDetailByPassPeriod = function( indicator ) {
+  var o = this;
+  var m = this.measures[$(indicator).attr("id")];
+  strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
+  var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
+  strHTML += "<div class='analysis'>";
+  strHTML += "<div class='table-responsive'>" + sHTMLTREND  + "</div>";
+  strHTML += (m.cp == "") ? "" : "<p class='cityperspective'>" + m.cp + "</p>";
+  strHTML += "</div>";
+  var strCl = "col-xs-12 col-md-12";
+  //loop from 'chartSerial' property of 'm'
+  var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
+   if (!$.isEmptyObject(m.chartTypeSerial)){
+     var dataArray=m.chartTypeSerial;
+     $.each(dataArray, function() {
+      var type,icon;
+       $.each(this, function(key, value){
+         if (key=='type')
+             type=value;
+         else if (key=='icon')
+              icon=value;
+       });
+       strType += '<label onclick="o.changegraphtypeByPassPeriod('+'\''+type+'\')'+'" '+
+                  'class="btn btn-default"'+
+                  ' title="Change the chart below to a '+type+
+                  ' Chart"><input type="radio" name="options" id="linechart" autocomplete="off">'+
+                  '<img src="'+
+                     icon+'"'+
+                  ' alt="'+
+                   type+
+                  ' chart icon"/></label>';
+     });
+   }
+  strType += '</div></div>';
+  var strContext = "";
+ 
+ strContext += '<div class="' + strCl + '">' + strType + '</div>';
+ // var sChartTitle = properCase(getType(m));
+ var sChartTitle =m.chartTitle;
+  if (m.showOptions=="True")
+    strHTML += '<h4 class="controlstitle">Chart Options</h4><section id="chartcontrols"><div class="col-xs-12">' + strContext + '</div><div class="col-xs-12">' + ''+ '</div></section>';
+    strHTML += "<h4 class='charttitle'>Chart: " + sChartTitle + "</h4><div id='measurechart_gauge' align='center'></div>";
+    strHTML += (m.ds=="") ? "" : "<p class='datasource'>" + m.ds + "</p>";
+    strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle +"</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
+    strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
+  $( ".aindicator.active" ).animate({
+    width: "100%"
+  }, 1000, function() {
+    o.createGraphByPassPeriod( m ,m.chartType);
+  });
+  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
+    opacity: 0,
+    height: 1
+  }, 900 );
+  $( ".aindicator.active .measuredetail" ).html( strHTML );
+  $( ".aindicator.active .measuredetail" ).animate({
+    opacity: 1
+  }, 1000 );
+};
+
+
 App.prototype.paintDetail = function( indicator ) {
 
   var o = this;
@@ -1014,7 +1178,7 @@ App.prototype.setDataRows = function(mm) {
   var arrRows = [], oData = {}, fmt, intTarget, intSumTarget= 0;
 
   intDA = (mm.da=="") ? 0 : parseInt(mm.da);
-
+  
   mm.vs.sort(function(a, b){	return ( ((a.p * 1000) + a.y) - ((b.p *1000) + b.y));});
   if (this.contexttype=="ytd") {
     for (var i = 0; i < mm.vs.length; i++ ) {
@@ -1111,6 +1275,49 @@ App.prototype.setChartRows = function( mm ) {
   if (getType(mm)=="YEARLY" || this.contexttype == "seq") {arrRows[0].unshift("Year");}
   this.chartrows = arrRows;
 };
+function getGraphOptionsByType(type,List){
+  for (var key in List){
+      if (List.hasOwnProperty(key)){
+          var  cellType= List[key].type;
+      if  (cellType==type)
+           return List[key].options
+  }
+  }
+}
+
+App.prototype.createGraphByPassPeriod = function(mm,defaultChartType) {
+  var o = this;
+  var dt = new google.visualization.DataTable(mm.vs);
+  var dtChart = new google.visualization.DataTable(mm.vs);
+ //BUILD DATA TABLE STRUCTURE
+  $( "#graphyear .btn-group" ).html("");
+  o.charttype=defaultChartType;
+ //CREATE THE CHART AND TABLE
+ var chartoptions = {};
+     if (o.charttype=='pie'){
+      chartoptions=getGraphOptionsByType('pie',mm["chartTypeSerial"]);
+      this.chart = new google.visualization.PieChart(document.getElementById("measurechart_gauge"));
+     }
+     else if (o.charttype=='pie3D'){
+         chartoptions={is3D: true};
+         this.chart = new google.visualization.PieChart(document.getElementById("measurechart_gauge"));
+     }
+     else if (o.charttype=='gauge'){
+         chartoptions=getGraphOptionsByType("gauge",mm["chartTypeSerial"]);
+         this.chart = new google.visualization.Gauge(document.getElementById("measurechart_gauge"));
+     }
+    if (!this.table) {this.table = new google.visualization.Table(document.getElementById("measuretable"));}
+      var tableoptions = {title: mm.m, showRowNumber: false, width: '100%', height: '100%'};
+      this.mTitle = mm.m.replace(/\n/g,' ');
+     //DRAW THE CHART AND TABLE
+      this.table.draw(dt,tableoptions);
+      this.chart.draw(dtChart,chartoptions);
+      this.dt = dt;
+      this.dtChart= dtChart
+    if (o.charttype!='gauge'){
+       $( "" ).html("<img src='" + this.chart.getImageURI() + "'/>");
+    };
+};
 App.prototype.createGraph = function(mm) {
   var o = this;
   var arrRows = [];
@@ -1165,14 +1372,14 @@ App.prototype.createGraph = function(mm) {
   dt.addRows(o.datarows);
   dtChart.addRows(o.chartrows);
  //CREATE THE CHART AND TABLE
-  //if (!this.chart) {
      if (o.charttype=='pie')
          this.chart = new google.visualization.PieChart(document.getElementById("measurechart"));
      else if (o.charttype=='pie3D')
-     this.chart = new google.visualization.PieChart(document.getElementById("measurechart"));
+         this.chart = new google.visualization.PieChart(document.getElementById("measurechart"));
+     else if (o.charttype=='gauge')
+         this.chart = new google.visualization.Gauge(document.getElementById("measurechart"));
      else   
          this.chart = new google.visualization.ComboChart(document.getElementById("measurechart"));
-  //};
   if (!this.table) {this.table = new google.visualization.Table(document.getElementById("measuretable"));}
   var strYTD = (this.contexttype=="ytd") ? " (Year-To-Date) " : " ";
   var chartoptions = {};
@@ -1181,6 +1388,9 @@ App.prototype.createGraph = function(mm) {
   }
    else if (o.charttype=='pie3D')
       chartoptions={is3D: true};
+   else if (o.charttype=='gauge'){
+      chartoptions=getGraphOptionsByType("gauge",mm["chartTypeSerial"]);
+        }    
    else 
       chartoptions = {animation: {duration: 1000, easing: 'linear' },seriesType: o.charttype, series: oSeries, height: 400,width: "100%",hAxis: { title: (mm.it=="m") ? "Month" :(mm.it=="d") ? "Day":(mm.it=="h") ? "Hour": "Quarter" },vAxes:oAxes};
 
@@ -1201,7 +1411,11 @@ App.prototype.createGraph = function(mm) {
     this.table.draw(dt, tableoptions);
     this.dt = dt;
   }
-  $( "" ).html("<img src='" + this.chart.getImageURI() + "'/>");
+  //gauge not support on getImageURI()
+  if (o.charttype!='gauge'){
+    $( "" ).html("<img src='" + this.chart.getImageURI() + "'/>");
+  }
+  
 };
 App.prototype.yearselect = function(o, v) {
   var m = this.measures[$(".aindicator.active").attr("id")];
@@ -1326,6 +1540,12 @@ App.prototype.changecontexttype = function(sContext) {
   var m = this.measures[$(".aindicator.active").attr("id")];
   this.createGraph(m);
 };
+App.prototype.changegraphtypeByPassPeriod = function(sType) {
+  var m = this.measures[$(".aindicator.active").attr("id")];
+  this.charttype = sType;
+  this.createGraphByPassPeriod(m,this.charttype);
+};
+
 App.prototype.changegraphtype = function(sType) {
   var m = this.measures[$(".aindicator.active").attr("id")];
   this.charttype = sType;
@@ -1339,6 +1559,7 @@ App.prototype.drawSymbol = function(sPOSNEG, sDIRECTION) {
   return sReturn;
 };
 App.prototype.drawMeasure = function(m, cat) {
+  
   var o = this;
   var sKEYWORDS, sMEASURE, sVALUE, sINTERVAL, sPOSNEG, sPERIOD, sDIRECTION, sCHANGE, sID, sIcon, lastVal, lastYear, lastPeriod, intDA;
   var compVal1, compVal2;
@@ -1350,6 +1571,7 @@ App.prototype.drawMeasure = function(m, cat) {
   //CREATE YTD VALUES FOR NUMERIC AND CURRENCY MEASURES
   m.ytds = {};
   lastVal = 0
+  if (m.byPassPeriod!="True"){
   if (m.ytd=="True") {
     m.vs.sort(function(a, b){	return (a.p + (a.y*100)) - (b.p + (b.y*100));});
 
@@ -1407,6 +1629,7 @@ App.prototype.drawMeasure = function(m, cat) {
     }
 
   }
+}//end of bypassperiod
 
   if (Math.abs(compVal1 - compVal2) <= Math.abs(compVal2 * (1+parseFloat(m.v)) - compVal2)) {
     sPOSNEG = "STABLE";
@@ -1432,7 +1655,10 @@ App.prototype.drawMeasure = function(m, cat) {
   sCHANGE = Math.abs(sCHANGE.toFixed(2)) + "%";
   sCHANGE = (m.vt=="p") ? ((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
   sID = m.id;
- 
+  if (m.byPassPeriod=="True"){
+     //alert(JSON.stringify(m));
+     //alert(JSON.stringify(cat));
+  }
   $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID, sIcon, m) );
 
 };
@@ -1447,6 +1673,9 @@ App.prototype.createTab = function (sTabName, index){
   }
 };
 App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod, strDirection, strInterval, strChangeVal, strID, strIcon, m) {
+  if (m.byPassPeriod=="True"){
+    
+    }
   var o = this;
   var strHTML = "";
   strHTML += '<div class="aindicator nonactive" href="#" id="' + strID + '"><div class="indicator ' + strPSN + '">';
@@ -1458,14 +1687,14 @@ App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod
     //         'strPeriod:'+strPeriod, 'strDirection:'+strDirection+'strInterval:'+ strInterval+'strChangeVal:'+strChangeVal+'strID:'+ strID;
   strHTML += '<section class="measuredetail hide"></section>';
    /* hide measure detail section - replace with icon */
-  
-  if(!strIcon || 0 === strIcon.length){
-     if (m.chartType=='RYG'){
-      var category = m.c[0];
-      if (category=='Nightly Summary')
-          o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
-      else if (category=='Historical Demand')
-          o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
+   if (m.byPassPeriod!="True"){
+     if(!strIcon || 0 === strIcon.length){
+         if (m.chartType=='RYG'){
+               var category = m.c[0];
+               if (category=='Nightly Summary')
+                   o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
+               else if (category=='Historical Demand')
+                   o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
        var data=trafficlightData["RYG"];
        var dataset=data["dataset"];
        var value_R=dataset['R'];
@@ -1481,15 +1710,15 @@ App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod
         strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
      }
   }else {
-    //strHTML += '<br><p class="measurevalue"><span class="' + strIcon + '"/></p>';
     strHTML += '<br><p class="measurevalue"><img src="/resources/dashboard/img/'+strIcon+'" alt="An icon"/></p><br>';
   }
-
+}
+else {
+  strHTML += '<br><p class="measurevalue"><span>' + m.measureValue + '</span></p>';
+  strHTML += '<p class="measureperiod">'  +m.measureTitle +'&nbsp;&nbsp;&nbsp;'+ '</p>';
+}
   strHTML += '<div class="row">';
   strHTML += '<div class="col-xs-12 explanation"><div>';
-//  strHTML += (strDirection == "Up") ? '<p><span class="glyphicon glyphicon-arrow-up"></span></p><p class="direction">Increase of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
- // strHTML += (strDirection == "Down") ? '<p><span class="glyphicon glyphicon-arrow-down"></span></p><p class="direction">Decrease of ' + strChangeVal + ' from previous ' + strInterval + '</p>' : '';
- // strHTML += (strDirection == "Stable") ? '<p><span class="glyphicon glyphicon-minus"></span></p><p class="direction">Stable from previous ' + strInterval + '</p>' : '';
   strHTML += '</div>';
   strHTML += '</div>';
   strHTML += '</div>';
@@ -2107,4 +2336,5 @@ $(document).ready(function() {
   });
   
   });
-google.load('visualization', '1', {packages: ['corechart', 'bar', 'table']});
+google.load('visualization', '1', {packages: ['PieChart','gauge','corechart', 'bar', 'table']});
+//google.charts.load('current',{packages: ['gauge','corechart', 'bar', 'table']});
