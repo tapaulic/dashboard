@@ -1011,16 +1011,18 @@ App.prototype.paintDetail = function( indicator ) {
   strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle +"</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
   strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
   o.charttype="bars";
-  if(isDailyChart){
-    o.contexttype="seq";
-  }else{
-    if (m.ytd=="True") {o.contexttype="ytd";} else {o.contexttype="period";}
-  }
   m.activeYears = {};
   var intLoop = (getType(m)=="YEARLY" || o.contexttype=="seq") ? 15 : 3;
-  for (var x = 0; x < intLoop; x++) {
-    m.activeYears[new Date().getFullYear() - x] = true;
+  if(isDailyChart){
+    o.contexttype="seq";
+    m.activeYears[new Date().getFullYear() ] = true;
+  }else{
+    if (m.ytd=="True") {o.contexttype="ytd";} else {o.contexttype="period";}
+    for (var x = 0; x < intLoop; x++) {
+        m.activeYears[new Date().getFullYear() - x] = true;
+    }
   }
+
   $( ".aindicator.active" ).animate({
     width: "100%"
   }, 1000, function() {
