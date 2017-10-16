@@ -4622,32 +4622,36 @@
                                },
                            "byPassPeriod":"True"     
       },
-{"id":3.03,"chartTypeSerial":"","icon":"","m":"Motel Usage as of 4am","chartType":"","it":"m","vt":"n","ytd":"True","ht":"False","v":"0.01","yv":"0.01","bv":"","da":"","dd":"Down","c":["Nightly Summary"],"ds":" Source: Shelter Management Information System (SMIS) ","cp":"","kw":"",
-    "vs": [
-    {"y":2016,"p":1,"v":164},
-    {"y":2016,"p":2,"v":119},
-    {"y":2016,"p":3,"v":145},
-    {"y":2016,"p":4,"v":117},
-    {"y":2016,"p":5,"v":161},
-    {"y":2016,"p":6,"v":140},
-    {"y":2016,"p":7,"v":164},
-    {"y":2016,"p":8,"v":119},
-    {"y":2016,"p":9,"v":145},
-    {"y":2016,"p":10,"v":117},
-    {"y":2016,"p":11,"v":161},
-    {"y":2016,"p":12,"v":140},
-    {"y":2017,"p":1,"v":164},
-    {"y":2017,"p":2,"v":119},
-    {"y":2017,"p":3,"v":145},
-    {"y":2017,"p":4,"v":117},
-    {"y":2017,"p":5,"v":161},
-    {"y":2017,"p":6,"v":140},
-    {"y":2017,"p":7,"v":164},
-    {"y":2017,"p":8,"v":119},
-    {"y":2017,"p":9,"v":145},
-    {"y":2017,"p":10,"v":117}
-    ]
-    }
-],
-"targets": [{}],
-"categories": [ "Live Stream" ,"Nightly Summary" ,"Historical Occupancy" ,"Historical Demand" ]}
+{"id":3.03,
+        "chartTypeSerial":[{"type":"BarChart","icon":"/resources/dashboard/img/pie.png",
+        "options":{"vAxis": {"minValue": 0,"maxValue": 100,"title": ""} ,
+        "curveType": "function",
+        "titlePosition": "top",
+        "legend": { "position": "none" },
+        "height": 250,
+        "width": "100%",
+        "chartArea": {
+                      "left": 200,
+                      "top": 30,
+                      "width": "90%",
+                      "height": "80%"
+                      },
+        "fontSize":12
+        }
+       }],
+   "vs":{
+         "cols":[{"id":"","label":"Category","pattern":"","type":"string"},{"id":"","label":"Amount","pattern":"","type":"number"}],
+         "rows":[{"c":[{"v":"Rooms","f":null},{"v":200,"f":null}]},
+                 {"c":[{"v":"Clients","f":null},{"v":717,"f":null}]}] 
+       },
+   "byPassPeriod":"True",
+   "chartTitle":"Motel Usage as of 4am",
+   "showOptions":"False",
+   "measureValue":"200 / 717",
+   "measureTitle":"Rooms / Clients",
+   "icon":"","m":"Motel Usage as of 4am","chartType":"BarChart","c":["Nightly Summary"],"ds":" Source: Shelter Management Information System (SMIS) ","cp":"","kw":""
+   }
+   ],
+   "targets": [{}],
+  "categories": [ "Live Stream" ,"Nightly Summary" ,"Historical Occupancy" ,"Historical Demand" ]
+}
