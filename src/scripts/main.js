@@ -1,4 +1,5 @@
 var inter_handle_livedemandstream=null;
+var inter_handle_live=null;
 var dashboard; //THIS A GLOBAL VARIABLE TO YOUR FULL APPLICATION
 var secondLabelVisible = true;
 var arrMM = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -34,61 +35,41 @@ var App = function(sDisplaySel,
   this.htmlsource = sHTMLSource;
   this.icons = { 'up' : '<span class="glyphicon glyphicon-arrow-up"></span>', 'down' : '<span class="glyphicon glyphicon-arrow-down"></span>', 'stable' : '<span class="glyphicon glyphicon-minus"></span>' };
 };
-var liveData={};
+var liveDemandStreamData={};
+var liveCurrentOccupancyBySectorData={};
 var trafficlightData={};
 
 App.prototype.loadHTML = function() {
   var o = this;
   $( o.selectors.display ).load( o.htmlsource + ' ' + o.selectors.sourcelist, function() { o.loadData(); } );
 };
-
+//processData
+App.prototype.loadDataOnly = function() {
+  var o = this;
+  $.ajax({ type: "GET", url: o.urls.jsonmeasures,  async:false,dataType: "json",
+  error:function(jqXHR, exception){
+       o.errorHandle(jqXHR, exception);
+    },
+   success: function(data) { o.processData(data);  $('#post').html(""); } });
+  $.ajax({ type: "GET", url: o.urls.jsonnarratives, async:false, dataType: "json",
+  error:function(jqXHR, exception){
+    o.errorHandle(jqXHR, exception);
+    },
+   success: function(data) { o.narratives = data;  $('#post').html(""); } });
+};
 
 App.prototype.loadData = function() {
   var o = this;
-  $.ajax({ type: "GET", url: o.urls.jsonmeasures,  dataType: "json",
+  $.ajax({ type: "GET", url: o.urls.jsonmeasures,  async:false, dataType: "json",
   error:function(jqXHR, exception){
-    var msg = '';
-    if (jqXHR.status === 0) {
-        msg = 'Due to network issues, the live stream is currently unavailable.';
-    } else if (jqXHR.status == 404) {
-        //msg = 'Requested page not found. [404]'+jqXHR.responseText.toString();
-        msg = 'Requested page not found. [404]'
-    } else if (jqXHR.status == 500) {
-        msg = 'Internal Server Error [500].';
-    } else if (exception === 'parsererror') {
-        msg = 'Error reading data file.';
-    } else if (exception === 'timeout') {
-        msg = 'Time out error.';
-    } else if (exception === 'abort') {
-        msg = 'Ajax request aborted.';
-    } else {
-        msg = 'Uncaught Error.\n' + jqXHR.responseText;
-    }
-    $('#post').html("<font size='2' color='#cc0000'>"+msg+"</font>");
+    o.errorHandle(jqXHR, exception);
     },
-   success: function(data) { o.drawIndex(data); } });
-  $.ajax({ type: "GET", url: o.urls.jsonnarratives,  dataType: "json",
+   success: function(data) { o.drawIndex(data);  $('#post').html(""); } });
+  $.ajax({ type: "GET", url: o.urls.jsonnarratives,   async:false,dataType: "json",
   error:function(jqXHR, exception){
-    var msg = '';
-    if (jqXHR.status === 0) {
-        msg = 'Due to network issues, the live stream is currently unavailable.';
-    } else if (jqXHR.status == 404) {
-        //msg = 'Requested page not found. [404]'+jqXHR.responseText.toString();
-        msg = 'Requested page not found. [404]'
-    } else if (jqXHR.status == 500) {
-        msg = 'Internal Server Error [500].';
-    } else if (exception === 'parsererror') {
-        msg = 'Error reading data file.';
-    } else if (exception === 'timeout') {
-        msg = 'Time out error.';
-    } else if (exception === 'abort') {
-        msg = 'Ajax request aborted.';
-    } else {
-        msg = 'Uncaught Error.\n' + jqXHR.responseText;
-    }
-    $('#post').html("<font size='2' color='#cc0000'>"+msg+"</font>");
+    o.errorHandle(jqXHR, exception);
     },
-   success: function(data) { o.narratives = data; } });
+   success: function(data) { o.narratives = data;  $('#post').html(""); } });
 };
 
 /*load traffic light data*/
@@ -97,67 +78,79 @@ App.prototype.loadTrafficLightData= function(urlOfTrafficLight){
   trafficlightData={};
    $.ajax({ type: "GET", url: urlOfTrafficLight, async:false, dataType: "json", 
    error:function(jqXHR, exception){
-    var msg = '';
-    if (jqXHR.status === 0) {
-        msg = 'Due to network issues, the live stream is currently unavailable.';
-    } else if (jqXHR.status == 404) {
-        //msg = 'Requested page not found. [404]'+jqXHR.responseText.toString();
-        msg = 'Requested page not found. [404]'
-    } else if (jqXHR.status == 500) {
-        msg = 'Internal Server Error [500].';
-    } else if (exception === 'parsererror') {
-        msg = 'Error reading data file.';
-    } else if (exception === 'timeout') {
-        msg = 'Time out error.';
-    } else if (exception === 'abort') {
-        msg = 'Ajax request aborted.';
-    } else {
-        msg = 'Uncaught Error.\n' + jqXHR.responseText;
-    }
-    $('#post').html("<font size='2' color='#cc0000'>"+msg+"</font>");
-    },
+    o.errorHandle(jqXHR, exception);
+   },
    success: function(data) {
     trafficlightData=data;
-
      $('#post').html("");
    }
   });
 };
 
-
-
-/*load live data*/
-App.prototype.loadLiveData= function(){
+/*load LiveDemmandStreamData*/
+App.prototype.loadLiveDemmandStreamData= function(){
   var o = this;
-  liveData={};
+  liveDemandStreamData={};
    $.ajax({ type: "GET", url: o.urls.jsonliveData, async:false, dataType: "json", 
    error:function(jqXHR, exception){
-    var msg = '';
-    if (jqXHR.status === 0) {
-        msg = 'Due to network issues, the live stream is currently unavailable.';
-    } else if (jqXHR.status == 404) {
-        //msg = 'Requested page not found. [404]'+jqXHR.responseText.toString();
-        msg = 'Requested page not found. [404]'
-    } else if (jqXHR.status == 500) {
-        msg = 'Internal Server Error [500].';
-    } else if (exception === 'parsererror') {
-        msg = 'Error reading data file.';
-    } else if (exception === 'timeout') {
-        msg = 'Time out error.';
-    } else if (exception === 'abort') {
-        msg = 'Ajax request aborted.';
-    } else {
-        msg = 'Uncaught Error.\n' + jqXHR.responseText;
-    }
-    $('#post').html("<font size='2' color='#cc0000'>"+msg+"</font>");
+    o.errorHandle(jqXHR, exception);
     },
    success: function(data) {
-     liveData=data;
+    liveDemandStreamData=data;
      $('#post').html("");
    }
   });
 };
+
+App.prototype.errorHandle = function(jqXHR, exception){
+/*
+  if (inter_handle_livedemandstream!=null)
+     clearInterval(inter_handle_livedemandstream);
+  if (inter_handle_live!=null)
+     clearInterval(inter_handle_live);
+*/     
+var msg = '';
+if (jqXHR.status === 0) {
+    msg = 'Due to network issues, the live stream is currently unavailable.';
+} else if (jqXHR.status == 404) {
+    //msg = 'Requested page not found. [404]'+jqXHR.responseText.toString();
+    msg = 'Requested page not found. [404]'
+} else if (jqXHR.status == 500) {
+    msg = 'Internal Server Error [500].';
+} else if (exception === 'parsererror') {
+    msg = 'Error reading data file.';
+} else if (exception === 'timeout') {
+    msg = 'Time out error.';
+} else if (exception === 'abort') {
+    msg = 'Ajax request aborted.';
+} else {
+    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+}
+$('#post').html("<font size='2' color='#cc0000'>"+msg+"</font>");
+};
  
+App.prototype.processData = function(d) {
+  var o = this;
+  $('#searchtext').keydown( function(e) {
+    var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+    if(key == 13) { o.search( $( '#searchtext' ).val() ); }
+    if(key == 27) { o.resetsearch( '#searchtext' ); }
+  });
+  //key as measures from jsonfile
+  o.measures = d.measures;
+  $.each( d.categories, function(i,citem) {
+    o.measures[citem] = [];
+  });
+  d.measures.sort(function(a, b){	return (a.id - b.id);});
+  $.each( d.measures, function(i,mitem) {
+    o.measures[mitem.id] = mitem;
+    m = mitem;
+    $.each( mitem.c, function(j,ditem) {
+      o.measures[ ditem ].push( m );
+      o.drawMeasure( m, ditem,false );
+  });//inner loop end
+  });//out loop end
+};
 App.prototype.drawIndex = function(d) {
   var o = this;
   $('#searchtext').keydown( function(e) {
@@ -165,23 +158,19 @@ App.prototype.drawIndex = function(d) {
     if(key == 13) { o.search( $( '#searchtext' ).val() ); }
     if(key == 27) { o.resetsearch( '#searchtext' ); }
   });
-
   //key as measures from jsonfile
   o.measures = d.measures;
   $.each( d.categories, function(i,citem) {
     o.measures[citem] = [];
     o.createTab(citem, i );
   });
-
   d.measures.sort(function(a, b){	return (a.id - b.id);});
-
-
   $.each( d.measures, function(i,mitem) {
     o.measures[mitem.id] = mitem;
     m = mitem;
     $.each( mitem.c, function(j,ditem) {
       o.measures[ ditem ].push( m );
-      o.drawMeasure( m, ditem );
+      o.drawMeasure( m, ditem,true );
   });//inner loop end
   });//out loop end
 
@@ -194,10 +183,7 @@ App.prototype.drawIndex = function(d) {
     });
   });
   $( "#pdfcat, #excelcat").multiselect({includeSelectAllOption: true, numberDisplayed:1, enableClickableOptGroups: true, enableCollapsibleOptGroups: true});
-
   o.targets = d.targets[0];
-  //alert(JSON.stringify(o.targets));
-
   $('.aindicator.nonactive').bind('click', function() { o.measureClick( this );});
   setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -208,6 +194,7 @@ App.prototype.drawIndex = function(d) {
   setConsistentHeightDASHBOARD("#dashboard_indicators", ".explanation");
 };
 App.prototype.measureClick = function( m ) {
+ 
   if ($( m ).hasClass("active")) {$( m ).removeClass("active"); return;}
   o = this;
   $( m ).unbind('click');
@@ -215,26 +202,120 @@ App.prototype.measureClick = function( m ) {
   $( m ).addClass("active");
   $( ".aindicator" ).addClass("hide");
   $( ".aindicator.active, .aindicator.active .measuredetail" ).removeClass("hide");
+  //load data firstly 
+  o.loadDataOnly();
+  o.loadLiveDemmandStreamData();
+  o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
+  o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
   var row = this.measures[$(m).attr("id")];
   var category = row.c[0];
-  if (row.chartType=="mxgraph" && category=="Live Stream"){
-       o.loadLiveData();
-       o.drawlivedemandstream.call(o,liveData['LSD'],m);
-       //var intervalTime = parseInt(row.intervalTime.toString(), 10)
-       //inter_handle_livedemandstream=setInterval(function() {dashboard.reloadLiveData(m);},intervalTime);
-       inter_handle_livedemandstream=setInterval(function() {dashboard.reloadLiveData(m);},1000*6*1);//6 seconds
-       return;
-  }
-  else if (row.chartType=="RYG"){
-        //nightlysummarytrafficlight
-       if (category=='Nightly Summary'){
-        o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
-        o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
+  if (category=="Live Stream"){
+       //mxgraph
+      if(row.chartType=="mxgraph"){
+        o.drawlivedemandstream.call(o,liveDemandStreamData['LSD'],m);
+        var intervalTime = parseInt(row.intervalTime.toString(), 10);
+        inter_handle_livedemandstream=setInterval(function() {dashboard.showLiveDemmandStream(row);},intervalTime);//6 seconds
         return;
       }
+      else {
+        //byPassPeriod
+        if (row.byPassPeriod=="True"){
+            o.paintDetailByPassPeriod.call(o, row);
+            var intervalTime = parseInt(row.intervalTime.toString(), 10);
+            inter_handle_live=setInterval(function() {o.paintDetailByPassPeriod.call(o, row);},intervalTime);//6 seconds
+            return ;
+        }
+        else {
+            o.paintDetail.call(o, row );
+            var intervalTime = parseInt(row.intervalTime.toString(), 10);
+            inter_handle_live=setInterval(function() {o.paintDetail.call(o, row );},intervalTime);//6 seconds
+            return;
+           }
+       }
+    }
+  //non live stream     
+  else {
+     if (row.chartType=="RYG"){
+      if (category=='Nightly Summary'){
+          o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
+          o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
+          return;
+     }
+     // historicaldemandtrafficlight
+      else if (category=='Historical Demand'){
+           o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
+           o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
+           return;
+       }
+     }
+     //non RYG
+     else {
+      if (row.byPassPeriod=="True"){
+          o.paintDetailByPassPeriod.call(o, m );
+          return;
+      }
+      else {
+          o.paintDetail.call(o, m );
+         return;
+      }
+     }
+    }
+  };
+
+  /*
+  if (row.chartType=="mxgraph" && category=="Live Stream"){
+      // o.loadLiveDemmandStreamData();
+       o.drawlivedemandstream.call(o,liveDemandStreamData['LSD'],m);
+       var intervalTime = parseInt(row.intervalTime.toString(), 10);
+       inter_handle_livedemandstream=setInterval(function() {dashboard.showLiveDemmandStream(row);},intervalTime);//6 seconds
+       return;
+  }
+  //&& row.id=="1.46"
+  else if (category=="Live Stream" && row.id=="1.46"){//CurrentOccupancybySector
+           //o.loadDataOnly();
+           if (row.byPassPeriod=="True")
+               o.paintDetailByPassPeriod.call(o, m );
+           else     
+               o.paintDetail.call(o, row );
+               var intervalTime = parseInt(row.intervalTime.toString(), 10);
+           inter_handle_live=setInterval(function() {
+           o.showLiveData(row);
+           },intervalTime);//6 seconds
+           return;
+}
+  else if (category=="Live Stream" && row.id=="1.45" ){//CurrentOccupancybySector
+        // o.loadDataOnly();
+         if (row.byPassPeriod=="True")
+             o.paintDetailByPassPeriod.call(o, row );
+         else 
+         o.paintDetail.call(o,row);
+         var intervalTime = parseInt(row.intervalTime.toString(), 10);
+         inter_handle_live=setInterval(function() {
+         o.showLiveData(row);
+  },intervalTime);//6 seconds
+  return;
+}
+ else if (category=="Live Stream" && row.id=="2.18" ){//CurrentOccupancybySector
+        //o.loadDataOnly();
+        if (row.byPassPeriod=="True")
+            o.paintDetailByPassPeriod.call(o, row );
+        else 
+            o.paintDetail.call(o,row);
+        var intervalTime = parseInt(row.intervalTime.toString(), 10);
+        inter_handle_live=setInterval(function() {o.showLiveData(row);},intervalTime);//x seconds calling  
+        return;
+}
+//nightlysummarytrafficlight 
+//hard code ?? I do not like it ,finally will be change it.
+ else if (row.chartType=="RYG"){
+       if (category=='Nightly Summary'){
+          // o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
+           o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
+           return;
+      }
       // historicaldemandtrafficlight
-       else if (category=='Historical Demand'){
-        o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
+ else if (category=='Historical Demand'){
+       // o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
         o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
         return;
         }
@@ -244,15 +325,18 @@ App.prototype.measureClick = function( m ) {
         o.paintDetailByPassPeriod.call(o, m );
         return;
       }
-      else {
-       o.paintDetail.call(o, m );
-       return;
+    else {
+        o.paintDetail.call(o, m );
+         return;
       }
   }
-};
+  */
+
 App.prototype.closeDetail = function() {
   if (inter_handle_livedemandstream!=null)
      clearInterval(inter_handle_livedemandstream);
+  if (inter_handle_live!=null) 
+     clearInterval(inter_handle_live);
   var o = this;
   delete this.chart;
   delete this.table;
@@ -270,15 +354,27 @@ App.prototype.closeDetail = function() {
 reload Live data and show on screen
 
 */ 
-App.prototype.reloadLiveData = function(m) {
+App.prototype.showLiveDemmandStream = function(m) {
   $('#div_loading_1').css("display","block");
   var o = this;
-  o.loadLiveData();
+  o.loadLiveDemmandStreamData();
   //LSD
-  data_LSD=liveData['LSD'];
+  data_LSD=liveDemandStreamData['LSD'];
   o.drawlivedemandstream.call(o,data_LSD,m);
-  //
+ 
 };
+
+App.prototype.showLiveData = function(m) {
+  $('#div_loading_1').css("display","block");
+  var o = this;
+  o.loadDataOnly();
+  if (m.byPassPeriod=="True")
+     o.paintDetailByPassPeriod.call(o, m );
+  else   
+     o.paintDetail.call(o,m);
+};
+
+
 /*
 App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget, blnYTD, blnYear, blnPeriod) {
   var sPOSNEG, sDIRECTION, sCHANGE, sHTML = "",sCURPER, sLASTPER, sCURVAL, sLASTVAL, sCOMMENT="", intDA;
@@ -355,7 +451,6 @@ App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget,
 };
 */
 /*drawmxgraph*/
-//App.prototype.drawmxgraph = function (container,dataSource){
 function drawmxgraph (container,dataSource){
     if (!mxClient.isBrowserSupported()){
       mxUtils.error('Browser is not supported!', 200, false);
@@ -386,16 +481,10 @@ function drawmxgraph (container,dataSource){
           if (secondLabel != null && state.shape != null && state.secondLabel == null){
             state.secondLabel = new mxText(secondLabel, new mxRectangle(),
               mxConstants.ALIGN_LEFT, mxConstants.ALIGN_BOTTOM);
-            //state.secondLabel.color = 'black';
             state.secondLabel.color = getSecondLabelColorByID(state.cell.getId(),data.vertexes);
-            //state.secondLabel.family = 'Verdana';
             state.secondLabel.family =getSecondLabelFontNameByID(state.cell.getId(),data.vertexes);
-            //state.secondLabel.size = 10;
             state.secondLabel.size = getSecondLabelFontSizeByID(state.cell.getId(),data.vertexes);
-            //state.secondLabel.fontStyle = mxConstants.FONT_ITALIC;
-            //state.secondLabel.background = 'lightgreen';
             state.secondLabel.background = getSecondLabelBackGroundColorByID(state.cell.getId(),data.vertexes);
-            //state.secondLabel.valign = 'top';
             state.secondLabel.valign = getSecondLabelValignByID(state.cell.getId(),data.vertexes);
             state.secondLabel.dialect = state.shape.dialect;
             state.secondLabel.dialect = mxConstants.DIALECT_STRICTHTML;
@@ -414,7 +503,6 @@ function drawmxgraph (container,dataSource){
           state.secondLabel.bounds = bounds;
           state.secondLabel.redraw();
         }
-
         return result;
       };
 
@@ -447,50 +535,34 @@ function drawmxgraph (container,dataSource){
         }
         return mxGraphModel.prototype.getStyle.apply(this, arguments) + ';fontSize=' + fs;
       };
-
-      /*end of font size change*/
+   /*end of font size change*/
       new mxRubberband(graph);
-      //graph.isCellMoveable(true);
       graph.setEnabled(true);
       graph.setHtmlLabels(true);
       graph.setCellsLocked(true);
       graph.setConnectable(true);
       graph.setTooltips(false);
       graph.setAllowDanglingEdges(false);
-      //graph.setAllowDanglingEdges(true);
       graph.setMultigraph(false);
       graph.setAutoSizeCells(true);
       graph.setCellsResizable(false);
       graph.setCellsMovable(false);
-
-      //	graph.setCellsMovable(true);
-      //graph.centerZoom = false;
       graph.centerZoom = true;
       graph.setCellsSelectable(false);
-
       var style_cell = new Object();
       style_cell[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
       style_cell[mxConstants.STYLE_CURVED] = '1';
       graph.getStylesheet().putCellStyle('myshape', style_cell);
       var style =graph.getStylesheet().getDefaultEdgeStyle();
-      //style[mxConstants.STYLE_EDGE] = mxEdgeStyle.TopToBottom;
-      //style[mxConstants.STYLE_CURVED] = true;
       style[mxConstants.STYLE_ROUNDED] = true;
-      //style[mxConstants.STYLE_ROUNDED]=true;
-      //style[mxConstants.STYLE_EDGE]=mxConstants.EDGESTYLE_ENTITY_RELATION;
-      //style[mxConstants.STYLE_SHAPE]=mxConstants.SHAPE_ELLIPSE;
-      //mxCoordinateAssignment.prototype.edgeStyle = mxHierarchicalEdgeStyle.CURVE;
       style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
       graph.getStylesheet().putDefaultEdgeStyle(style);
-      //graph.alternateEdgeStyle = 'elbow=vertical';
       graph.getModel().beginUpdate();
       try
       {
-
         //get vertexes
         var X2={}; //my namespace:)
-        // var v_tmp={};
-        ;                  X2.Eval=function(code){
+        X2.Eval=function(code){
         if(!!(window.attachEvent && !window.opera)){//ie
           execScript(code);
         }else{
@@ -510,17 +582,14 @@ function drawmxgraph (container,dataSource){
             var width=vertexes[key].width;
             var height=vertexes[key].height;
             var style=vertexes[key].style;
-            //var parentCell=graph.insertVertex(parent, '1000', '',0,0,400,400,style,true);
             v_tmp=graph.insertVertex(parent, id, value,left,top,width,height,style,false);
-            //v_tmp=graph.insertVertex(parentCell, id, value,left,top,width,height,style,true);
             vertext_name=vertexes[key].id;
             X2.Eval('var '+ vertext_name+'='+'v_tmp'+';');
             vertex_data_array.push({'id':id,'vertex':v_tmp});
             model.setValue(v_tmp,value);//update model
           }
         }//end loop vertexes
-
-        /*get edges*/
+       /*get edges*/
         var edges=data['edges'];
         var edge_name='';
         //start to loop edge
@@ -530,11 +599,8 @@ function drawmxgraph (container,dataSource){
             var value=edges[key].value;
             var from=getVertexByID(vertex_data_array,edges[key].from);
             var to=getVertexByID(vertex_data_array,edges[key].to);
-            //var style=edges[key].style;
             var style=graph.getStylesheet().getDefaultEdgeStyle();
-            // e_tmp=graph.insertEdge(parent, null, '', from,to,'edgeStyle=elbowConnector;');
             e_tmp=graph.insertEdge(parent, null, '', from,to,style);
-            //e_tmp=graph.insertEdge(parentCell, null, '', from,to,'edgeStyle=elbowConnector;');
             edge_name=edges[key].id;
             X2.Eval('var '+ edge_name+'='+'e_tmp'+';');
           }
@@ -549,6 +615,15 @@ function drawmxgraph (container,dataSource){
 
     }
 };
+function getMeasureByID(id,list){
+  for (var key in list){
+    if (list.hasOwnProperty(key)){
+        var  cellID= list[key].id;
+     if  (cellID==id)
+     return list[key];
+}
+}
+}
 function getVertexByID(vertexes_array,vertexID){
   for (var i = 0; i < vertexes_array.length; i++) {
     if (vertexes_array[i].id==vertexID){
@@ -566,8 +641,6 @@ function getSecondLableValueByID(vertexID,vertexList){
   }
   }
 }
-
-
 function getSecondLabelColorByID(vertexID,vertexList){
 for (var key in vertexList){
       if (vertexList.hasOwnProperty(key)){
@@ -576,7 +649,6 @@ for (var key in vertexList){
        return vertexList[key].secondLabel.color; 
   }
   }
-
 }
 
 function getSecondLabelFontNameByID(vertexID,vertexList){
@@ -587,9 +659,6 @@ for (var key in vertexList){
        return vertexList[key].secondLabel.family; 
   }
   }
-
-
-
 }
 
 function getSecondLabelFontSizeByID(vertexID,vertexList){
@@ -611,10 +680,6 @@ for (var key in vertexList){
   }
   }
 }
-
-
-
-
 function getSecondLabelBackGroundColorByID(vertexID,vertexList){
 for (var key in vertexList){
       if (vertexList.hasOwnProperty(key)){
@@ -647,8 +712,6 @@ function drawtabledata(container,data,swidth,sheight){
     'rowNumberCell': ''};
   var datatable = new google.visualization.DataTable(data);
   var table = new google.visualization.Table(container);
-  //table.draw(datatable,{showRowNumber: false, width: '90%', height: '100%', allowHtml: true,
-  //cssClassNames:cssClassNames});
   table.draw(datatable,{page:'enable',pageSize:'18',showRowNumber: false, width: swidth.toString(), height:sheight.toString(), allowHtml: true,
   cssClassNames:cssClassNames});
   return datatable;
@@ -665,13 +728,10 @@ App.prototype.drawlivedemandstream= function(data,m ) {
    "</div>"+
   "</div>"+
   "<font size='2'><strong><div id='div_loading_1'>"+
-  //"<img src='/resources/dashboard/img/Preloader_1.gif' width=32 height=32/>"+
   "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
   "</div></strong></font>"+
   "<h4 class='tabletitle'>"+"Chart:Live Demand Stream"+"</h4>"+
-  //"<section id='chartcontrols'>"+
   "<section id='chartcontrols_1'>"+
-  //"<img id='loading1' src='/resources/dashboard/img/Preloader_1.gif' width=32 height=32/>"+
   "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
   "</section>"+
  "<div class='tabletitle'><h4>"+"Data Table:Live Demand Stream"+"</h4>"+
@@ -680,12 +740,10 @@ App.prototype.drawlivedemandstream= function(data,m ) {
   "Export Data</button>"+
  "</div>"+
  "<section id='chartcontrols_2' class='chartcontrols'>"+
- //"<img id='loading2' src='/resources/dashboard/img/Preloader_1.gif' width=32 height=32/>"+
  "<img id='loading2' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
  "<div id='div_livedemandstream_datatable'></div>";
  "</section>"
  strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";    
-
 $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
     opacity: 0,
     height: 1
@@ -764,7 +822,6 @@ App.prototype.drawtrafficlight = function(data,m) {
   "<h4 class='tabletitle'>"+"Chart:R.Y.G"+"</h4>"+
   "<section id='chartcontrols_3'>"+
   "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
- // "<div id='trafficLight_div' style='display: table;  margin:auto;border:none; text-align: center;'>"+
  "<div id='trafficLight_div'>"+
   "<div id='ryg_div' style='display:inline;border:none;vertical-align: middle;text-align:center;'>"+
   "<div id='r_div'><div id='r_value_div' style='color:white'></div></div>"+
@@ -814,118 +871,21 @@ App.prototype.drawtrafficlight = function(data,m) {
       $("#excelexport").click(function(){
         o.downloadLiveCSV(dataTable);
     });
-
    }
   );
-  
 };
-/*
-by pass Period
-
 App.prototype.paintDetailByPassPeriod = function( indicator ) {
   var o = this;
   var m = this.measures[$(indicator).attr("id")];
-  var isDailyChart=(m.it==="d")?true:false;
-  strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
   var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
-  strHTML += "<div class='analysis'>";
-  strHTML += "<div class='table-responsive'>" + sHTMLTREND  + "</div>";
-  strHTML += (m.cp == "") ? "" : "<p class='cityperspective'>" + m.cp + "</p>";
-  strHTML += "</div>";
-  var strCl = "col-xs-12 col-md-12";
-  //need loop from 'chartSerial' property of 'm'
-  var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
-   if ($.isEmptyObject(m.chartTypeSerial)){
-//       strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
-//       strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
-   }
-   else {
-  //  strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
-  //  strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
-     var dataArray=m.chartTypeSerial;
-     $.each(dataArray, function() {
-      var type,icon;
-       $.each(this, function(key, value){
-         if (key=='type')
-             //type=JSON.stringify(value);
-             type=value;
-         else if (key=='icon')
-              //icon=JSON.stringify(value);
-              icon=value;
-          
-       });
-       strType += '<label onclick="o.changegraphtypeByPassPeriod('+'\''+type+'\')'+'" '+
-       'class="btn btn-default"'+
-       ' title="Change the chart below to a '+type+
-        ' Chart"><input type="radio" name="options" id="linechart" autocomplete="off">'+
-       '<img src="'+
-        icon+'"'+
-       ' alt="'+
-       type+
-       ' chart icon"/></label>';
-     });
-   }
-  strType += '</div></div>';
-  var strContext = "";
- 
-  strContext += '<div class="' + strCl + '">' + strType + '</div>';
-  var sChartTitle = properCase(getType(m));
-  strHTML += '<h4 class="controlstitle">Chart Options</h4><section id="chartcontrols"><div class="col-xs-12">' + strContext + '</div><div class="col-xs-12">' + ''+ '</div></section>';
-  strHTML += "<h4 class='charttitle'>Chart: " + sChartTitle + "</h4><div id='measurechart'></div>";
-  strHTML += (m.ds=="") ? "" : "<p class='datasource'>" + m.ds + "</p>";
-  strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle +"</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
-  strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
-  o.charttype="pie";
-  $( ".aindicator.active" ).animate({
-    width: "100%"
-  }, 1000, function() {
-    o.createGraphByPassPeriod( m );
-  });
-  
-  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
-    opacity: 0,
-    height: 1
-  }, 900 );
-  alert(strHTML);
-  $( ".aindicator.active .measuredetail" ).html( strHTML );
-  $( ".aindicator.active .measuredetail" ).animate({
-    opacity: 1
-  }, 1000 );
-  //ACTIVATE SWITCHES
-  $("#groupbyperiod, #showytdvalues").bootstrapSwitch();
-  
-  $('#groupbyperiod').on('switchChange.bootstrapSwitch', function(event, state) {
-    o.selectGroupByPeriod();
-  });
-  
-  $('#showytdvalues').on('switchChange.bootstrapSwitch', function(event, state) {
-    o.selectYTD();
-  });
-};
-  {"type":"pie","icon":"/resources/dashboard/img/pie.png",
-                                "options":{
-                                "titlePosition": "top",
-                                "legend": "yes",
-                                "is3D": "false",
-                                "height": 360,
-                                "width": 360,
-                                "chartArea": {
-                                    "left": 30,
-                                    "top": 30,
-                                    "width": "100%",
-                                    "height": "100%"
-                                  },
-                                "pieSliceText": "percentage",
-                                 "pieSliceTextStyle ": {"fontSize":34},
-                                 "fontSize":16
-                             }},
-                     
-*/
-App.prototype.paintDetailByPassPeriod = function( indicator ) {
-  var o = this;
-  var m = this.measures[$(indicator).attr("id")];
-  strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
-  var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
+  strHTML ="<div  class='btn-group'>"+
+           "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>"+
+           "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>"+
+           "</div>"+
+           "</div>";
+  strHTML +="<font size='2'><strong><div id='div_loading_1'>"+
+            "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
+            "</div></strong></font>";
   strHTML += "<div class='analysis'>";
   strHTML += "<div class='table-responsive'>" + sHTMLTREND  + "</div>";
   strHTML += (m.cp == "") ? "" : "<p class='cityperspective'>" + m.cp + "</p>";
@@ -958,11 +918,12 @@ App.prototype.paintDetailByPassPeriod = function( indicator ) {
   var strContext = "";
  
  strContext += '<div class="' + strCl + '">' + strType + '</div>';
- // var sChartTitle = properCase(getType(m));
  var sChartTitle =m.chartTitle;
-  if (m.showOptions=="True")
+  if (m.showOptions=="True"){
     strHTML += '<h4 class="controlstitle">Chart Options</h4><section id="chartcontrols"><div class="col-xs-12">' + strContext + '</div><div class="col-xs-12">' + ''+ '</div></section>';
-    strHTML += "<h4 class='charttitle'>Chart: " + sChartTitle + "</h4><div id='measurechart_gauge' align='center'></div>";
+  }
+    strHTML += "<h4 class='charttitle'>Chart: " + sChartTitle + "</h4>"+
+               "<div id='measurechart_gauge'></div>";
     strHTML += (m.ds=="") ? "" : "<p class='datasource'>" + m.ds + "</p>";
     strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle +"</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
     strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
@@ -970,6 +931,8 @@ App.prototype.paintDetailByPassPeriod = function( indicator ) {
     width: "100%"
   }, 1000, function() {
     o.createGraphByPassPeriod( m ,m.chartType);
+    $('#div_loading_1').text("As of: "+getCurrentTime());
+    $('#closeDetail').prop('disabled', false);
   });
   $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
     opacity: 0,
@@ -983,61 +946,19 @@ App.prototype.paintDetailByPassPeriod = function( indicator ) {
 
 
 App.prototype.paintDetail = function( indicator ) {
-
   var o = this;
   var m = this.measures[$(indicator).attr("id")];
   var isDailyChart=(m.it==="d")?true:false;
-  strHTML = '<button id="closeDetail" class="btn btn-primary" type="button" onclick="window.dashboardapp.closeDetail()"><span class="glyphicon glyphicon-arrow-left"></span> <span class="btntext">Back</span></button>';
+  strHTML ="<div  class='btn-group'>"+
+  "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>"+
+  "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>"+
+  "</div>"+
+  "</div>";
+  strHTML +="<font size='2'><strong><div id='div_loading_1'>"+
+           "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
+           "</div></strong></font>";
   var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
-  /*
-  sHTMLTREND = "<h4>Trend Analysis</h4>";
-  if (m.vt=="p") {
-    sHTMLTREND += "<table class='table table-bordered'><tr><th>Trend</th><th>Current Value</th><th>Comparison Value</th><th>Percentage Point Changed</th><th>Analysis</th></tr>";
-  } else {
-    sHTMLTREND += "<table class='table table-bordered'><tr><th>Trend</th><th>Current Value</th><th>Comparison Value</th><th>% Changed</th><th>Analysis</th></tr>";
-  }
-  m.vs.sort(function(a, b){	return ( ((b.y * 1000) + b.p) - ((a.y *1000) + a.p));});
-  if (m.ytd=="True") {
-    //DRAW YTD ANALYSIS
-    compVal1 = m.ytds[m.ytds.curYear][m.ytds.curPeriod];compVal2 = m.ytds[m.ytds.curYear - 1][m.ytds.curPeriod];
-    sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Year-To-Date vs. Previous Year", false, true, false, false);
-
-    if (m.ht=="True") {
-      //DRAW TARGET YTD ANALYSIS
-      compVal1 = m.ytds[m.vs[0].y][m.vs[0].p]; compVal2 = 0;
-      $.each (this.targets[$(indicator).attr("id")], function(i,item) {if (item.y == m.vs[0].y && item.p <= m.vs[0].p) {compVal2 += item.v;}});
-      if (compVal2 != 0) {sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Year-To-Date vs. Budget/Target", true, true, false, false);}
-    }
-  }
-
-  //DRAW YEARLY PERIOD ANALYSIS
-  if (m.it!="y") {
-    compVal1 = m.vs[0].v;
-    compVal2 = (m.it=="m") ? m.vs[12].v : m.vs[4].v;
-    sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Last Year At This Time", false, false, true, false);
-  }
-
-
-  //DRAW PERIOD ANALYSIS
-  compVal1 = m.vs[0].v;
-  compVal2 = m.vs[1].v;
-  sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Last Period", false, false, false, true);
-
-  //DRAW TARGET PERIOD ANALYSIS
-  if (m.ht=="True") {
-    compVal1 = m.vs[0].v;
-    compVal2 = "";
-    $.each (this.targets[$(indicator).attr("id")], function(i,item) {
-      if (item.y == m.vs[0].y && item.p == m.vs[0].p) {
-        compVal2 = item.v;
-      }
-    });
-    if (compVal2 != "") {
-      sHTMLTREND += o.getAnalysis(m, compVal1, compVal2, "Current Period vs. Budget/Target", true, false, false, true);
-    }
-  }
-  sHTMLTREND += "</table>";
-*/
+ 
   strHTML += "<div class='analysis'>";
   strHTML += "<div class='table-responsive'>" + sHTMLTREND  + "</div>";
   strHTML += (m.cp == "") ? "" : "<p class='cityperspective'>" + m.cp + "</p>";
@@ -1059,12 +980,9 @@ App.prototype.paintDetail = function( indicator ) {
       var type,icon;
        $.each(this, function(key, value){
          if (key=='type')
-             //type=JSON.stringify(value);
              type=value;
          else if (key=='icon')
-              //icon=JSON.stringify(value);
               icon=value;
-          
        });
        strType += '<label onclick="o.changegraphtype('+'\''+type+'\')'+'" '+
        'class="btn btn-default"'+
@@ -1077,15 +995,10 @@ App.prototype.paintDetail = function( indicator ) {
        ' chart icon"/></label>';
      });
    }
-  //var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
-  //strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
-  //strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
-
   strType += '</div></div>';
   var strContext = "";
   if(!isDailyChart){
-
-    strContext += '<div class="' + strCl + ' groupbyperiod"><label for="groupbyperiod">Group by ' + strP + '</label><input type="checkbox" id="groupbyperiod" name="groupbyperiod" data-on-text="Yes" data-off-text="No" data-handle-width="50" checked></div>';
+   strContext += '<div class="' + strCl + ' groupbyperiod"><label for="groupbyperiod">Group by ' + strP + '</label><input type="checkbox" id="groupbyperiod" name="groupbyperiod" data-on-text="Yes" data-off-text="No" data-handle-width="50" checked></div>';
     strContext += (m.ytd=="True") ? '<div class="' + strCl + '"><label for="showytdvalues">Show Year-To-Date Values</label><input type="checkbox" id="showytdvalues" name="showytdvalues" data-on-text="Yes" data-off-text="No"  data-handle-width="50" checked></div>' : '';
   }
   strContext += '<div class="' + strCl + '">' + strType + '</div>';
@@ -1109,18 +1022,19 @@ App.prototype.paintDetail = function( indicator ) {
         m.activeYears[new Date().getFullYear() - x] = true;
     }
   }
-   
+
   $( ".aindicator.active" ).animate({
     width: "100%"
   }, 1000, function() {
     o.createGraph( m );
+    $('#div_loading_1').text("As of: "+getCurrentTime());
+    $('#closeDetail').prop('disabled', false);
   });
   
   $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
     opacity: 0,
     height: 1
   }, 900 );
-  
   $( ".aindicator.active .measuredetail" ).html( strHTML );
   $( ".aindicator.active .measuredetail" ).animate({
     opacity: 1
@@ -1285,7 +1199,16 @@ function getGraphOptionsByType(type,List){
   }
   }
 }
-
+App.prototype.drawChart =function (cType,dataTable,options,containerID) {
+  // Draw a column chart
+    wrapper = new google.visualization.ChartWrapper({
+      chartType: cType,
+      dataTable:dataTable ,
+      options: options,
+      containerId: containerID
+    });
+    wrapper.draw();
+  }
 App.prototype.createGraphByPassPeriod = function(mm,defaultChartType) {
   var o = this;
   var dt = new google.visualization.DataTable(mm.vs);
@@ -1295,30 +1218,29 @@ App.prototype.createGraphByPassPeriod = function(mm,defaultChartType) {
   o.charttype=defaultChartType;
  //CREATE THE CHART AND TABLE
  var chartoptions = {};
-     if (o.charttype=='pie'){
-      chartoptions=getGraphOptionsByType('pie',mm["chartTypeSerial"]);
-      this.chart = new google.visualization.PieChart(document.getElementById("measurechart_gauge"));
-     }
-     else if (o.charttype=='pie3D'){
-         chartoptions={is3D: true};
-         this.chart = new google.visualization.PieChart(document.getElementById("measurechart_gauge"));
-     }
-     else if (o.charttype=='gauge'){
-         chartoptions=getGraphOptionsByType("gauge",mm["chartTypeSerial"]);
-         this.chart = new google.visualization.Gauge(document.getElementById("measurechart_gauge"));
-     }
-    if (!this.table) {this.table = new google.visualization.Table(document.getElementById("measuretable"));}
-      var tableoptions = {title: mm.m, showRowNumber: false, width: '100%', height: '100%'};
+ var cssClassNames = {
+  'headerRow': '',
+  'tableRow': '',
+  'oddTableRow': '',
+  'selectedTableRow': '',
+  'hoverTableRow': '',
+  'headerCell': 'bold_column_font',
+  'tableCell': 'data_cell_font',
+  'rowNumberCell': ''};
+  chartoptions=getGraphOptionsByType(o.charttype,mm["chartTypeSerial"]);
+      //DRAW THE CHART 
+      o.drawChart(o.charttype,mm.vs,chartoptions,'measurechart_gauge');
+      //DRAW THE CHART AND TABLE
+      this.table = new google.visualization.Table(document.getElementById("measuretable"));
+      var tableoptions = {title: mm.m, showRowNumber: false, width: '100%', height: '100%',
+      allowHtml: true,
+      cssClassNames:cssClassNames};
       this.mTitle = mm.m.replace(/\n/g,' ');
-     //DRAW THE CHART AND TABLE
       this.table.draw(dt,tableoptions);
-      this.chart.draw(dtChart,chartoptions);
+      //set dataTable of App
       this.dt = dt;
       this.dtChart= dtChart
-    if (o.charttype!='gauge'){
-       $( "" ).html("<img src='" + this.chart.getImageURI() + "'/>");
-    };
-};
+  };
 App.prototype.createGraph = function(mm) {
   var o = this;
   var arrRows = [];
@@ -1327,7 +1249,15 @@ App.prototype.createGraph = function(mm) {
   var dtChart = new google.visualization.DataTable();
   var transposeTitles = [];
   var fmt;
-
+  var cssClassNames = {
+    'headerRow': '',
+    'tableRow': '',
+    'oddTableRow': '',
+    'selectedTableRow': '',
+    'hoverTableRow': '',
+    'headerCell': 'bold_column_font',
+    'tableCell': 'data_cell_font',
+    'rowNumberCell': ''};
   //BUILD DATA TABLE STRUCTURE
   dt.addColumn( 'string', 'Year' );
   dtChart.addColumn( 'string', 'Period' );
@@ -1372,7 +1302,7 @@ App.prototype.createGraph = function(mm) {
   }
   dt.addRows(o.datarows);
   dtChart.addRows(o.chartrows);
- //CREATE THE CHART AND TABLE
+  //CREATE THE CHART AND TABLE
      if (o.charttype=='pie')
          this.chart = new google.visualization.PieChart(document.getElementById("measurechart"));
      else if (o.charttype=='pie3D')
@@ -1381,7 +1311,7 @@ App.prototype.createGraph = function(mm) {
          this.chart = new google.visualization.Gauge(document.getElementById("measurechart"));
      else   
          this.chart = new google.visualization.ComboChart(document.getElementById("measurechart"));
-  if (!this.table) {this.table = new google.visualization.Table(document.getElementById("measuretable"));}
+  this.table = new google.visualization.Table(document.getElementById("measuretable"));
   var strYTD = (this.contexttype=="ytd") ? " (Year-To-Date) " : " ";
   var chartoptions = {};
   if (o.charttype=='pie'){
@@ -1394,10 +1324,10 @@ App.prototype.createGraph = function(mm) {
         }    
    else 
       chartoptions = {animation: {duration: 1000, easing: 'linear' },seriesType: o.charttype, series: oSeries, height: 400,width: "100%",hAxis: { title: (mm.it=="m") ? "Month" :(mm.it=="d") ? "Day":(mm.it=="h") ? "Hour": "Quarter" },vAxes:oAxes};
-
-  var tableoptions = {title: mm.m, showRowNumber: false, width: '100%', height: '100%'};
+  var tableoptions = {title: mm.m, showRowNumber: false, width: '100%', height: '100%',
+  allowHtml: true,
+  cssClassNames:cssClassNames};
   this.mTitle = mm.m.replace(/\n/g,' ');
-
   //DRAW THE CHART AND TABLE
   if (getType(mm)=="YEARLY" && o.contexttype!="seq") {
     this.chart.draw(dt, google.charts.Bar.convertOptions(chartoptions));
@@ -1459,7 +1389,6 @@ App.prototype.dataTableToCSV = function () {
 };
 
 App.prototype.dataTableLiveToCSV = function (dataTable) {
-  //  alert(dataTable.toString);
     var dt_cols = dataTable.getNumberOfColumns();
     var dt_rows = dataTable.getNumberOfRows();
     var csv_cols = [];
@@ -1479,11 +1408,6 @@ App.prototype.dataTableLiveToCSV = function (dataTable) {
     }
     return csv_out;
   };
-
-
-
-
-
 App.prototype.downloadCSV = function() {
   var csv_out = this.dataTableToCSV();
 
@@ -1559,7 +1483,7 @@ App.prototype.drawSymbol = function(sPOSNEG, sDIRECTION) {
   var sReturn = (sPOSNEG=="N/A") ? "" : (sDIRECTION == "Up") ? '<span class="glyphicon glyphicon-arrow-up ' + sPOSNEG + '"></span>' : (sDIRECTION == "Down") ? '<span class="glyphicon glyphicon-arrow-down ' + sPOSNEG + '"></span>' : '<span class="glyphicon glyphicon-minus ' + sPOSNEG + '"></span>';
   return sReturn;
 };
-App.prototype.drawMeasure = function(m, cat) {
+App.prototype.drawMeasure = function(m, cat,bDraw) {
   
   var o = this;
   var sKEYWORDS, sMEASURE, sVALUE, sINTERVAL, sPOSNEG, sPERIOD, sDIRECTION, sCHANGE, sID, sIcon, lastVal, lastYear, lastPeriod, intDA;
@@ -1656,11 +1580,8 @@ App.prototype.drawMeasure = function(m, cat) {
   sCHANGE = Math.abs(sCHANGE.toFixed(2)) + "%";
   sCHANGE = (m.vt=="p") ? ((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
   sID = m.id;
-  if (m.byPassPeriod=="True"){
-     //alert(JSON.stringify(m));
-     //alert(JSON.stringify(cat));
-  }
-  $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID, sIcon, m) );
+  if (bDraw)
+      $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID, sIcon, m) );
 
 };
 App.prototype.createTab = function (sTabName, index){
@@ -1674,18 +1595,12 @@ App.prototype.createTab = function (sTabName, index){
   }
 };
 App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod, strDirection, strInterval, strChangeVal, strID, strIcon, m) {
-  if (m.byPassPeriod=="True"){
-    
-    }
   var o = this;
   var strHTML = "";
   strHTML += '<div class="aindicator nonactive" href="#" id="' + strID + '"><div class="indicator ' + strPSN + '">';
   strHTML += '<div class="hide keywords">' + strKW + '</div>';
-  //strHTML += '<h3>' + strTitle.replace(/\n/g,'<br/>').replace(/\Percentage/g,'%').replace(/\Number/g,'#') + '</h3>';
   strHTML += '<h3>' + strTitle.replace(/\n/g,'<br/>') + '</h3>';
   strHTML += '<div class="measure">';
-  //strHTML += 'strPSN:'+strPSN+'strKW:'+ strKW+'strTitle:'+strTitle+'strVal:'+ strVal+
-    //         'strPeriod:'+strPeriod, 'strDirection:'+strDirection+'strInterval:'+ strInterval+'strChangeVal:'+strChangeVal+'strID:'+ strID;
   strHTML += '<section class="measuredetail hide"></section>';
    /* hide measure detail section - replace with icon */
    if (m.byPassPeriod!="True"){
@@ -1715,8 +1630,13 @@ App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod
   }
 }
 else {
+  if(!strIcon || 0 === strIcon.length){
   strHTML += '<br><p class="measurevalue"><span>' + m.measureValue + '</span></p>';
   strHTML += '<p class="measureperiod">'  +m.measureTitle +'&nbsp;&nbsp;&nbsp;'+ '</p>';
+  }
+  else 
+  strHTML += '<br><p class="measurevalue"><img src="/resources/dashboard/img/'+strIcon+'" alt="An icon"/></p><br>';
+
 }
   strHTML += '<div class="row">';
   strHTML += '<div class="col-xs-12 explanation"><div>';
@@ -2238,7 +2158,6 @@ function getImageFromUrl(url, callback) {
     document.body.appendChild(canvas);
     canvas.width = img.width;
     canvas.height = img.height;
-
     var ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0);
     data = canvas.toDataURL('image/png');
@@ -2251,7 +2170,7 @@ function getImageFromUrl(url, callback) {
     //ret['data'] = data;
     //ret['pending'] = false;
     if (typeof callback === 'function') {
-      callback(data);
+         callback(data);
     }
   }
   img.src = url;
@@ -2335,7 +2254,5 @@ $(document).ready(function() {
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".explanation");
   });
-  
   });
-google.load('visualization', '1', {packages: ['PieChart','gauge','corechart', 'bar', 'table']});
-//google.charts.load('current',{packages: ['gauge','corechart', 'bar', 'table']});
+google.load('visualization', '1', {packages: ['wordtree','PieChart','gauge','corechart', 'bar', 'table']});
