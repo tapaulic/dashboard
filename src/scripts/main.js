@@ -819,7 +819,7 @@ App.prototype.drawtrafficlight = function(data,m) {
   "<font size='2'><strong><div id='div_loading_1'>"+
   "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
   "</div></strong></font>"+
-  "<h4 class='tabletitle'>"+"Chart:R.Y.G"+"</h4>"+
+  "<h4 class='tabletitle'>"+"Chart: Red Yellow Green"+"</h4>"+
   "<section id='chartcontrols_3'>"+
   "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
  "<div id='trafficLight_div'>"+
@@ -831,7 +831,7 @@ App.prototype.drawtrafficlight = function(data,m) {
    "<div id='div_RYG_datatable_1' style='display:inline;'></div>"+ 
    "</div>"+
   "</section>"+
- "<div class='tabletitle'><h4>"+"Data Table:R.Y.G"+"</h4>"+
+ "<div class='tabletitle'><h4>"+"Data Table: Red Yellow Green"+"</h4>"+
  "<button id='excelexport' disabled disabled  class='btnbs btn-primary popoverbs' type='button' onclick='' data-placement='top'  title='Export this data into an excel spreadsheet'>"+
  "<img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/>"+
   "Export Data</button>"+

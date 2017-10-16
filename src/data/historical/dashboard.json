@@ -4301,7 +4301,7 @@
 		}
 		   
 		   ],
-           "chartTitle":"Occupancy as of 4am",
+           "chartTitle":"Occupancy Stream",
            "showOptions":"False",
            "measureValue":"",
            "measureTitle":"",
@@ -4397,7 +4397,7 @@
 			
         } ,
 		   "curveType": "function",
-		    "chartTitle":"Occupancy as of 4am",
+		    "chartTitle":"Occupancy Stream",
            "titlePosition": "top",
           "legend": { "position": "none" },
           "height": 250,
@@ -4477,7 +4477,7 @@
 			                            {"c":[{"v":"Clients","f":null},{"v":717,"f":null}]}] 
                               },
 		                  "byPassPeriod":"True",
-                          "chartTitle":"Motel usage",
+                          "chartTitle":"Motel Usage",
                           "showOptions":"False",
                           "measureValue":"",
                           "measureTitle":"",
@@ -4499,13 +4499,13 @@
          "width": "80%",
          "height": "80%"
           },
-        "pieSliceText": "percentage",
+        "pieSliceText": "value",
         "pieSliceTextStyle ": {"fontSize":30},
         "fontSize":16
          }
         }
       ],
-      "chartTitle":"Occupancy as of 4am",
+      "chartTitle":"Unserved Clients",
       "showOptions":"False",
       "measureValue":"92%",
       "measureTitle":"",
@@ -4602,7 +4602,7 @@
 						    ],
 							
                             "cp":"",
-                            "chartTitle":"Unserved Clients by Sector",
+                            "chartTitle":"Occupancy as of 4am",
                             "showOptions":"False",
                             "measureValue":"5 / 4 / 3 / 2 / 1",
                             "measureTitle":"M / W / F / Y / Co-ed",
