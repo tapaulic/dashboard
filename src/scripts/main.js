@@ -610,7 +610,9 @@ function drawmxgraph (container,dataSource){
       finally
       {
         // Updates the display
+       
         graph.getModel().endUpdate();
+        
       }
 
     }
@@ -756,7 +758,7 @@ $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .
   $( ".aindicator.active" ).animate({
     width: "100%"
   }, 1000, function(){
-    $('#chartcontrols_1').append("<div  id='div_livedemandstream_mxgraph' style='display: table; margin: 0 auto;'></div>");
+    $('#chartcontrols_1').append("<div  id='div_livedemandstream_mxgraph' style='overflow:auto;display:table;margin: 0 auto;resize:both;'></div>");
     $('#chartcontrols_1').append("<br/>");
     $('#chartcontrols_1').append("<br/>");
     $('#div_livedemandstream_mxgraph').html("");
@@ -2206,7 +2208,8 @@ function setConsistentHeightDASHBOARD(strParentSelector, strChildSelector) {
     function () {
       var items = $(this).find(strChildSelector);
       if (items.length) {
-        items.each( function () {$(this).css('height','auto'); });
+        //alert(JSON.stringify(items));
+        items.each( function () {$(this).css('height','auto');});
         items.each( function () { heights.push($(this).height()); });
         tallest = Math.max.apply(null, heights);
         items.each( function () {$(this).css('height',tallest + 'px'); });
@@ -2251,6 +2254,26 @@ $(document).ready(function() {
   window.dashboardapp = dashboard;
   dashboard.loadHTML();
   $( window ).resize(function() {
+    var obj =$('#div_livedemandstream_mxgraph').get(0);
+     if (obj!=null)
+       $('#div_livedemandstream_mxgraph').css("minWidth", 1000);
+    /*
+    $("#div_livedemandstream_mxgraph").resizable({
+      minWidth: 771,
+      minHeight: 850,
+      resize: function (event, ui) {
+          var $elm = ui.element;
+          if (ui.size.width <= $elm.resizable("option", "minWidth"))
+             console.log("Reached Min Width!");
+          if (ui.size.height <= $elm.resizable("option", "minHeight"))
+             console.log("Reached Min Height!");
+          if (ui.size.width >= $elm.resizable("option", "maxWidth"))
+             console.log("Reached Max Width!");
+          if (ui.size.height >= $elm.resizable("option", "maxHeight"))
+             console.log("Reached Max Height!");
+      }
+  });
+  */
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".explanation");
   });
