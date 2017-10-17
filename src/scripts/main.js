@@ -2256,7 +2256,7 @@ $(document).ready(function() {
   $( window ).resize(function() {
     var obj =$('#div_livedemandstream_mxgraph').get(0);
      if (obj!=null)
-       $('#div_livedemandstream_mxgraph').css("minWidth", 1000);
+       $('#div_livedemandstream_mxgraph').css("minWidth", 771);
     /*
     $("#div_livedemandstream_mxgraph").resizable({
       minWidth: 771,
