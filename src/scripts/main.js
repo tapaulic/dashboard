@@ -2255,8 +2255,12 @@ $(document).ready(function() {
   dashboard.loadHTML();
   $( window ).resize(function() {
     var obj =$('#div_livedemandstream_mxgraph').get(0);
-     if (obj!=null)
-       $('#div_livedemandstream_mxgraph').css("minWidth", 771);
+     if (obj!=null){
+      //  $('#div_livedemandstream_mxgraph').css("minWidth", 771);
+        $('#div_livedemandstream_mxgraph').html("");
+        var data_mxgraph=(liveDemandStreamData['LSD'])['LSD_MXGRAPH'];
+        drawmxgraph(obj,data_mxgraph);
+     }
     /*
     $("#div_livedemandstream_mxgraph").resizable({
       minWidth: 771,
