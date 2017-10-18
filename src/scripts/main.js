@@ -110,7 +110,7 @@ App.prototype.errorHandle = function(jqXHR, exception){
      clearInterval(inter_handle_live);
 */     
 var msg = '';
-if (jqXHR.status === 0) {
+if (jqXHx.status === 0) {
     msg = 'Due to network issues, the live stream is currently unavailable.';
 } else if (jqXHR.status == 404) {
     //msg = 'Requested page not found. [404]'+jqXHR.responseText.toString();
