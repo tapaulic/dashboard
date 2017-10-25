@@ -610,13 +610,40 @@ function drawmxgraph (container,dataSource){
       finally
       {
         // Updates the display
-       
-        graph.getModel().endUpdate();
         
+          graphCentered(graph);
+          //graph.refresh();
+          graph.getModel().endUpdate();
       }
 
     }
 };
+function graphCentered(graph){
+  var margin = 2;
+  var bounds = graph.getGraphBounds();
+  //alert(graph.container.clientWidth);
+  if (graph.container.clientWidth>=1000)
+  var max = 1.2;
+  if (graph.container.clientWidth>=803 && graph.container.clientWidth<1000)
+  var max = 1;
+  else if (graph.container.clientWidth>=574 && graph.container.clientWidth<803)
+  var max = 0.98;
+  else if (graph.container.clientWidth>=570 && graph.container.clientWidth<574)
+  var max = 0.72;
+  else if (graph.container.clientWidth>=360 && graph.container.clientWidth<570)
+  var max = 0.61;
+  else if (graph.container.clientWidth<360)
+  var max = 0.32;
+  var cw = graph.container.clientWidth - margin;
+  var ch = graph.container.clientHeight - margin;
+  var w = bounds.width / graph.view.scale;
+  var h = bounds.height / graph.view.scale;
+  var s = Math.min(max, Math.min(cw / w, ch / h));
+  graph.view.scaleAndTranslate(s,
+    (margin + cw - w * s) / (4.5 * s) - bounds.x / graph.view.scale,
+    (margin + ch - h * s) / (4.5 * s) - bounds.y / graph.view.scale);
+
+}
 function getMeasureByID(id,list){
   for (var key in list){
     if (list.hasOwnProperty(key)){
@@ -758,13 +785,14 @@ $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .
   $( ".aindicator.active" ).animate({
     width: "100%"
   }, 1000, function(){
-    $('#chartcontrols_1').append("<div  id='div_livedemandstream_mxgraph' style='overflow:auto;display:table;margin: 0 auto;resize:both;'></div>");
+    //$('#chartcontrols_1').append("<div style='align:center;text-align:center;display:table;margin:0 auto;'><div style='align:center;text-align:center;display:table-row;margin:0 auto;'><div id='div_livedemandstream_mxgraph' style='align:center;text-align:center;display:table-cell;margin:0 auto;'></div></div></div>");    
+    $('#chartcontrols_1').append("<div id='div_livedemandstream_mxgraph' style='align:center;text-align:center;margin:0 auto;'></div>");    
     $('#chartcontrols_1').append("<br/>");
     $('#chartcontrols_1').append("<br/>");
     $('#div_livedemandstream_mxgraph').html("");
     $('#div_livedemandstream_datatable').html("");
     $('#div_loading_1').css("display","block");
-      var container_mxgraph =$('#div_livedemandstream_mxgraph').get(0);
+     var container_mxgraph =$('#div_livedemandstream_mxgraph').get(0);
       drawmxgraph(container_mxgraph,data_mxgraph);
        $('#chartcontrols_1').children("#loading1").remove();
       var container_table=$('#div_livedemandstream_datatable')[0];
@@ -925,7 +953,8 @@ App.prototype.paintDetailByPassPeriod = function( indicator ) {
     strHTML += '<h4 class="controlstitle">Chart Options</h4><section id="chartcontrols"><div class="col-xs-12">' + strContext + '</div><div class="col-xs-12">' + ''+ '</div></section>';
   }
     strHTML += "<h4 class='charttitle'>Chart: " + sChartTitle + "</h4>"+
-               "<div id='measurechart_gauge'></div>";
+               "<div id='measurechart_gauge'>"+
+               "</div>";
     strHTML += (m.ds=="") ? "" : "<p class='datasource'>" + m.ds + "</p>";
     strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle +"</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
     strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
@@ -2256,28 +2285,10 @@ $(document).ready(function() {
   $( window ).resize(function() {
     var obj =$('#div_livedemandstream_mxgraph').get(0);
      if (obj!=null){
-      //  $('#div_livedemandstream_mxgraph').css("minWidth", 771);
         $('#div_livedemandstream_mxgraph').html("");
         var data_mxgraph=(liveDemandStreamData['LSD'])['LSD_MXGRAPH'];
         drawmxgraph(obj,data_mxgraph);
      }
-    /*
-    $("#div_livedemandstream_mxgraph").resizable({
-      minWidth: 771,
-      minHeight: 850,
-      resize: function (event, ui) {
-          var $elm = ui.element;
-          if (ui.size.width <= $elm.resizable("option", "minWidth"))
-             console.log("Reached Min Width!");
-          if (ui.size.height <= $elm.resizable("option", "minHeight"))
-             console.log("Reached Min Height!");
-          if (ui.size.width >= $elm.resizable("option", "maxWidth"))
-             console.log("Reached Max Width!");
-          if (ui.size.height >= $elm.resizable("option", "maxHeight"))
-             console.log("Reached Max Height!");
-      }
-  });
-  */
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".explanation");
   });
