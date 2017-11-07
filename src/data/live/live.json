@@ -1,40 +1,1685 @@
 {
-  "LSD":{ 
-  "LSD_MXGRAPH":{
-   "vertexes": [
-    {"id": "v1", "value": "<font style='color:black' size='3'>Waiting</font></br><strong><font style='font-weight: bold;' size='4'>88</font></strong>", "left": -120, "top": 120, "width": 130, "height":60, "style": "fillColor=#F5A352;editable=0;fontColor=#423c40", "secondLabel": {}},
-    {"id": "v2", "value": "<font style='color:black' size='3'>Admitted</font></br><strong><font style='font-weight: bold;' size='4'>95</font></strong>", "left": -120, "top": 230, "width": 130, "height":60, "style": "fillColor=#79BFA1;editable=0;fontColor=#423c40", "secondLabel": {}},
-    {"id": "v3", "value": "<font style='color:black' size='3'>Bed Held</font></br><strong><font style='font-weight: bold;' size='4'>25</font></strong>", "left": 170, "top": 120, "width": 130, "height":60, "style": "myshape;fillColor=#A3CBF1;editable=0;fontColor=#423c40", "secondLabel": {}},
-    {"id": "v4", "value": "<font style='color:black' size='3'>No Show</font></br><strong><font style='font-weight: bold;' size='4'>32</font></strong>", "left": 450, "top": 10, "width": 130, "height":60, "style": "myshape;fillColor=#C5AAF5;editable=0;fontColor=#423c40", "secondLabel": {}},
-    {"id": "v5", "value": "<font style='color:black' size='3'>Admitted</font></br><strong><font style='font-weight: bold;' size='4'>90</font></strong>", "left": 450, "top": 120, "width": 130, "height":60, "style": "myshape;fillColor=#79BFA1;editable=0;fontColor=#423c40", "secondLabel": {}},
-    {"id": "v6", "value": "<font style='color:black' size='3'>Rejected</font></br><strong><font style='font-weight: bold;' size='4'>91</font></strong>", "left": 450, "top": 230, "width": 130, "height":60, "style": "myshape;fillColor=#FB7374;editable=0;fontColor=#423c40", "secondLabel": {}}], "edges": [
-     {"id": "e1", "value": "1", "from": "v1", "to": "v2", "style": "edgeStyle=elbowConnector;ROUNDED=true;fontColor=#000000;spacingRight=2;align=right;fontStyle=0;"},
-     {"id": "e2", "value": "2", "from": "v1", "to": "v3", "style": "edgeStyle=elbowConnector;"},
-     {"id": "e3", "value": "3", "from": "v3", "to": "v4", "style": "edgeStyle=elbowConnector;"},
-     {"id": "e4", "value": "4", "from": "v3", "to": "v5", "style": "edgeStyle=elbowConnector;"},
-     {"id": "e5", "value": "5", "from": "v3", "to": "v6", "style": "edgeStyle=elbowConnector;"}]
-   },
-  "LSD_DATATABLE":{ 
-   "cols": [{
-     "id": "",
-     "label": "Status",
-     "pattern": "",
-     "type": "string"
-   }, {
-     "id": "",
-     "label": "Count",
-     "pattern": "",
-     "type": "number"
-   }
- ],
- "rows": [
-          {"c":[{"v":"Waiting","f":null},{"v":88,"f":null}]},
-          {"c":[{"v":"Admitted","f":null},{"v":95,"f":null}]},
-          {"c":[{"v":"Bed Held","f":null},{"v":25,"f":null}]},
-          {"c":[{"v":"No Show","f":null},{"v":32,"f":null}]},
-          {"c":[{"v":"Admitted","f":null},{"v":90,"f":null}]},
-          {"c":[{"v":"Rejected","f":null},{"v":91,"f":null}]}
- ]
+  "LSD": {
+    "LSD_MXGRAPH": {
+      "vertexes": [
+        {
+          "id": "v1",
+          "value": "<font style='color:black' size='1'>Waiting</font></br><strong><font style='font-weight: bold;' size='3'>88</font></strong>",
+          "left": -160,
+          "top": 120,
+          "width": 105,
+          "height": 60,
+          "style": "fillColor=#F5A352;editable=0;fontColor=#423c40",
+          "secondLabel": {
+            "value": "<BR/><BR/><BR/><font style='color:black; font-size: 10px;'><dl style='width: auto; text-align: left;'><dd>Co-ed&nbsp;3&nbsp;[2&nbsp;/&nbsp;5&nbsp;/&nbsp;7]</dd><dd>Families&nbsp;4&nbsp;[2&nbsp;/&nbsp;3&nbsp;/&nbsp;4]</dd><dd>Men&nbsp;16&nbsp;[6&nbsp;/&nbsp;7&nbsp;/&nbsp;8]</dd><dd>Women&nbsp;14&nbsp;[&nbsp;14&nbsp;/&nbsp;56&nbsp/&nbsp;80]</dd><dd>Youth&nbsp;37&nbsp;[&nbsp;10&nbsp/&nbsp;12&nbsp;/&nbsp;14]</dd><dd>All&nbsp;37&nbsp;[&nbsp;10&nbsp/&nbsp;12&nbsp;/&nbsp;14]</dd></dl></font>"
+          }
+        },
+        {
+          "id": "v2",
+          "value": "<font style='color:black' size='1'>Admit Local</font></br><strong><font style='font-weight: bold;' size='3'>95</font></strong>",
+          "left": 380,
+          "top": -10,
+          "width": 95,
+          "height": 88,
+          "style": "myshape;fillColor=#79BFA1;editable=0;fontColor=#423c40",
+          "secondLabel": {
+            "value": "<font  style='color:black;font-size: 10px;' ><dl style='width: auto; text-align: left;'><dd>Co-ed&nbsp;3&nbsp;[2&nbsp;/&nbsp;5&nbsp;/&nbsp;7]</dd><dd>Families&nbsp;4&nbsp;[2&nbsp;/&nbsp;3&nbsp;/&nbsp;4]</dd><dd>Men&nbsp;16&nbsp;[6&nbsp;/&nbsp;7&nbsp;/&nbsp;8]</dd><dd>Women&nbsp;14&nbsp;[&nbsp;14&nbsp;/&nbsp;56&nbsp/&nbsp;80]</dd><dd>Youth&nbsp;37&nbsp;[&nbsp;10&nbsp/&nbsp;12&nbsp;/&nbsp;14]</dd><dd>All&nbsp;37&nbsp;[&nbsp;10&nbsp/&nbsp;12&nbsp;/&nbsp;14]</dd></dl></font>"
+          }
+        },
+        {
+          "id": "v3",
+          "value": "<font style='color:black' size='1'>En Route / Hold</font></br><strong><font style='font-weight: bold;' size='3'>25</font></strong>",
+          "left": 40,
+          "top": 120,
+          "width": 105,
+          "height": 60,
+          "style": "fillColor=#A3CBF1;editable=0;fontColor=#423c40",
+          "secondLabel": {
+            "value": "<br/><br/><br/><font  style='color:black;font-size: 10px;' ><dl style='width: auto; text-align: left;'><dd>Co-ed&nbsp;3&nbsp;[2&nbsp;/&nbsp;5&nbsp;/&nbsp;7]</dd><dd>Families&nbsp;4&nbsp;[2&nbsp;/&nbsp;3&nbsp;/&nbsp;4]</dd><dd>Men&nbsp;16&nbsp;[6&nbsp;/&nbsp;7&nbsp;/&nbsp;8]</dd><dd>Women&nbsp;14&nbsp;[&nbsp;14&nbsp;/&nbsp;56&nbsp/&nbsp;80]</dd><dd>Youth&nbsp;37&nbsp;[&nbsp;10&nbsp/&nbsp;12&nbsp;/&nbsp;14]</dd><dd>All&nbsp;37&nbsp;[&nbsp;10&nbsp/&nbsp;12&nbsp;/&nbsp;14]</dd></dl></font>"
+          }
+        },
+        {
+          "id": "v4",
+          "value": "<font style='color:black' size='1'>No Show</font></br><strong><font style='font-weight: bold;' size='3'>32</font></strong>",
+          "left": 380,
+          "top": 106,
+          "width": 95,
+          "height": 88,
+          "style": "myshape;fillColor=#C5AAF5;editable=0;fontColor=#423c40",
+          "secondLabel": {
+            "value": "<font   style='color:black;font-size: 10px;'><dl style='width: auto; text-align: left;'><dd>Co-ed&nbsp;3&nbsp;[2&nbsp;/&nbsp;5&nbsp;/&nbsp;7]</dd><dd>Families&nbsp;4&nbsp;[2&nbsp;/&nbsp;3&nbsp;/&nbsp;4]</dd><dd>Men&nbsp;16&nbsp;[6&nbsp;/&nbsp;7&nbsp;/&nbsp;8]</dd><dd>Women&nbsp;14&nbsp;[&nbsp;14&nbsp;/&nbsp;56&nbsp/&nbsp;80]</dd><dd>Youth&nbsp;37&nbsp;[&nbsp;10/&nbsp;12&nbsp/&nbsp;14]</dd><dd>All&nbsp;37&nbsp;[&nbsp;10/&nbsp;12&nbsp/&nbsp;14]</dd></dl></font>"
+          }
+        },
+        {
+          "id": "v5",
+          "value": "<font style='color:black' size='1'>Admitted</font></br><strong><font style='font-weight: bold;' size='3'>90</font></strong>",
+          "left": 380,
+          "top": 220,
+          "width": 95,
+          "height": 88,
+          "style": "myshape;fillColor=#79BFA1;editable=0;fontColor=#423c40",
+          "secondLabel": {
+            "value": "<font  style='color:black;font-size: 10px;'><dl style='width: auto; text-align: left;'><dd>Co-ed&nbsp;3&nbsp;[2&nbsp;/&nbsp;5&nbsp;/&nbsp;7]</dd><dd>Families&nbsp;4&nbsp;[2&nbsp;/&nbsp;3&nbsp;/&nbsp;4]</dd><dd>Men&nbsp;16&nbsp;[6&nbsp;/&nbsp;7&nbsp;/&nbsp;8]</dd><dd>Women&nbsp;14&nbsp;[&nbsp;14&nbsp;/&nbsp;56&nbsp/&nbsp;80]</dd><dd>Youth&nbsp;37&nbsp;[&nbsp;10/&nbsp;12&nbsp/&nbsp;14]</dd><dd>All&nbsp;37&nbsp;[&nbsp;10/&nbsp;12&nbsp/&nbsp;14]</dd></dl></font>"
+          }
+        },
+        {
+          "id": "v6",
+          "value": "<font style='color:black' size='1'>Rejected</font></br><strong><font style='font-weight: bold;' size='3'>91</font></strong>",
+          "left": 380,
+          "top": 335,
+          "width": 95,
+          "height": 88,
+          "style": "myshape;fillColor=#FB7374;editable=0;fontColor=#423c40",
+          "secondLabel": {
+            "value": "<font  style='color:black;font-size: 10px;'><dl style='width: auto; text-align: left;'><dd>Co-ed&nbsp;3&nbsp;[2&nbsp;/&nbsp;5&nbsp;/&nbsp;7]</dd><dd>Families&nbsp;4&nbsp;[2&nbsp;/&nbsp;3&nbsp;/&nbsp;4]</dd><dd>Men&nbsp;16&nbsp;[6&nbsp;/&nbsp;7&nbsp;/&nbsp;8]</dd><dd>Women&nbsp;14&nbsp;[&nbsp;14&nbsp;/&nbsp;56&nbsp/&nbsp;80]</dd><dd>Youth&nbsp;37&nbsp;[&nbsp;10/&nbsp;12&nbsp/&nbsp;14]</dd><dd>All&nbsp;37&nbsp;[&nbsp;10/&nbsp;12&nbsp/&nbsp;14]</dd></dl></font>"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "value": "1",
+          "from": "v3",
+          "to": "v2",
+          "style": "edgeStyle=elbowConnector;ROUNDED=true;fontColor=#000000;spacingRight=2;align=right;fontStyle=0;"
+        },
+        {
+          "id": "e2",
+          "value": "2",
+          "from": "v1",
+          "to": "v3",
+          "style": "edgeStyle=elbowConnector;"
+        },
+        {
+          "id": "e3",
+          "value": "3",
+          "from": "v3",
+          "to": "v4",
+          "style": "edgeStyle=elbowConnector;"
+        },
+        {
+          "id": "e4",
+          "value": "4",
+          "from": "v3",
+          "to": "v5",
+          "style": "edgeStyle=elbowConnector;"
+        },
+        {
+          "id": "e5",
+          "value": "5",
+          "from": "v3",
+          "to": "v6",
+          "style": "edgeStyle=elbowConnector;"
+        }
+      ]
+    },
+    "LSD_DATATABLE": {
+      "cols": [
+        {
+          "id": "",
+          "label": "Stage",
+          "pattern": "",
+          "type": "string"
+        },
+        {
+          "id": "",
+          "label": "Sector",
+          "pattern": "",
+          "type": "string"
+        },
+        {
+          "id": "",
+          "label": "Clients",
+          "pattern": "",
+          "type": "number"
+        },
+        {
+          "id": "",
+          "label": "Min Time",
+          "pattern": "",
+          "type": "string"
+        },
+        {
+          "id": "",
+          "label": "Avg Time",
+          "pattern": "",
+          "type": "string"
+        },
+        {
+          "id": "",
+          "label": "Max Time",
+          "pattern": "",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        {
+          "c": [
+            {
+              "v": "Waiting",
+              "f": null
+            },
+            {
+              "v": "Co-Ed",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Waiting",
+              "f": null
+            },
+            {
+              "v": "Families",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Waiting",
+              "f": null
+            },
+            {
+              "v": "Men",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Waiting",
+              "f": null
+            },
+            {
+              "v": "Women",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Waiting",
+              "f": null
+            },
+            {
+              "v": "Youth",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Waiting",
+              "f": null
+            },
+            {
+              "v": "All",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted (Local)",
+              "f": null
+            },
+            {
+              "v": "Co-Ed",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted (Local)",
+              "f": null
+            },
+            {
+              "v": "Families",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted (Local)",
+              "f": null
+            },
+            {
+              "v": "Men",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted (Local)",
+              "f": null
+            },
+            {
+              "v": "Women",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted (Local)",
+              "f": null
+            },
+            {
+              "v": "Youth",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted (Local)",
+              "f": null
+            },
+            {
+              "v": "All",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "En Route",
+              "f": null
+            },
+            {
+              "v": "Co-Ed",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "En Route",
+              "f": null
+            },
+            {
+              "v": "Families",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "En Route",
+              "f": null
+            },
+            {
+              "v": "Men",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "En Route",
+              "f": null
+            },
+            {
+              "v": "Women",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "En Route",
+              "f": null
+            },
+            {
+              "v": "Youth",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "En Route",
+              "f": null
+            },
+            {
+              "v": "All",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "No Show",
+              "f": null
+            },
+            {
+              "v": "Co-Ed",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "No Show",
+              "f": null
+            },
+            {
+              "v": "Families",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "No Show",
+              "f": null
+            },
+            {
+              "v": "Men",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "No Show",
+              "f": null
+            },
+            {
+              "v": "Women",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "No Show",
+              "f": null
+            },
+            {
+              "v": "Youth",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "No Show",
+              "f": null
+            },
+            {
+              "v": "All",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted (Referral)",
+              "f": null
+            },
+            {
+              "v": "Co-Ed",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted (Referral)",
+              "f": null
+            },
+            {
+              "v": "Families",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted (Referral)",
+              "f": null
+            },
+            {
+              "v": "Men",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted (Referral)",
+              "f": null
+            },
+            {
+              "v": "Women",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted (Referral)",
+              "f": null
+            },
+            {
+              "v": "Youth",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted (Referral)",
+              "f": null
+            },
+            {
+              "v": "All",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Rejected",
+              "f": null
+            },
+            {
+              "v": "Co-Ed",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Rejected",
+              "f": null
+            },
+            {
+              "v": "Families",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Rejected",
+              "f": null
+            },
+            {
+              "v": "Men",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Rejected",
+              "f": null
+            },
+            {
+              "v": "Women",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Rejected",
+              "f": null
+            },
+            {
+              "v": "Youth",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Rejected",
+              "f": null
+            },
+            {
+              "v": "All",
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            },
+            {
+              "v": 3,
+              "f": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "map": {
+    "markers": [
+      {
+        "id": 1,
+        "type":"C",
+        "status":"1",
+        "lat": 43.6532,
+        "lng": -79.3832,
+        "title": "<p><font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:Tony,Paulic</p><p>Vacancy:10</p>",
+        "icon": "/resources/dashboard/img/C.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:Tony,Paulic</p><p>Vacancy:10</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 2,
+        "type":"Y",
+        "status":"1",
+        "lat": 43.6533,
+        "lng": -79.3834,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/Y.png",
+        "infoWindow": {
+          "content": "<p><font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 3,
+        "type":"Y",
+        "status":"1",
+        "lat": 43.6534,
+        "lng": -79.3836,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/Y.png",
+        "infoWindow": {
+          "content": "<p><font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 4,
+        "type":"Y",
+        "status":"1",
+        "lat": 43.6534,
+        "lng": -79.3835,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/Y.png",
+        "infoWindow": {
+          "content": "<p><font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 4,
+        "type":"Y",
+        "status":"1",
+        "lat": 43.6534,
+        "lng": -79.3835,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/Y.png",
+        "infoWindow": {
+          "content": "<p><font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 5,
+        "type":"F",
+        "status":"1",
+        "lat": 43.654,
+        "lng": -79.3835,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/F.png",
+        "infoWindow": {
+          "content": "<p><font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 6,
+        "type":"F",
+        "status":"1",
+        "lat": 43.654,
+        "lng": -79.3835,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/F.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 7,
+        "type":"F",
+        "status":"1",
+        "lat": 43.651,
+        "lng": -79.3852,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/F.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 8,
+        "type":"M",
+        "status":"1",
+        "lat": 43.651,
+        "lng": -79.3852,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/M.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 9,
+        "type":"W",
+        "status":"1",
+        "lat": 43.6549,
+        "lng": -79.3852,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/W.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 10,
+        "type":"W",
+        "status":"1",
+        "lat": 43.6549,
+        "lng": -79.3852,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/W.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 11,
+        "type":"W",
+        "status":"1",
+        "lat": 43.6559,
+        "lng": -79.3496,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/W.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 12,
+        "type":"W",
+        "status":"1",
+        "lat": 43.6558,
+        "lng": -79.3490,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/W.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 13,
+        "type":"W",
+        "status":"1",
+        "lat": 43.6554,
+        "lng": -79.3491,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/W.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 14,
+        "type":"M",
+        "status":"1",
+        "lat": 43.6556,
+        "lng": -79.3470,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/M.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 15,
+        "type":"Y",
+        "status":"1",
+        "lat": 43.6553,
+        "lng": -79.3472,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/Y.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 16,
+        "type":"Y",
+        "status":"1",
+        "lat": 43.6553,
+        "lng": -79.3473,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/Y.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 17,
+        "type":"W",
+        "status":"1",
+        "lat": 43.6559,
+        "lng": -79.3296,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/W.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 18,
+        "type":"W",
+        "status":"1",
+        "lat": 43.6559,
+        "lng": -79.3491,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/W.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 19,
+        "type":"W",
+        "status":"1",
+        "lat": 43.6558,
+        "lng": -79.3493,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/W.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 20,
+        "type":"Y",
+        "status":"1",
+        "lat": 43.7558,
+        "lng": -79.3593,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/Y.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 21,
+        "type":"Y",
+        "status":"1",
+        "lat": 43.7769,
+        "lng": -79.3743,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/Y.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Fax:vvvvvvvvvvv</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 22,
+        "type":"Y",
+        "status":"1",
+        "lat": 43.7768,
+        "lng": -79.3745,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/Y.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Vacancy:18</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 23,
+        "type":"Y",
+        "status":"1",
+        "lat": 43.7868,
+        "lng": -79.6746,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/Y.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Vacancy:26</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      },
+      {
+        "id": 24,
+        "type":"Y",
+        "status":"1",
+        "lat": 43.7868,
+        "lng": -79.6746,
+        "title": "Lima",
+        "icon": "/resources/dashboard/img/Y.png",
+        "infoWindow": {
+          "content": "<p<font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:xxxxxxxx</p><p>Vacancy:26</p>"
+        },
+        "click": "(this.infoWindow).open(this.map, this);",
+        "mouseover": "(this.infoWindow).open(this.map, this);",
+        "mouseout": "this.infoWindow.close();"
+      }
+    ],
+    "controls": [
+      {
+        "id": 1,
+        "position": "top_right",
+        "content": "Co_ED",
+        "type":"C",
+        "status":"1",
+        "style": {
+          "margin": "5px",
+          "padding": "0px 6px",
+          "border": "solid 1px #717B87",
+          "background": "#5bc0de",
+          "width": "50px",
+          "height":"20px",
+          "padding-top":"1px"
+        },
+          "click": "123"
+      },
+      {
+        "id": 2,
+        "position": "top_right",
+        "content": "Youth",
+        "type":"Y",
+        "status":"1",
+        "style": {
+          "margin": "5px",
+          "padding": "0px 6px",
+          "border": "solid 1px #717B87",
+          "background": "#5bc0de",
+          "width": "50px",
+          "height":"20px",
+          "padding-top":"1px"
+        },
+        "events": {
+          "click": "alert('Youth');"
+        }
+      },
+      {
+        "id": 3,
+        "position": "top_right",
+        "content": "Families",
+        "type":"F",
+        "status":"1",
+        "style": {
+          "margin": "5px",
+          "padding": "0px 6px",
+          "border": "solid 1px #717B87",
+          "background": "#5bc0de",
+          "width": "50px",
+          "height":"20px",
+          "padding-top":"1px"
+        },
+        "events": {
+          "click": "alert('Families');"
+        }
+      },
+      {
+        "id": 4,
+        "position": "top_right",
+        "content": "Women",
+        "type":"W",
+        "status":"1",
+        "style": {
+          "margin": "5px",
+          "padding": "0px 6px",
+          "border": "solid 1px #717B87",
+          "background": "#5bc0de",
+          "width": "50px",
+          "height":"20px",
+          "padding-top":"1px"
+        },
+        "events": {
+          "click": "alert('Women');"
+        }
+      },
+      {
+        "id": 5,
+        "position": "top_right",
+        "content": "Men",
+        "type":"M",
+        "status":"1",
+        "style": {
+          "margin": "5px",
+          "padding": "0px 6px",
+          "border": "solid 1px #717B87",
+          "background": "#5bc0de",
+          "width": "50px",
+          "height":"20px",
+          "padding-top":"1px"
+        },
+        "events": {
+          "click": "alert('Men');"
+        }
+      }
+    ],
+    "map_datatable":{ 
+      "cols": [
+        {
+        "id": 1,
+        "label": "Address",
+        "pattern": "",
+        "type": "string"
+       },
+       {
+        "id": 2,
+        "label": "Contact",
+        "pattern": "",
+        "type": "string"
+      },
+      {
+        "id": 3,
+        "label": "Shelter Type",
+        "pattern": "",
+        "type": "string"
+      },
+      {
+        "id": 4,
+        "label": "Vacancy",
+        "pattern": "",
+        "type": "number"
+      }
+     
+   ],
+    "rows":[
+             {"c":[{"v":"55 John Street","f":null},{"v":"Tony Paulic","f":null},{"v":"Y","f":null},{"v":10,"f":null}]},
+             {"c":[{"v":"56 John Street","f":null},{"v":"Mike vasiliou","f":null},{"v":"Y","f":null},{"v":5,"f":null}]},
+             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"M","f":null},{"v":6,"f":null}]},
+             {"c":[{"v":"55 John Street","f":null},{"v":"Tony Paulic","f":null},{"v":"M","f":null},{"v":10,"f":null}]},
+             {"c":[{"v":"56 John Street","f":null},{"v":"Mike vasiliou","f":null},{"v":"M","f":null},{"v":5,"f":null}]},
+             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"M","f":null},{"v":6,"f":null}]},
+             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"W","f":null},{"v":6,"f":null}]},
+             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"W","f":null},{"v":6,"f":null}]},
+             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"F","f":null},{"v":6,"f":null}]},
+             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"F","f":null},{"v":6,"f":null}]},
+             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"F","f":null},{"v":6,"f":null}]},
+             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"F","f":null},{"v":6,"f":null}]},
+             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"C","f":null},{"v":6,"f":null}]},
+             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"C","f":null},{"v":6,"f":null}]}
+    ]}
   }
- }
- }
+}
