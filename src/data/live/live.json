@@ -1558,7 +1558,9 @@
           "height":"20px",
           "padding-top":"1px"
         },
-          "click": "123"
+        "events": {
+          "click": ""
+        }
       },
       {
         "id": 2,
@@ -1576,7 +1578,7 @@
           "padding-top":"1px"
         },
         "events": {
-          "click": "alert('Youth');"
+          "click": ""
         }
       },
       {
@@ -1595,7 +1597,7 @@
           "padding-top":"1px"
         },
         "events": {
-          "click": "alert('Families');"
+          "click": ""
         }
       },
       {
@@ -1614,7 +1616,7 @@
           "padding-top":"1px"
         },
         "events": {
-          "click": "alert('Women');"
+          "click": ""
         }
       },
       {
@@ -1633,27 +1635,27 @@
           "padding-top":"1px"
         },
         "events": {
-          "click": "alert('Men');"
+          "click": ""
         }
       }
     ],
     "map_datatable":{ 
       "cols": [
         {
-        "id": 1,
+          "id": 1,
+          "label": "Sector",
+          "pattern": "",
+          "type": "string"
+         },
+        {
+        "id": 2,
         "label": "Address",
         "pattern": "",
         "type": "string"
        },
        {
-        "id": 2,
-        "label": "Contact",
-        "pattern": "",
-        "type": "string"
-      },
-      {
         "id": 3,
-        "label": "Shelter Type",
+        "label": "Contact",
         "pattern": "",
         "type": "string"
       },
@@ -1666,20 +1668,22 @@
      
    ],
     "rows":[
-             {"c":[{"v":"55 John Street","f":null},{"v":"Tony Paulic","f":null},{"v":"Y","f":null},{"v":10,"f":null}]},
-             {"c":[{"v":"56 John Street","f":null},{"v":"Mike vasiliou","f":null},{"v":"Y","f":null},{"v":5,"f":null}]},
-             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"M","f":null},{"v":6,"f":null}]},
-             {"c":[{"v":"55 John Street","f":null},{"v":"Tony Paulic","f":null},{"v":"M","f":null},{"v":10,"f":null}]},
-             {"c":[{"v":"56 John Street","f":null},{"v":"Mike vasiliou","f":null},{"v":"M","f":null},{"v":5,"f":null}]},
-             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"M","f":null},{"v":6,"f":null}]},
-             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"W","f":null},{"v":6,"f":null}]},
-             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"W","f":null},{"v":6,"f":null}]},
-             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"F","f":null},{"v":6,"f":null}]},
-             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"F","f":null},{"v":6,"f":null}]},
-             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"F","f":null},{"v":6,"f":null}]},
-             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"F","f":null},{"v":6,"f":null}]},
-             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"C","f":null},{"v":6,"f":null}]},
-             {"c":[{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":"C","f":null},{"v":6,"f":null}]}
+             {"c":[{"v":"Man","f":null},{"v":"55 John Street","f":null},{"v":"Tony Paulic","f":null},{"v":10,"f":null}],"status":"1","type":"M"},
+             {"c":[{"v":"Man","f":null},{"v":"56 John Street","f":null},{"v":"Mike vasiliou","f":null},{"v":5,"f":null}],"status":"1","type":"M"},
+             {"c":[{"v":"Man","f":null},{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":6,"f":null}],"status":"1","type":"M"},
+             {"c":[{"v":"Man","f":null},{"v":"55 John Street","f":null},{"v":"Tony Paulic","f":null},{"v":10,"f":null}],"status":"1","type":"M"},
+             {"c":[{"v":"Man","f":null},{"v":"56 John Street","f":null},{"v":"Mike vasiliou","f":null},{"v":5,"f":null}],"status":"1","type":"M"},
+             {"c":[{"v":"Women","f":null},{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":6,"f":null}],"status":"1","type":"W"},
+             {"c":[{"v":"Women","f":null},{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":6,"f":null}],"status":"1","type":"W"},
+             {"c":[{"v":"Women","f":null},{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":6,"f":null}],"status":"1","type":"W"},
+             {"c":[{"v":"Families","f":null},{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":6,"f":null}],"status":"1","type":"F"},
+             {"c":[{"v":"Families","f":null},{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":6,"f":null}],"status":"1","type":"F"},
+             {"c":[{"v":"Youth","f":null},{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":6,"f":null}],"status":"1","type":"Y"},
+             {"c":[{"v":"Youth","f":null},{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":6,"f":null}],"status":"1","type":"Y"},
+             {"c":[{"v":"Co-ed","f":null},{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":6,"f":null}],"status":"1","type":"C"},
+             {"c":[{"v":"Co-ed","f":null},{"v":"57 John Street","f":null},{"v":"Ben Lee","f":null},{"v":6,"f":null}],"status":"1","type":"C"}
+             
+             
     ]}
   }
 }

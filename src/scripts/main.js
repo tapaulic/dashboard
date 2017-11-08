@@ -498,19 +498,41 @@ function setMarkers(item){
    }
  }
 }
-/*
-function setMapDataTable(item){
-  var dataTableList=liveDemandStreamData['map'].map_datatable.rows;
+
+function setMapDataTable(dataList,item){
+  var dataTableRowsList=dataList.rows;
   var curType=item["type"];
-  for (var key in dataTableList){
-    if (dataTableList.hasOwnProperty(key)){
-    if  (curType==markerList[key].type){
-         markerList[key].status=item["status"];
+  var curStatus=item["status"];
+  for (var key in dataTableRowsList){
+    if (dataTableRowsList.hasOwnProperty(key)){
+    if  (curType==dataTableRowsList[key].type){
+         dataTableRowsList[key].status=item["status"];
      }
    }
  }
 }
-*/
+
+function setDataListByStatus(data){
+  var data_Rows=[];
+  var status="1";
+  //alert(JSON.stringify("data rows:"+data["rows"]));
+  for (var key in data.rows){
+    if (data.hasOwnProperty(key)){
+    if  (status==data[key].status){
+        data_Rows.push(data[key]);
+     }
+   }
+ }
+   data["rows"]=data_Rows;
+
+}
+function removeByStatus(arr, item) {
+  for(var i = arr.length; i--;) {
+      if(arr[i].status === item) {
+          arr.splice(i, 1);
+      }
+  }
+}
 function processFilter(item){
          if (item["status"]=="1") {
            item["status"]="0";
@@ -525,11 +547,21 @@ function processFilter(item){
          var container_map =$('#div_liveMap').get(0);
          var data_map=liveDemandStreamData['map'];
          drawMap(container_map,data_map);
-         //var container_table=$('#div_liveMap_datatable')[0];
-         //var dataTable=new google.visualization.DataTable();
-         //var data_datatable=data['map_datatable'];
-        //dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
-
+         var container_table=$('#div_liveMap_datatable')[0];
+         var data_datatable={};
+         data_datatable=liveDemandStreamData['map'].map_datatable;
+         setMapDataTable(data_datatable,item);
+         var datatable ={};
+         datatable=jQuery.extend(true, {}, data_datatable);//clone  map_datatable to datatable
+         /*remove status == 0*/
+         removeByStatus(datatable.rows, "0");
+         var dataTable=new google.visualization.DataTable();
+         dataTable=drawtabledata(container_table,datatable,'90%','100%',false);
+         $("#excelexport").click(function(){
+           downloadLiveCSV_Map(dataTable);
+           datatable = null;
+      });
+    
 }
 function loadMarker(item){
   map.addMarker({
@@ -569,6 +601,7 @@ function loadMarkers(data){
     });
 }
 /*drawMap*/
+
 function drawMap(container,data){
  map = new GMaps({
   el: container,
@@ -592,6 +625,15 @@ map.fitZoom();
 
 /*drawmxgraph*/
 function drawmxgraph (container,dataSource){
+   /*add listener */
+   $(container).append(mxUtils.button('Details',
+   function(evt)
+   {
+        secondLabelVisible = !secondLabelVisible;
+        $(container).empty();
+        drawmxgraph (container,dataSource);
+   }
+ ));
     if (!mxClient.isBrowserSupported()){
       mxUtils.error('Browser is not supported!', 200, false);
     }
@@ -666,7 +708,7 @@ function drawmxgraph (container,dataSource){
         return [state.shape, state.text, state.secondLabel, state.control];
       };
       /*end */
-      /*add listener */
+     /*
       graph.addListener(mxEvent.CLICK, function(sender, event){
          var mouseEvent = event.getProperty('event');
          var selectedCell = event.getProperty('cell');
@@ -680,7 +722,7 @@ function drawmxgraph (container,dataSource){
               //alert(graph.getSecondLabel(selectedCell));
               
         });
-
+*/
        
       /*start of font size change*/
       graph.processChange = function(change){
@@ -905,6 +947,7 @@ function drawtabledata(container,data,swidth,sheight,paging){
     'headerCell': 'bold_column_font',
     'tableCell': 'data_cell_font',
     'rowNumberCell': ''};
+  //  setDataListByStatus(data);
   var datatable = new google.visualization.DataTable(data);
   var table = new google.visualization.Table(container);
   if (paging)
@@ -1661,6 +1704,27 @@ App.prototype.dataTableToCSV = function () {
   return csv_out;
 };
 
+function dataTableLiveToCSV_Map(dataTable) {
+  var dt_cols = dataTable.getNumberOfColumns();
+  var dt_rows = dataTable.getNumberOfRows();
+  var csv_cols = [];
+  var csv_out;
+  //alert("dt_rows"+dt_rows);
+  for (var i=0; i<dt_cols; i++) {
+    csv_cols.push(dataTable.getColumnLabel(i).replace(/,/g,""));
+  }
+
+  csv_out = csv_cols.join(",")+"\r\n";
+  for (i=0; i<dt_rows; i++) {
+    var raw_col = [];
+    for (var j=0; j<dt_cols; j++) {
+      raw_col.push(dataTable.getFormattedValue(i, j, 'label').replace(/,/g,""));
+    }
+    csv_out += raw_col.join(",")+"\r\n";
+  }
+ // alert(JSON.stringify(csv_out));
+  return csv_out;
+};
 App.prototype.dataTableLiveToCSV = function (dataTable) {
     var dt_cols = dataTable.getNumberOfColumns();
     var dt_rows = dataTable.getNumberOfRows();
@@ -1700,7 +1764,27 @@ App.prototype.downloadCSV = function() {
     link.dispatchEvent(event);
   }
 };
+function downloadLiveCSV_Map (dataTable) {
+  //var csv_out = this.dataTableToCSV();
+  var csv_out = dataTableLiveToCSV_Map(dataTable);
+  var browser = navigator.userAgent;
+  var IEversion = 99;
+  if (browser.indexOf("MSIE") > 1) {IEversion = parseInt(browser.substr(browser.indexOf("MSIE")+5, 5));}
+  if (IEversion < 10) {
 
+  } else {
+    var blob = new Blob([csv_out], {type: 'text/csv;charset=utf-8'});
+    var url  = window.URL || window.webkitURL;
+    var link = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
+    link.href = url.createObjectURL(blob);
+    link.download = this.mTitle + ".csv";
+    var event = document.createEvent("MouseEvents");
+    event.initEvent("click", true, false);
+    link.dispatchEvent(event);
+   // alert("link:"+ alert(JSON.stringify(link)));
+  }
+  
+};
 App.prototype.downloadLiveCSV = function(dataTable) {
   //var csv_out = this.dataTableToCSV();
   var csv_out = this.dataTableLiveToCSV(dataTable);
