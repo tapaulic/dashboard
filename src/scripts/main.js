@@ -557,7 +557,7 @@ function processFilter(item){
          removeByStatus(datatable.rows, "0");
          var dataTable=new google.visualization.DataTable();
          dataTable=drawtabledata(container_table,datatable,'90%','100%',false);
-         $("#excelexport").click(function(){
+         $("#excelexport").unbind().click(function(){
            downloadLiveCSV_Map(dataTable);
            datatable = null;
       });
@@ -640,7 +640,7 @@ function drawmxgraph (container,dataSource){
         var container_table=$('#div_livedemandstream_datatable')[0];
         var dataTable=new google.visualization.DataTable();
         dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
-        $("#excelexport").click(function(){
+        $("#excelexport").unbind().click(function(){
           downloadLiveCSV_Map(dataTable);
           datatable = null;
      });
