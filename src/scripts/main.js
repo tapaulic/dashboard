@@ -1,7 +1,7 @@
 var inter_handle_livedemandstream=null;
 var inter_handle_live=null;
 var dashboard; //THIS A GLOBAL VARIABLE TO YOUR FULL APPLICATION
-var secondLabelVisible = true;
+var secondLabelVisible = false;
 var arrMM = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var arrMMM = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var arrColors = [ "", "MidnightBlue", "Gray", "Orange", "Purple", "Brown", "LightCoral", "GreenYellow", "DarkTurquoise", "DarkOliveGreen", "IndianRed", "PaleVioletRed","Pink" ];
@@ -626,12 +626,26 @@ map.fitZoom();
 /*drawmxgraph*/
 function drawmxgraph (container,dataSource){
    /*add listener */
+
    $(container).append(mxUtils.button('Details',
    function(evt)
    {
         secondLabelVisible = !secondLabelVisible;
         $(container).empty();
         drawmxgraph (container,dataSource);
+        if (!secondLabelVisible)
+         var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE'];
+        else 
+        var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE_DETAILS'];
+        var container_table=$('#div_livedemandstream_datatable')[0];
+        var dataTable=new google.visualization.DataTable();
+        dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
+        $("#excelexport").click(function(){
+          downloadLiveCSV_Map(dataTable);
+          datatable = null;
+     });
+
+
    }
  ));
     if (!mxClient.isBrowserSupported()){
@@ -966,6 +980,7 @@ App.prototype.drawlivedemandstream= function(data,m ) {
   var o = this;
   var data_mxgraph=data['LSD_MXGRAPH'];
   var data_datatable=data['LSD_DATATABLE'];
+  var data_datatable_details=data['LSD_DATATABLE_DETAILS'];
   var strHTML =""+
   "<div  class='btn-group'>"+
   "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>"+
@@ -1009,11 +1024,15 @@ $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .
     $('#div_livedemandstream_datatable').html("");
     $('#div_loading_1').css("display","block");
      var container_mxgraph =$('#div_livedemandstream_mxgraph').get(0);
+    
       drawmxgraph(container_mxgraph,data_mxgraph);
        $('#chartcontrols_1').children("#loading1").remove();
       var container_table=$('#div_livedemandstream_datatable')[0];
       var dataTable=new google.visualization.DataTable();
+      if (!secondLabelVisible)
       dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
+      else 
+      dataTable=drawtabledata(container_table,data_datatable_details,'90%','100%',false);
       $('#chartcontrols_2').children("#loading2").remove();
       $('#div_loading_1').text("As of: "+getCurrentTime());
       $('#closeDetail').prop('disabled', false);
@@ -1781,7 +1800,6 @@ function downloadLiveCSV_Map (dataTable) {
     var event = document.createEvent("MouseEvents");
     event.initEvent("click", true, false);
     link.dispatchEvent(event);
-   // alert("link:"+ alert(JSON.stringify(link)));
   }
   
 };

@@ -4,7 +4,7 @@
       "vertexes": [
         {
           "id": "v1",
-          "value": "<font style='color:black' size='1'>Waiting</font></br><strong><font style='font-weight: bold;' size='3'>88</font></strong>",
+          "value": "<font style='color:black' size='1'>Waiting</font></br><strong><font style='font-weight: bold;' size='3'>50</font></strong>",
           "left": -160,
           "top": 120,
           "width": 105,
@@ -16,7 +16,7 @@
         },
         {
           "id": "v2",
-          "value": "<font style='color:black' size='1'>Admit Local</font></br><strong><font style='font-weight: bold;' size='3'>95</font></strong>",
+          "value": "<font style='color:black' size='1'>Admit Local</font></br><strong><font style='font-weight: bold;' size='3'>50</font></strong>",
           "left": 380,
           "top": -10,
           "width": 95,
@@ -28,7 +28,7 @@
         },
         {
           "id": "v3",
-          "value": "<font style='color:black' size='1'>En Route / Hold</font></br><strong><font style='font-weight: bold;' size='3'>25</font></strong>",
+          "value": "<font style='color:black' size='1'>En Route / Hold</font></br><strong><font style='font-weight: bold;' size='3'>50</font></strong>",
           "left": 40,
           "top": 120,
           "width": 105,
@@ -40,7 +40,7 @@
         },
         {
           "id": "v4",
-          "value": "<font style='color:black' size='1'>No Show</font></br><strong><font style='font-weight: bold;' size='3'>32</font></strong>",
+          "value": "<font style='color:black' size='1'>No Show</font></br><strong><font style='font-weight: bold;' size='3'>50</font></strong>",
           "left": 380,
           "top": 106,
           "width": 95,
@@ -52,7 +52,7 @@
         },
         {
           "id": "v5",
-          "value": "<font style='color:black' size='1'>Admitted</font></br><strong><font style='font-weight: bold;' size='3'>90</font></strong>",
+          "value": "<font style='color:black' size='1'>Admitted</font></br><strong><font style='font-weight: bold;' size='3'>50</font></strong>",
           "left": 380,
           "top": 220,
           "width": 95,
@@ -64,7 +64,7 @@
         },
         {
           "id": "v6",
-          "value": "<font style='color:black' size='1'>Rejected</font></br><strong><font style='font-weight: bold;' size='3'>91</font></strong>",
+          "value": "<font style='color:black' size='1'>Rejected</font></br><strong><font style='font-weight: bold;' size='3'>50</font></strong>",
           "left": 380,
           "top": 335,
           "width": 95,
@@ -132,6 +132,126 @@
           "label": "Clients",
           "pattern": "",
           "type": "number"
+        }
+      ],
+      "rows": [
+        {
+          "c": [
+            {
+              "v": "Waiting",
+              "f": null
+            },
+            {
+              "v": "All",
+              "f": null
+            },
+            {
+              "v": 50,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "En Route / Hold",
+              "f": null
+            },
+            {
+              "v": "All",
+              "f": null
+            },
+            {
+              "v": 50,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admit Local",
+              "f": null
+            },
+            {
+              "v": "All",
+              "f": null
+            },
+            {
+              "v": 50,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "No Show",
+              "f": null
+            },
+            {
+              "v": "All",
+              "f": null
+            },
+            {
+              "v": 50,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Admitted",
+              "f": null
+            },
+            {
+              "v": "All",
+              "f": null
+            },
+            {
+              "v": 50,
+              "f": null
+            }
+          ]
+        },
+        {
+          "c": [
+            {
+              "v": "Rejected",
+              "f": null
+            },
+            {
+              "v": "All",
+              "f": null
+            },
+            {
+              "v": 50,
+              "f": null
+            }
+          ]
+        }
+      ]
+    },
+    "LSD_DATATABLE_DETAILS": {
+      "cols": [
+        {
+          "id": "",
+          "label": "Stage",
+          "pattern": "",
+          "type": "string"
+        },
+        {
+          "id": "",
+          "label": "Sector",
+          "pattern": "",
+          "type": "string"
+        },
+        {
+          "id": "",
+          "label": "Clients",
+          "pattern": "",
+          "type": "number"
         },
         {
           "id": "",
@@ -153,7 +273,7 @@
         }
       ],
       "rows": [
-        {
+           {
           "c": [
             {
               "v": "Waiting",
@@ -164,7 +284,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -181,6 +301,7 @@
             }
           ]
         },
+        
         {
           "c": [
             {
@@ -192,7 +313,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -209,6 +330,7 @@
             }
           ]
         },
+        
         {
           "c": [
             {
@@ -220,7 +342,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -237,6 +359,7 @@
             }
           ]
         },
+        
         {
           "c": [
             {
@@ -248,7 +371,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -265,6 +388,7 @@
             }
           ]
         },
+      
         {
           "c": [
             {
@@ -276,7 +400,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -293,6 +417,7 @@
             }
           ]
         },
+       
         {
           "c": [
             {
@@ -304,7 +429,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 50,
               "f": null
             },
             {
@@ -321,18 +446,19 @@
             }
           ]
         },
+      
         {
           "c": [
             {
-              "v": "Admitted (Local)",
+              "v": "En Route / Hold",
               "f": null
             },
             {
-              "v": "Co-Ed",
+              "v": "Co-ed",
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -349,10 +475,11 @@
             }
           ]
         },
+       
         {
           "c": [
             {
-              "v": "Admitted (Local)",
+              "v": "En Route / Hold",
               "f": null
             },
             {
@@ -360,7 +487,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -377,10 +504,11 @@
             }
           ]
         },
+       
         {
           "c": [
             {
-              "v": "Admitted (Local)",
+              "v": "En Route / Hold",
               "f": null
             },
             {
@@ -388,7 +516,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -405,10 +533,11 @@
             }
           ]
         },
+       
         {
           "c": [
             {
-              "v": "Admitted (Local)",
+              "v": "En Route / Hold",
               "f": null
             },
             {
@@ -416,7 +545,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -433,10 +562,11 @@
             }
           ]
         },
+       
         {
           "c": [
             {
-              "v": "Admitted (Local)",
+              "v": "En Route / Hold",
               "f": null
             },
             {
@@ -444,7 +574,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -461,10 +591,11 @@
             }
           ]
         },
+      
         {
           "c": [
             {
-              "v": "Admitted (Local)",
+              "v": "En Route / Hold",
               "f": null
             },
             {
@@ -472,7 +603,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 50,
               "f": null
             },
             {
@@ -489,18 +620,19 @@
             }
           ]
         },
+        
         {
           "c": [
             {
-              "v": "En Route",
+              "v": "Admit Local",
               "f": null
             },
             {
-              "v": "Co-Ed",
+              "v": "Co-ed",
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -517,10 +649,11 @@
             }
           ]
         },
+       
         {
           "c": [
             {
-              "v": "En Route",
+              "v": "Admit Local",
               "f": null
             },
             {
@@ -528,7 +661,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -545,10 +678,11 @@
             }
           ]
         },
+        
         {
           "c": [
             {
-              "v": "En Route",
+              "v": "Admit Local",
               "f": null
             },
             {
@@ -556,7 +690,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -573,10 +707,11 @@
             }
           ]
         },
+        
         {
           "c": [
             {
-              "v": "En Route",
+              "v": "Admit Local",
               "f": null
             },
             {
@@ -584,7 +719,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -601,10 +736,11 @@
             }
           ]
         },
+      
         {
           "c": [
             {
-              "v": "En Route",
+              "v": "Admit Local",
               "f": null
             },
             {
@@ -612,7 +748,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -629,10 +765,11 @@
             }
           ]
         },
+       
         {
           "c": [
             {
-              "v": "En Route",
+              "v": "Admit Local",
               "f": null
             },
             {
@@ -640,7 +777,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 50,
               "f": null
             },
             {
@@ -657,6 +794,7 @@
             }
           ]
         },
+      
         {
           "c": [
             {
@@ -664,11 +802,11 @@
               "f": null
             },
             {
-              "v": "Co-Ed",
+              "v": "Co-ed",
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -685,6 +823,7 @@
             }
           ]
         },
+       
         {
           "c": [
             {
@@ -696,7 +835,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -713,6 +852,7 @@
             }
           ]
         },
+       
         {
           "c": [
             {
@@ -724,7 +864,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -741,6 +881,7 @@
             }
           ]
         },
+        
         {
           "c": [
             {
@@ -752,7 +893,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -769,6 +910,7 @@
             }
           ]
         },
+        
         {
           "c": [
             {
@@ -780,7 +922,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -797,6 +939,7 @@
             }
           ]
         },
+        
         {
           "c": [
             {
@@ -808,7 +951,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 50,
               "f": null
             },
             {
@@ -825,18 +968,19 @@
             }
           ]
         },
+        
         {
           "c": [
             {
-              "v": "Admitted (Referral)",
+              "v": "Admitted",
               "f": null
             },
             {
-              "v": "Co-Ed",
+              "v": "Co-ed",
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -853,10 +997,11 @@
             }
           ]
         },
+        
         {
           "c": [
             {
-              "v": "Admitted (Referral)",
+              "v": "Admitted",
               "f": null
             },
             {
@@ -864,7 +1009,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -881,10 +1026,11 @@
             }
           ]
         },
+        
         {
           "c": [
             {
-              "v": "Admitted (Referral)",
+              "v": "Admitted",
               "f": null
             },
             {
@@ -892,7 +1038,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -909,10 +1055,11 @@
             }
           ]
         },
+       
         {
           "c": [
             {
-              "v": "Admitted (Referral)",
+              "v": "Admitted",
               "f": null
             },
             {
@@ -920,7 +1067,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -937,10 +1084,11 @@
             }
           ]
         },
+        
         {
           "c": [
             {
-              "v": "Admitted (Referral)",
+              "v": "Admitted",
               "f": null
             },
             {
@@ -948,7 +1096,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -965,10 +1113,11 @@
             }
           ]
         },
+       
         {
           "c": [
             {
-              "v": "Admitted (Referral)",
+              "v": "Admitted",
               "f": null
             },
             {
@@ -976,7 +1125,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 50,
               "f": null
             },
             {
@@ -993,6 +1142,7 @@
             }
           ]
         },
+       
         {
           "c": [
             {
@@ -1000,11 +1150,11 @@
               "f": null
             },
             {
-              "v": "Co-Ed",
+              "v": "Co-ed",
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -1021,6 +1171,7 @@
             }
           ]
         },
+        
         {
           "c": [
             {
@@ -1032,7 +1183,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -1049,6 +1200,7 @@
             }
           ]
         },
+        
         {
           "c": [
             {
@@ -1060,7 +1212,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -1077,6 +1229,7 @@
             }
           ]
         },
+       
         {
           "c": [
             {
@@ -1088,7 +1241,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -1105,6 +1258,7 @@
             }
           ]
         },
+        
         {
           "c": [
             {
@@ -1116,7 +1270,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 10,
               "f": null
             },
             {
@@ -1133,6 +1287,7 @@
             }
           ]
         },
+        
         {
           "c": [
             {
@@ -1144,7 +1299,7 @@
               "f": null
             },
             {
-              "v": 3,
+              "v": 50,
               "f": null
             },
             {
@@ -1168,8 +1323,8 @@
     "markers": [
       {
         "id": 1,
-        "type":"C",
-        "status":"1",
+        "type": "C",
+        "status": "1",
         "lat": 43.6532,
         "lng": -79.3832,
         "title": "<p><font style='font-weight: bold;'>Address:105 John Street</font></p><p>Contact:Tony,Paulic</p><p>Vacancy:10</p>",
@@ -1183,8 +1338,8 @@
       },
       {
         "id": 2,
-        "type":"Y",
-        "status":"1",
+        "type": "Y",
+        "status": "1",
         "lat": 43.6533,
         "lng": -79.3834,
         "title": "Lima",
@@ -1198,8 +1353,8 @@
       },
       {
         "id": 3,
-        "type":"Y",
-        "status":"1",
+        "type": "Y",
+        "status": "1",
         "lat": 43.6534,
         "lng": -79.3836,
         "title": "Lima",
@@ -1213,8 +1368,8 @@
       },
       {
         "id": 4,
-        "type":"Y",
-        "status":"1",
+        "type": "Y",
+        "status": "1",
         "lat": 43.6534,
         "lng": -79.3835,
         "title": "Lima",
@@ -1228,8 +1383,8 @@
       },
       {
         "id": 4,
-        "type":"Y",
-        "status":"1",
+        "type": "Y",
+        "status": "1",
         "lat": 43.6534,
         "lng": -79.3835,
         "title": "Lima",
@@ -1243,8 +1398,8 @@
       },
       {
         "id": 5,
-        "type":"F",
-        "status":"1",
+        "type": "F",
+        "status": "1",
         "lat": 43.654,
         "lng": -79.3835,
         "title": "Lima",
@@ -1258,8 +1413,8 @@
       },
       {
         "id": 6,
-        "type":"F",
-        "status":"1",
+        "type": "F",
+        "status": "1",
         "lat": 43.654,
         "lng": -79.3835,
         "title": "Lima",
@@ -1273,8 +1428,8 @@
       },
       {
         "id": 7,
-        "type":"F",
-        "status":"1",
+        "type": "F",
+        "status": "1",
         "lat": 43.651,
         "lng": -79.3852,
         "title": "Lima",
@@ -1288,8 +1443,8 @@
       },
       {
         "id": 8,
-        "type":"M",
-        "status":"1",
+        "type": "M",
+        "status": "1",
         "lat": 43.651,
         "lng": -79.3852,
         "title": "Lima",
@@ -1303,8 +1458,8 @@
       },
       {
         "id": 9,
-        "type":"W",
-        "status":"1",
+        "type": "W",
+        "status": "1",
         "lat": 43.6549,
         "lng": -79.3852,
         "title": "Lima",
@@ -1318,8 +1473,8 @@
       },
       {
         "id": 10,
-        "type":"W",
-        "status":"1",
+        "type": "W",
+        "status": "1",
         "lat": 43.6549,
         "lng": -79.3852,
         "title": "Lima",
@@ -1333,8 +1488,8 @@
       },
       {
         "id": 11,
-        "type":"W",
-        "status":"1",
+        "type": "W",
+        "status": "1",
         "lat": 43.6559,
         "lng": -79.3496,
         "title": "Lima",
@@ -1348,8 +1503,8 @@
       },
       {
         "id": 12,
-        "type":"W",
-        "status":"1",
+        "type": "W",
+        "status": "1",
         "lat": 43.6558,
         "lng": -79.3490,
         "title": "Lima",
@@ -1363,8 +1518,8 @@
       },
       {
         "id": 13,
-        "type":"W",
-        "status":"1",
+        "type": "W",
+        "status": "1",
         "lat": 43.6554,
         "lng": -79.3491,
         "title": "Lima",
@@ -1378,8 +1533,8 @@
       },
       {
         "id": 14,
-        "type":"M",
-        "status":"1",
+        "type": "M",
+        "status": "1",
         "lat": 43.6556,
         "lng": -79.3470,
         "title": "Lima",
@@ -1393,8 +1548,8 @@
       },
       {
         "id": 15,
-        "type":"Y",
-        "status":"1",
+        "type": "Y",
+        "status": "1",
         "lat": 43.6553,
         "lng": -79.3472,
         "title": "Lima",
@@ -1408,8 +1563,8 @@
       },
       {
         "id": 16,
-        "type":"Y",
-        "status":"1",
+        "type": "Y",
+        "status": "1",
         "lat": 43.6553,
         "lng": -79.3473,
         "title": "Lima",
@@ -1423,8 +1578,8 @@
       },
       {
         "id": 17,
-        "type":"W",
-        "status":"1",
+        "type": "W",
+        "status": "1",
         "lat": 43.6559,
         "lng": -79.3296,
         "title": "Lima",
@@ -1438,8 +1593,8 @@
       },
       {
         "id": 18,
-        "type":"W",
-        "status":"1",
+        "type": "W",
+        "status": "1",
         "lat": 43.6559,
         "lng": -79.3491,
         "title": "Lima",
@@ -1453,8 +1608,8 @@
       },
       {
         "id": 19,
-        "type":"W",
-        "status":"1",
+        "type": "W",
+        "status": "1",
         "lat": 43.6558,
         "lng": -79.3493,
         "title": "Lima",
@@ -1468,8 +1623,8 @@
       },
       {
         "id": 20,
-        "type":"Y",
-        "status":"1",
+        "type": "Y",
+        "status": "1",
         "lat": 43.7558,
         "lng": -79.3593,
         "title": "Lima",
@@ -1483,8 +1638,8 @@
       },
       {
         "id": 21,
-        "type":"Y",
-        "status":"1",
+        "type": "Y",
+        "status": "1",
         "lat": 43.7769,
         "lng": -79.3743,
         "title": "Lima",
@@ -1498,8 +1653,8 @@
       },
       {
         "id": 22,
-        "type":"Y",
-        "status":"1",
+        "type": "Y",
+        "status": "1",
         "lat": 43.7768,
         "lng": -79.3745,
         "title": "Lima",
@@ -1513,8 +1668,8 @@
       },
       {
         "id": 23,
-        "type":"Y",
-        "status":"1",
+        "type": "Y",
+        "status": "1",
         "lat": 43.7868,
         "lng": -79.6746,
         "title": "Lima",
@@ -1528,8 +1683,8 @@
       },
       {
         "id": 24,
-        "type":"Y",
-        "status":"1",
+        "type": "Y",
+        "status": "1",
         "lat": 43.7868,
         "lng": -79.6746,
         "title": "Lima",
@@ -1547,16 +1702,16 @@
         "id": 1,
         "position": "top_right",
         "content": "Co_ED",
-        "type":"C",
-        "status":"1",
+        "type": "C",
+        "status": "1",
         "style": {
           "margin": "5px",
           "padding": "0px 6px",
           "border": "solid 1px #717B87",
           "background": "#5bc0de",
           "width": "50px",
-          "height":"20px",
-          "padding-top":"1px"
+          "height": "20px",
+          "padding-top": "1px"
         },
         "events": {
           "click": ""
@@ -1566,16 +1721,16 @@
         "id": 2,
         "position": "top_right",
         "content": "Youth",
-        "type":"Y",
-        "status":"1",
+        "type": "Y",
+        "status": "1",
         "style": {
           "margin": "5px",
           "padding": "0px 6px",
           "border": "solid 1px #717B87",
           "background": "#5bc0de",
           "width": "50px",
-          "height":"20px",
-          "padding-top":"1px"
+          "height": "20px",
+          "padding-top": "1px"
         },
         "events": {
           "click": ""
@@ -1585,16 +1740,16 @@
         "id": 3,
         "position": "top_right",
         "content": "Families",
-        "type":"F",
-        "status":"1",
+        "type": "F",
+        "status": "1",
         "style": {
           "margin": "5px",
           "padding": "0px 6px",
           "border": "solid 1px #717B87",
           "background": "#5bc0de",
           "width": "50px",
-          "height":"20px",
-          "padding-top":"1px"
+          "height": "20px",
+          "padding-top": "1px"
         },
         "events": {
           "click": ""
@@ -1604,16 +1759,16 @@
         "id": 4,
         "position": "top_right",
         "content": "Women",
-        "type":"W",
-        "status":"1",
+        "type": "W",
+        "status": "1",
         "style": {
           "margin": "5px",
           "padding": "0px 6px",
           "border": "solid 1px #717B87",
           "background": "#5bc0de",
           "width": "50px",
-          "height":"20px",
-          "padding-top":"1px"
+          "height": "20px",
+          "padding-top": "1px"
         },
         "events": {
           "click": ""
@@ -1623,67 +1778,359 @@
         "id": 5,
         "position": "top_right",
         "content": "Men",
-        "type":"M",
-        "status":"1",
+        "type": "M",
+        "status": "1",
         "style": {
           "margin": "5px",
           "padding": "0px 6px",
           "border": "solid 1px #717B87",
           "background": "#5bc0de",
           "width": "50px",
-          "height":"20px",
-          "padding-top":"1px"
+          "height": "20px",
+          "padding-top": "1px"
         },
         "events": {
           "click": ""
         }
       }
     ],
-    "map_datatable":{ 
+    "map_datatable": {
       "cols": [
         {
           "id": 1,
           "label": "Sector",
           "pattern": "",
           "type": "string"
-         },
+        },
         {
-        "id": 2,
-        "label": "Address",
-        "pattern": "",
-        "type": "string"
-       },
-       {
-        "id": 3,
-        "label": "Contact",
-        "pattern": "",
-        "type": "string"
-      },
-      {
-        "id": 4,
-        "label": "Vacancy",
-        "pattern": "",
-        "type": "number"
-      }
-     
-   ],
-    "rows":[
-             {"c":[{"v":"Man","f":null},{"v":"55 John Street","f":null},{"v":"416-397-1745","f":null},{"v":10,"f":null}],"status":"1","type":"M"},
-             {"c":[{"v":"Man","f":null},{"v":"56 John Street","f":null},{"v":"416-397-1745","f":null},{"v":5,"f":null}],"status":"1","type":"M"},
-             {"c":[{"v":"Man","f":null},{"v":"57 John Street","f":null},{"v":"416-397-1745","f":null},{"v":6,"f":null}],"status":"1","type":"M"},
-             {"c":[{"v":"Man","f":null},{"v":"55 John Street","f":null},{"v":"416-397-1745","f":null},{"v":10,"f":null}],"status":"1","type":"M"},
-             {"c":[{"v":"Man","f":null},{"v":"56 John Street","f":null},{"v":"416-397-1745","f":null},{"v":5,"f":null}],"status":"1","type":"M"},
-             {"c":[{"v":"Women","f":null},{"v":"57 John Street","f":null},{"v":"416-397-1745","f":null},{"v":6,"f":null}],"status":"1","type":"W"},
-             {"c":[{"v":"Women","f":null},{"v":"57 John Street","f":null},{"v":"416-397-1745","f":null},{"v":6,"f":null}],"status":"1","type":"W"},
-             {"c":[{"v":"Women","f":null},{"v":"57 John Street","f":null},{"v":"416-397-1745","f":null},{"v":6,"f":null}],"status":"1","type":"W"},
-             {"c":[{"v":"Families","f":null},{"v":"57 John Street","f":null},{"v":"416-397-1745","f":null},{"v":6,"f":null}],"status":"1","type":"F"},
-             {"c":[{"v":"Families","f":null},{"v":"57 John Street","f":null},{"v":"416-397-1745","f":null},{"v":6,"f":null}],"status":"1","type":"F"},
-             {"c":[{"v":"Youth","f":null},{"v":"57 John Street","f":null},{"v":"416-397-1745","f":null},{"v":6,"f":null}],"status":"1","type":"Y"},
-             {"c":[{"v":"Youth","f":null},{"v":"57 John Street","f":null},{"v":"416-397-1745","f":null},{"v":6,"f":null}],"status":"1","type":"Y"},
-             {"c":[{"v":"Co-ed","f":null},{"v":"57 John Street","f":null},{"v":"416-397-1745","f":null},{"v":6,"f":null}],"status":"1","type":"C"},
-             {"c":[{"v":"Co-ed","f":null},{"v":"57 John Street","f":null},{"v":"416-397-1745","f":null},{"v":6,"f":null}],"status":"1","type":"C"}
-             
-             
-    ]}
+          "id": 2,
+          "label": "Address",
+          "pattern": "",
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "label": "Contact",
+          "pattern": "",
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "label": "Vacancy",
+          "pattern": "",
+          "type": "number"
+        }
+      ],
+      "rows": [
+        {
+          "c": [
+            {
+              "v": "Man",
+              "f": null
+            },
+            {
+              "v": "55 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 10,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "M"
+        },
+        {
+          "c": [
+            {
+              "v": "Man",
+              "f": null
+            },
+            {
+              "v": "56 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 5,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "M"
+        },
+        {
+          "c": [
+            {
+              "v": "Man",
+              "f": null
+            },
+            {
+              "v": "57 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 6,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "M"
+        },
+        {
+          "c": [
+            {
+              "v": "Man",
+              "f": null
+            },
+            {
+              "v": "55 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 10,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "M"
+        },
+        {
+          "c": [
+            {
+              "v": "Man",
+              "f": null
+            },
+            {
+              "v": "56 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 5,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "M"
+        },
+        {
+          "c": [
+            {
+              "v": "Women",
+              "f": null
+            },
+            {
+              "v": "57 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 6,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "W"
+        },
+        {
+          "c": [
+            {
+              "v": "Women",
+              "f": null
+            },
+            {
+              "v": "57 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 6,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "W"
+        },
+        {
+          "c": [
+            {
+              "v": "Women",
+              "f": null
+            },
+            {
+              "v": "57 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 6,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "W"
+        },
+        {
+          "c": [
+            {
+              "v": "Families",
+              "f": null
+            },
+            {
+              "v": "57 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 6,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "F"
+        },
+        {
+          "c": [
+            {
+              "v": "Families",
+              "f": null
+            },
+            {
+              "v": "57 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 6,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "F"
+        },
+        {
+          "c": [
+            {
+              "v": "Youth",
+              "f": null
+            },
+            {
+              "v": "57 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 6,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "Y"
+        },
+        {
+          "c": [
+            {
+              "v": "Youth",
+              "f": null
+            },
+            {
+              "v": "57 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 6,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "Y"
+        },
+        {
+          "c": [
+            {
+              "v": "Co-ed",
+              "f": null
+            },
+            {
+              "v": "57 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 6,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "C"
+        },
+        {
+          "c": [
+            {
+              "v": "Co-ed",
+              "f": null
+            },
+            {
+              "v": "57 John Street",
+              "f": null
+            },
+            {
+              "v": "416-397-1745",
+              "f": null
+            },
+            {
+              "v": 6,
+              "f": null
+            }
+          ],
+          "status": "1",
+          "type": "C"
+        }
+      ]
+    }
   }
 }
