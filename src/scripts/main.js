@@ -1,7 +1,7 @@
 var inter_handle_livedemandstream=null;
 var inter_handle_live=null;
 var dashboard; //THIS A GLOBAL VARIABLE TO YOUR FULL APPLICATION
-var secondLabelVisible = false;
+var secondLabelVisible = true;
 var arrMM = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var arrMMM = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var arrColors = [ "", "MidnightBlue", "Gray", "Orange", "Purple", "Brown", "LightCoral", "GreenYellow", "DarkTurquoise", "DarkOliveGreen", "IndianRed", "PaleVioletRed","Pink" ];
@@ -626,8 +626,28 @@ map.fitZoom();
 /*drawmxgraph*/
 function drawmxgraph (container,dataSource){
    /*add listener */
+   $('#div_button').html("");
+    /*
+   $('#details').on('switchChange.bootstrapSwitch', function(event, state) {
+      secondLabelVisible =state;
+      $(container).empty();
+      drawmxgraph (container,dataSource);
+      if (!secondLabelVisible)
+       var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE'];
+      else 
+      var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE_DETAILS'];
+      var container_table=$('#div_livedemandstream_datatable')[0];
+      var dataTable=new google.visualization.DataTable();
+      dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
+      $("#excelexport").unbind().click(function(){
+        downloadLiveCSV_Map(dataTable);
+        datatable = null;
+   });
+  }
+);
+*/
 
-   $(container).append(mxUtils.button('Details',
+   $('#div_button').append(mxUtils.button('Details',
    function(evt)
    {
         secondLabelVisible = !secondLabelVisible;
@@ -648,6 +668,7 @@ function drawmxgraph (container,dataSource){
 
    }
  ));
+ 
     if (!mxClient.isBrowserSupported()){
       mxUtils.error('Browser is not supported!', 200, false);
     }
@@ -1016,7 +1037,9 @@ $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .
   $( ".aindicator.active" ).animate({
     width: "100%"
   }, 1000, function(){
-    //$('#chartcontrols_1').append("<div style='align:center;text-align:center;display:table;margin:0 auto;'><div style='align:center;text-align:center;display:table-row;margin:0 auto;'><div id='div_livedemandstream_mxgraph' style='align:center;text-align:center;display:table-cell;margin:0 auto;'></div></div></div>");    
+    $('#chartcontrols_1').append("<div id='div_button' data-toggle='buttons'></div> ");  
+    //$('#div_button').append("<label for='details'></label><input type='checkbox' id='details' name='details' data-on-text='On' data-off-text='Off' data-handle-width='50' checked>");
+   // $("#details").bootstrapSwitch();  
     $('#chartcontrols_1').append("<div id='div_livedemandstream_mxgraph' style='align:center;text-align:center;margin:0 auto;'></div>");    
     $('#chartcontrols_1').append("<br/>");
     $('#chartcontrols_1').append("<br/>");
