@@ -1,7 +1,7 @@
 var inter_handle_livedemandstream=null;
 var inter_handle_live=null;
 var dashboard; //THIS A GLOBAL VARIABLE TO YOUR FULL APPLICATION
-var secondLabelVisible = true;
+var secondLabelVisible = false;
 var arrMM = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var arrMMM = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var arrColors = [ "", "MidnightBlue", "Gray", "Orange", "Purple", "Brown", "LightCoral", "GreenYellow", "DarkTurquoise", "DarkOliveGreen", "IndianRed", "PaleVioletRed","Pink" ];
