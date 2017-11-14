@@ -21,7 +21,7 @@ It should contain stylesheet references (and possibly other stuff) that this app
 <!-- place your application stylesheet references here: -->
 <link rel="stylesheet" type="text/css" href="/resources/dashboard/styles/main.css">
 <link rel="stylesheet" type="text/css" href="/resources/dashboard/styles/bootstrap-switch.min.css">
-
+<link rel="stylesheet" type="text/css" href="/resources/dashboard/styles/bootstrap-toggle.min.css">
 
 <!-- endbuild -->
 <!-- build:css /resources/dashboard/styles/core_print.css media="print"-->
@@ -34,6 +34,13 @@ It should contain stylesheet references (and possibly other stuff) that this app
 <!-- endbuild -->
 <script type="text/javascript">mxBasePath = '/resources/dashboard/scripts/mxgraph';</script>
 <script type="text/javascript" src="/resources/dashboard/scripts/mxgraph/js/mxClient.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsNv6cmhGxPhfyqE00Tqz4ukCQxMdz2sM" type="text/javascript" async defer></script>
+
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+<script type="text/javascript" src="/resources/dashboard/scripts/gmaps.js"></script>
+
+
+
 <!-- cot-app:head end-->
 
 <!--
@@ -70,12 +77,10 @@ It should contain script references that this application requires.
 
 <!-- place your application script references here: -->
 <script type="text/javascript" src="/resources/dashboard/scripts/bootstrap-switch.min.js"></script>
-
-
-
-
-
-
+<script type="text/javascript" src="/resources/dashboard/scripts/bootstrap-toggle.min.js"></script>
+<!-- Place GMap.js here
+<script type="text/javascript" src="/resources/dashboard/scripts/gmaps.js"></script>
+-->
 <!--
 <script type="text/javascript" src="/resources/dashboard/scripts/pdfmake.min.js"></script>
 <script type="text/javascript" src="/resources/dashboard/scripts/vfs_fonts.js"></script>

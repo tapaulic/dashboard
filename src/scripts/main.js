@@ -69,7 +69,7 @@ App.prototype.loadData = function() {
   error:function(jqXHR, exception){
     o.errorHandle(jqXHR, exception);
     },
-   success: function(data) { o.narratives = data;  $('#post').html(""); } });
+   success: function(data) { o.narratives = data; $('#post').html(""); } });
 };
 
 /*load traffic light data*/
@@ -217,6 +217,12 @@ App.prototype.measureClick = function( m ) {
         inter_handle_livedemandstream=setInterval(function() {dashboard.showLiveDemmandStream(row);},intervalTime);//6 seconds
         return;
       }
+      else if (row.chartType=="map"){
+        o.drawliveMap.call(o,liveDemandStreamData['map'],m);
+        var intervalTime = parseInt(row.intervalTime.toString(), 10);
+        inter_handle_live=setInterval(function() {dashboard.showLiveMap(row);},intervalTime);//6 seconds
+        return;
+     }
       else {
         //byPassPeriod
         if (row.byPassPeriod=="True"){
@@ -364,6 +370,20 @@ App.prototype.showLiveDemmandStream = function(m) {
  
 };
 
+/*
+reload Live map data and show on screen
+
+*/ 
+App.prototype.showLiveMap = function(m) {
+  $('#div_loading_1').css("display","block");
+  var o = this;
+  o.loadLiveDemmandStreamData();
+  //map
+  data_map=liveDemandStreamData['map'];
+  o.drawliveMap.call(o,data_map,m);
+};
+
+
 App.prototype.showLiveData = function(m) {
   $('#div_loading_1').css("display","block");
   var o = this;
@@ -450,8 +470,205 @@ App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget,
   return sHTML;
 };
 */
+/*
+*set control button status and back ground color
+*/
+function setControl(item){
+  var controlList=liveDemandStreamData['map'].controls;
+  var curControlID=item["id"];
+  for (var key in controlList){
+    if (controlList.hasOwnProperty(key)){
+        var  controlID=controlList[key].id;
+    if  (curControlID==controlID){
+         controlList[key]=item;
+         return;
+     }
+   }
+ }
+}
+
+function setMarkers(item){
+  var markerList=liveDemandStreamData['map'].markers;
+  var curType=item["type"];
+  for (var key in markerList){
+    if (markerList.hasOwnProperty(key)){
+    if  (curType==markerList[key].type){
+         markerList[key].status=item["status"];
+     }
+   }
+ }
+}
+
+function setMapDataTable(dataList,item){
+  var dataTableRowsList=dataList.rows;
+  var curType=item["type"];
+  var curStatus=item["status"];
+  for (var key in dataTableRowsList){
+    if (dataTableRowsList.hasOwnProperty(key)){
+    if  (curType==dataTableRowsList[key].type){
+         dataTableRowsList[key].status=item["status"];
+     }
+   }
+ }
+}
+
+function setDataListByStatus(data){
+  var data_Rows=[];
+  var status="1";
+  //alert(JSON.stringify("data rows:"+data["rows"]));
+  for (var key in data.rows){
+    if (data.hasOwnProperty(key)){
+    if  (status==data[key].status){
+        data_Rows.push(data[key]);
+     }
+   }
+ }
+   data["rows"]=data_Rows;
+
+}
+function removeByStatus(arr, item) {
+  for(var i = arr.length; i--;) {
+      if(arr[i].status === item) {
+          arr.splice(i, 1);
+      }
+  }
+}
+function processFilter(item){
+         if (item["status"]=="1") {
+           item["status"]="0";
+           item.style.background="lightgrey";  
+         }
+         else if (item["status"]=="0"){
+          item["status"]="1";
+          item.style.background="#5bc0de";  
+         }
+         setControl(item);
+         setMarkers(item);
+         var container_map =$('#div_liveMap').get(0);
+         var data_map=liveDemandStreamData['map'];
+         drawMap(container_map,data_map);
+         var container_table=$('#div_liveMap_datatable')[0];
+         var data_datatable={};
+         data_datatable=liveDemandStreamData['map'].map_datatable;
+         setMapDataTable(data_datatable,item);
+         var datatable ={};
+         datatable=jQuery.extend(true, {}, data_datatable);//clone  map_datatable to datatable
+         /*remove status == 0*/
+         removeByStatus(datatable.rows, "0");
+         var dataTable=new google.visualization.DataTable();
+         dataTable=drawtabledata(container_table,datatable,'90%','100%',false);
+         $("#excelexport").unbind().click(function(){
+           downloadLiveCSV_Map(dataTable);
+           datatable = null;
+      });
+    
+}
+function loadMarker(item){
+  map.addMarker({
+    lat:item['lat'],
+    lng: item['lng'],
+    title: item['title'],
+    icon: item['icon'],
+    infoWindow:item['infoWindow'],
+    mouseover: function(){item['mouseover']},
+    mouseout: function(){item['mouseout']},
+    click:function(e){item['click']}
+  });
+}
+function loadControl(item){
+  map.addControl({
+    position: item["position"],
+    content: item["content"],
+    style: item["style"],
+    events:{click: function(){
+      processFilter(item);
+    }
+  }
+  });
+}
+
+
+function loadMarkers(data){
+      $.each(data["markers"], function(i,item){
+        if (item["status"]=="1") //show 
+            loadMarker(item);
+      });
+  }
+
+  function  loadControls(data){
+    $.each(data["controls"], function(i,item){
+      loadControl(item);
+    });
+}
+/*drawMap*/
+
+function drawMap(container,data){
+ map = new GMaps({
+  el: container,
+  lat: 43.6532,
+  lng: -79.3832,
+  zoomControl : true,
+  zoomControlOpt: {
+      style : 'SMALL',
+      position: 'TOP_LEFT'
+  },
+  panControl : false,
+  streetViewControl : false,
+  mapTypeControl: false,
+  overviewMapControl: false
+});
+//load markers
+loadMarkers(data);
+loadControls(data);
+map.fitZoom();
+};
+
 /*drawmxgraph*/
 function drawmxgraph (container,dataSource){
+   /*add listener */
+   $('#div_button').html("");
+    /*
+   $('#details').on('switchChange.bootstrapSwitch', function(event, state) {
+      secondLabelVisible =state;
+      $(container).empty();
+      drawmxgraph (container,dataSource);
+      if (!secondLabelVisible)
+       var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE'];
+      else 
+      var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE_DETAILS'];
+      var container_table=$('#div_livedemandstream_datatable')[0];
+      var dataTable=new google.visualization.DataTable();
+      dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
+      $("#excelexport").unbind().click(function(){
+        downloadLiveCSV_Map(dataTable);
+        datatable = null;
+   });
+  }
+);
+*/
+
+   $('#div_button').append(mxUtils.button('Details',
+   function(evt)
+   {
+        secondLabelVisible = !secondLabelVisible;
+        $(container).empty();
+        drawmxgraph (container,dataSource);
+        if (!secondLabelVisible)
+         var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE'];
+        else 
+        var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE_DETAILS'];
+        var container_table=$('#div_livedemandstream_datatable')[0];
+        var dataTable=new google.visualization.DataTable();
+        dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
+        $("#excelexport").unbind().click(function(){
+          downloadLiveCSV_Map(dataTable);
+          datatable = null;
+     });
+
+
+   }
+ ));
+ 
     if (!mxClient.isBrowserSupported()){
       mxUtils.error('Browser is not supported!', 200, false);
     }
@@ -460,6 +677,8 @@ function drawmxgraph (container,dataSource){
       var graph = new mxGraph(container);
       var parent = graph.getDefaultParent();
       var data=dataSource;
+  
+      //secondlable
       graph.getSecondLabel = function(cell){
         if (!this.model.isEdge(cell)&&secondLabelVisible==true){
           var value=getSecondLableValueByID(cell.getId(),data.vertexes);
@@ -480,12 +699,16 @@ function drawmxgraph (container,dataSource){
           var secondLabel = graph.getSecondLabel(state.cell);
           if (secondLabel != null && state.shape != null && state.secondLabel == null){
             state.secondLabel = new mxText(secondLabel, new mxRectangle(),
-              mxConstants.ALIGN_LEFT, mxConstants.ALIGN_BOTTOM);
+            //  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_BOTTOM);
+            mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP);
             state.secondLabel.color = getSecondLabelColorByID(state.cell.getId(),data.vertexes);
             state.secondLabel.family =getSecondLabelFontNameByID(state.cell.getId(),data.vertexes);
             state.secondLabel.size = getSecondLabelFontSizeByID(state.cell.getId(),data.vertexes);
             state.secondLabel.background = getSecondLabelBackGroundColorByID(state.cell.getId(),data.vertexes);
             state.secondLabel.valign = getSecondLabelValignByID(state.cell.getId(),data.vertexes);
+              //state.secondLabel.valign = 'top';
+             // state.secondLabel.background = 'yellow';
+						//	state.secondLabel.border = 'black';
             state.secondLabel.dialect = state.shape.dialect;
             state.secondLabel.dialect = mxConstants.DIALECT_STRICTHTML;
             state.secondLabel.wrap = true;
@@ -496,7 +719,8 @@ function drawmxgraph (container,dataSource){
         if (state.secondLabel != null)
         {
           var scale = graph.getView().getScale();
-          var bounds = new mxRectangle(state.x + state.width - 8 * scale, state.y + 8 * scale, 35, 0);
+          var bounds = new mxRectangle(state.x + state.width - 8 * scale+17, state.y + 8 * scale, 35, 0);
+         //var bounds = new mxRectangle(state.x + state.width + 8 * scale, state.y + 8 * scale+100, 35, 0);
           state.secondLabel.state = state;
           state.secondLabel.value = graph.getSecondLabel(state.cell);
           state.secondLabel.scale = scale;
@@ -519,6 +743,22 @@ function drawmxgraph (container,dataSource){
         return [state.shape, state.text, state.secondLabel, state.control];
       };
       /*end */
+     /*
+      graph.addListener(mxEvent.CLICK, function(sender, event){
+         var mouseEvent = event.getProperty('event');
+         var selectedCell = event.getProperty('cell');
+         //alert(mouseEvent.currentTarget.innerHTML);
+          if (selectedCell.isVertex()){
+            secondLabelVisible = !secondLabelVisible;
+            //graph.refresh();
+            $(container).empty();
+            drawmxgraph (container,dataSource);
+          }
+              //alert(graph.getSecondLabel(selectedCell));
+              
+        });
+*/
+       
       /*start of font size change*/
       graph.processChange = function(change){
         if (change instanceof mxGeometryChange) {
@@ -550,12 +790,15 @@ function drawmxgraph (container,dataSource){
       graph.centerZoom = true;
       graph.setCellsSelectable(false);
       var style_cell = new Object();
-      style_cell[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
-      style_cell[mxConstants.STYLE_CURVED] = '1';
+     // style_cell[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
+      //style_cell[mxConstants.STYLE_SHAPE] = mxConstants.ROUNDED;
+      style_cell[mxConstants.STYLE_ROUNDED] = true;
+      //style_cell[mxConstants.STYLE_CURVED] = '1';
       graph.getStylesheet().putCellStyle('myshape', style_cell);
       var style =graph.getStylesheet().getDefaultEdgeStyle();
       style[mxConstants.STYLE_ROUNDED] = true;
       style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+      //style[mxConstants.STYLE_SHADOW] = true;
       graph.getStylesheet().putDefaultEdgeStyle(style);
       graph.getModel().beginUpdate();
       try
@@ -610,13 +853,40 @@ function drawmxgraph (container,dataSource){
       finally
       {
         // Updates the display
-       
-        graph.getModel().endUpdate();
         
+          graphCentered(graph);
+          //graph.refresh();
+          graph.getModel().endUpdate();
       }
 
     }
 };
+function graphCentered(graph){
+  var margin = 2;
+  var bounds = graph.getGraphBounds();
+  //alert(graph.container.clientWidth);
+  if (graph.container.clientWidth>=1000)
+  var max = 1.2;
+  if (graph.container.clientWidth>=803 && graph.container.clientWidth<1000)
+  var max = 1;
+  else if (graph.container.clientWidth>=574 && graph.container.clientWidth<803)
+  var max = 0.98;
+  else if (graph.container.clientWidth>=570 && graph.container.clientWidth<574)
+  var max = 0.72;
+  else if (graph.container.clientWidth>=360 && graph.container.clientWidth<570)
+  var max = 0.61;
+  else if (graph.container.clientWidth<360)
+  var max = 0.32;
+  var cw = graph.container.clientWidth - margin;
+  var ch = graph.container.clientHeight - margin;
+  var w = bounds.width / graph.view.scale;
+  var h = bounds.height / graph.view.scale;
+  var s = Math.min(max, Math.min(cw / w, ch / h));
+  graph.view.scaleAndTranslate(s,
+    (margin + cw - w * s) / (4.5 * s) - bounds.x / graph.view.scale,
+    (margin + ch - h * s) / (4.5 * s) - bounds.y / graph.view.scale);
+
+}
 function getMeasureByID(id,list){
   for (var key in list){
     if (list.hasOwnProperty(key)){
@@ -702,7 +972,7 @@ for (var key in vertexList){
   }
 }
 
-function drawtabledata(container,data,swidth,sheight){
+function drawtabledata(container,data,swidth,sheight,paging){
   var cssClassNames = {
     'headerRow': '',
     'tableRow': '',
@@ -712,10 +982,18 @@ function drawtabledata(container,data,swidth,sheight){
     'headerCell': 'bold_column_font',
     'tableCell': 'data_cell_font',
     'rowNumberCell': ''};
+  //  setDataListByStatus(data);
   var datatable = new google.visualization.DataTable(data);
   var table = new google.visualization.Table(container);
+  if (paging)
   table.draw(datatable,{page:'enable',pageSize:'18',showRowNumber: false, width: swidth.toString(), height:sheight.toString(), allowHtml: true,
   cssClassNames:cssClassNames});
+  else{
+  var tableoptions = {showRowNumber: false, width:swidth.toString(), height:sheight.toString(),
+  allowHtml: true,
+  cssClassNames:cssClassNames};
+  table.draw(datatable,tableoptions);
+  }
   return datatable;
 }
 /*drawlivedemandstream*/
@@ -723,6 +1001,7 @@ App.prototype.drawlivedemandstream= function(data,m ) {
   var o = this;
   var data_mxgraph=data['LSD_MXGRAPH'];
   var data_datatable=data['LSD_DATATABLE'];
+  var data_datatable_details=data['LSD_DATATABLE_DETAILS'];
   var strHTML =""+
   "<div  class='btn-group'>"+
   "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>"+
@@ -758,18 +1037,25 @@ $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .
   $( ".aindicator.active" ).animate({
     width: "100%"
   }, 1000, function(){
-    $('#chartcontrols_1').append("<div  id='div_livedemandstream_mxgraph' style='overflow:auto;display:table;margin: 0 auto;resize:both;'></div>");
+    $('#chartcontrols_1').append("<div id='div_button' data-toggle='buttons'></div> ");  
+    //$('#div_button').append("<label for='details'></label><input type='checkbox' id='details' name='details' data-on-text='On' data-off-text='Off' data-handle-width='50' checked>");
+   // $("#details").bootstrapSwitch();  
+    $('#chartcontrols_1').append("<div id='div_livedemandstream_mxgraph' style='align:center;text-align:center;margin:0 auto;'></div>");    
     $('#chartcontrols_1').append("<br/>");
     $('#chartcontrols_1').append("<br/>");
     $('#div_livedemandstream_mxgraph').html("");
     $('#div_livedemandstream_datatable').html("");
     $('#div_loading_1').css("display","block");
-      var container_mxgraph =$('#div_livedemandstream_mxgraph').get(0);
+     var container_mxgraph =$('#div_livedemandstream_mxgraph').get(0);
+    
       drawmxgraph(container_mxgraph,data_mxgraph);
        $('#chartcontrols_1').children("#loading1").remove();
       var container_table=$('#div_livedemandstream_datatable')[0];
       var dataTable=new google.visualization.DataTable();
-      dataTable=drawtabledata(container_table,data_datatable,'90%','100%');
+      if (!secondLabelVisible)
+      dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
+      else 
+      dataTable=drawtabledata(container_table,data_datatable_details,'90%','100%',false);
       $('#chartcontrols_2').children("#loading2").remove();
       $('#div_loading_1').text("As of: "+getCurrentTime());
       $('#closeDetail').prop('disabled', false);
@@ -781,6 +1067,73 @@ $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .
    }
   );
 };
+
+//draw google map
+App.prototype.drawliveMap= function(data,m ) {
+  var o = this;
+  var data_map=data;
+  var data_datatable=data['map_datatable'];
+  var strHTML =""+
+  "<div  class='btn-group'>"+
+  "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>"+
+   "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>"+
+   "</div>"+
+  "</div>"+
+  "<font size='2'><strong><div id='div_loading_1'>"+
+  "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
+  "</div></strong></font>"+
+  "<h4 class='tabletitle'>"+"Chart:Shelter Locations on Google Map"+"</h4>"+
+  "<section id='chartcontrols_1'>"+
+  "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
+  "</section>"+
+ "<div class='tabletitle'><h4>"+"Data Table:Shelter Locations"+"</h4>"+
+ "<button id='excelexport' disabled disabled  class='btnbs btn-primary popoverbs' type='button' onclick='' data-placement='top'  title='Export this data into an excel spreadsheet'>"+
+ "<img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/>"+
+  "Export Data</button>"+
+ "</div>"+
+ "<section id='chartcontrols_2' class='chartcontrols'>"+
+ "<img id='loading2' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
+ "<div id='div_liveMap_datatable'></div>";
+ "</section>"
+ strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";    
+$( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
+    opacity: 0,
+    height: 1
+ }, 900 );
+ 
+ $( ".aindicator.active .measuredetail" ).html( strHTML );
+ $( ".aindicator.active .measuredetail" ).animate({
+    opacity: 1
+  }, 1 );
+  $( ".aindicator.active" ).animate({
+    width: "100%"
+  }, 1000, function(){
+    //$('#chartcontrols_1').append("<div style='align:center;text-align:center;display:table;margin:0 auto;'><div style='align:center;text-align:center;display:table-row;margin:0 auto;'><div id='div_livedemandstream_mxgraph' style='align:center;text-align:center;display:table-cell;margin:0 auto;'></div></div></div>");    
+    $('#chartcontrols_1').append("<div id='div_liveMap' style='align:center;text-align:center;margin:0 auto;height:400px; width:100%;'></div>");    
+   // $('#chartcontrols_1').append("<br/>");
+   // $('#chartcontrols_1').append("<br/>");
+    $('#div_liveMap').html("");
+    $('#div_liveMap_datatable').html("");
+    $('#div_loading_1').css("display","block");
+     var container_map =$('#div_liveMap').get(0);
+      //drawmxgraph(container_map,data_mxgraph);
+      drawMap(container_map,data_map);
+       $('#chartcontrols_1').children("#loading1").remove();
+      var container_table=$('#div_liveMap_datatable')[0];
+      var dataTable=new google.visualization.DataTable();
+      dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
+      $('#chartcontrols_2').children("#loading2").remove();
+      $('#div_loading_1').text("As of: "+getCurrentTime());
+      $('#closeDetail').prop('disabled', false);
+      $('#excelexport').prop('disabled', false);
+      $("#excelexport").click(function(){
+        o.downloadLiveCSV(dataTable);
+    });
+ }
+  );
+};
+
+
 
  /*draw RBG*/
  function drawRYG(dataset,options){
@@ -842,6 +1195,8 @@ App.prototype.drawtrafficlight = function(data,m) {
  "<img id='loading2'  src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
  "<div id='div_RYG_datatable'></div>"+
  "</section>";
+ 
+
  strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
     opacity: 0,
@@ -863,9 +1218,9 @@ App.prototype.drawtrafficlight = function(data,m) {
       var container_table=$('#div_RYG_datatable')[0];
       var container_table_1=$('#div_RYG_datatable_1')[0];
       var dataTable_1=new google.visualization.DataTable();
-      var dataTable_1=drawtabledata(container_table_1,data_datatable_1,'70%','80%');
+      var dataTable_1=drawtabledata(container_table_1,data_datatable_1,'70%','80%',true);
       var dataTable=new google.visualization.DataTable();
-      dataTable=drawtabledata(container_table,data_datatable,'90%','100%');
+      dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
       $('#chartcontrols_2').children("#loading2").remove();
       $('#div_loading_1').text("As of: "+getCurrentTime());
       $('#closeDetail').prop('disabled', false);
@@ -925,7 +1280,8 @@ App.prototype.paintDetailByPassPeriod = function( indicator ) {
     strHTML += '<h4 class="controlstitle">Chart Options</h4><section id="chartcontrols"><div class="col-xs-12">' + strContext + '</div><div class="col-xs-12">' + ''+ '</div></section>';
   }
     strHTML += "<h4 class='charttitle'>Chart: " + sChartTitle + "</h4>"+
-               "<div id='measurechart_gauge'></div>";
+               "<div id='measurechart_gauge'>"+
+               "</div>";
     strHTML += (m.ds=="") ? "" : "<p class='datasource'>" + m.ds + "</p>";
     strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle +"</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
     strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
@@ -1390,6 +1746,27 @@ App.prototype.dataTableToCSV = function () {
   return csv_out;
 };
 
+function dataTableLiveToCSV_Map(dataTable) {
+  var dt_cols = dataTable.getNumberOfColumns();
+  var dt_rows = dataTable.getNumberOfRows();
+  var csv_cols = [];
+  var csv_out;
+  //alert("dt_rows"+dt_rows);
+  for (var i=0; i<dt_cols; i++) {
+    csv_cols.push(dataTable.getColumnLabel(i).replace(/,/g,""));
+  }
+
+  csv_out = csv_cols.join(",")+"\r\n";
+  for (i=0; i<dt_rows; i++) {
+    var raw_col = [];
+    for (var j=0; j<dt_cols; j++) {
+      raw_col.push(dataTable.getFormattedValue(i, j, 'label').replace(/,/g,""));
+    }
+    csv_out += raw_col.join(",")+"\r\n";
+  }
+ // alert(JSON.stringify(csv_out));
+  return csv_out;
+};
 App.prototype.dataTableLiveToCSV = function (dataTable) {
     var dt_cols = dataTable.getNumberOfColumns();
     var dt_rows = dataTable.getNumberOfRows();
@@ -1429,7 +1806,26 @@ App.prototype.downloadCSV = function() {
     link.dispatchEvent(event);
   }
 };
+function downloadLiveCSV_Map (dataTable) {
+  //var csv_out = this.dataTableToCSV();
+  var csv_out = dataTableLiveToCSV_Map(dataTable);
+  var browser = navigator.userAgent;
+  var IEversion = 99;
+  if (browser.indexOf("MSIE") > 1) {IEversion = parseInt(browser.substr(browser.indexOf("MSIE")+5, 5));}
+  if (IEversion < 10) {
 
+  } else {
+    var blob = new Blob([csv_out], {type: 'text/csv;charset=utf-8'});
+    var url  = window.URL || window.webkitURL;
+    var link = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
+    link.href = url.createObjectURL(blob);
+    link.download = this.mTitle + ".csv";
+    var event = document.createEvent("MouseEvents");
+    event.initEvent("click", true, false);
+    link.dispatchEvent(event);
+  }
+  
+};
 App.prototype.downloadLiveCSV = function(dataTable) {
   //var csv_out = this.dataTableToCSV();
   var csv_out = this.dataTableLiveToCSV(dataTable);
@@ -2237,6 +2633,7 @@ function getCurrentTime(){
   var hour = now.getHours() - (now.getHours() >= 12 ? 12 : 0);
   return [[now.getFullYear(),AddZero(now.getMonth() + 1),AddZero(now.getDate())].join("/"), [AddZero(hour), AddZero(now.getMinutes()),AddZero(now.getSeconds())].join(":"), now.getHours() >= 12 ? "PM" : "AM"].join(" ");
 };
+
 //****************************************  MAIN RUN **********************************************************************
 $(document).ready(function() {
   $.ajaxSetup({ cache: false });
@@ -2256,28 +2653,10 @@ $(document).ready(function() {
   $( window ).resize(function() {
     var obj =$('#div_livedemandstream_mxgraph').get(0);
      if (obj!=null){
-      //  $('#div_livedemandstream_mxgraph').css("minWidth", 771);
         $('#div_livedemandstream_mxgraph').html("");
         var data_mxgraph=(liveDemandStreamData['LSD'])['LSD_MXGRAPH'];
         drawmxgraph(obj,data_mxgraph);
      }
-    /*
-    $("#div_livedemandstream_mxgraph").resizable({
-      minWidth: 771,
-      minHeight: 850,
-      resize: function (event, ui) {
-          var $elm = ui.element;
-          if (ui.size.width <= $elm.resizable("option", "minWidth"))
-             console.log("Reached Min Width!");
-          if (ui.size.height <= $elm.resizable("option", "minHeight"))
-             console.log("Reached Min Height!");
-          if (ui.size.width >= $elm.resizable("option", "maxWidth"))
-             console.log("Reached Max Width!");
-          if (ui.size.height >= $elm.resizable("option", "maxHeight"))
-             console.log("Reached Max Height!");
-      }
-  });
-  */
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".explanation");
   });
