@@ -1082,11 +1082,11 @@ App.prototype.drawliveMap= function(data,m ) {
   "<font size='2'><strong><div id='div_loading_1'>"+
   "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
   "</div></strong></font>"+
-  "<h4 class='tabletitle'>"+"Chart:Shelter Locations on Google Map"+"</h4>"+
+  "<h4 class='tabletitle'>"+"Chart:Shelter Locations and Vacancies Mapped"+"</h4>"+
   "<section id='chartcontrols_1'>"+
   "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
   "</section>"+
- "<div class='tabletitle'><h4>"+"Data Table:Shelter Locations"+"</h4>"+
+ "<div class='tabletitle'><h4>"+"Data Table:Shelter Locations and Vacancies"+"</h4>"+
  "<button id='excelexport' disabled disabled  class='btnbs btn-primary popoverbs' type='button' onclick='' data-placement='top'  title='Export this data into an excel spreadsheet'>"+
  "<img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/>"+
   "Export Data</button>"+
