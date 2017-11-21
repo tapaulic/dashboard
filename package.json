@@ -40,5 +40,8 @@
     "includeMoment": false,
     "includeModeling": false,
     "includeBootbox": false
+  },
+  "dependencies": {
+    "pikaday": "^1.6.1"
   }
 }

@@ -1,21 +1,22 @@
-var inter_handle_livedemandstream=null;
-var inter_handle_live=null;
+var inter_handle_livedemandstream = null;
+var inter_handle_live = null;
 var dashboard; //THIS A GLOBAL VARIABLE TO YOUR FULL APPLICATION
 var secondLabelVisible = false;
 var arrMM = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 var arrMMM = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-var arrColors = [ "", "MidnightBlue", "Gray", "Orange", "Purple", "Brown", "LightCoral", "GreenYellow", "DarkTurquoise", "DarkOliveGreen", "IndianRed", "PaleVioletRed","Pink" ];
-var arrSeason = [ "", "Winter", "Spring", "Summer", "Fall" ];
+var arrColors = ["", "MidnightBlue", "Gray", "Orange", "Purple", "Brown", "LightCoral", "GreenYellow", "DarkTurquoise", "DarkOliveGreen", "IndianRed", "PaleVioletRed", "Pink"];
+var arrSeason = ["", "Winter", "Spring", "Summer", "Fall"];
 var arrDD = [""];
+var picker;
 
-for(i=1;i<=366;i++){
+for (i = 1; i <= 366; i++) {
   arrDD.push(i.toString());
 }
-var arrHH=[""];
-for(i=0;i<=23;i++){
+var arrHH = [""];
+for (i = 0; i <= 23; i++) {
   arrHH.push(i.toString());
 }
-var App = function(sDisplaySel,
+var App = function (sDisplaySel,
   sCategoryTabsSel,
   sIndicatorSel,
   sSourceListSel,
@@ -26,165 +27,176 @@ var App = function(sDisplaySel,
   sJSON_SSHA_HistoricalDemandTrafficlightData,
   sJSON_SSHA_NightlySummaryTrafficlightData
 ) {
-  this.selectors = { 'display': sDisplaySel, 'indicators': sIndicatorSel, 'sourcelist': sSourceListSel, 'tabs': sCategoryTabsSel};
-  this.urls = { 'jsonmeasures': sJSONMeasures, 'jsonnarratives': sJSONNarratives,
-                'jsonliveData':sJSON_SSHA_LiveData,//livedemandstreamData
-                'jsonlhistoricaldemandtrafficlightData':sJSON_SSHA_HistoricalDemandTrafficlightData,
-                'jsonlnightlysummarytrafficlightData':sJSON_SSHA_NightlySummaryTrafficlightData
-};
+  this.selectors = { 'display': sDisplaySel, 'indicators': sIndicatorSel, 'sourcelist': sSourceListSel, 'tabs': sCategoryTabsSel };
+  this.urls = {
+    'jsonmeasures': sJSONMeasures, 'jsonnarratives': sJSONNarratives,
+    'jsonliveData': sJSON_SSHA_LiveData,//livedemandstreamData
+    'jsonlhistoricaldemandtrafficlightData': sJSON_SSHA_HistoricalDemandTrafficlightData,
+    'jsonlnightlysummarytrafficlightData': sJSON_SSHA_NightlySummaryTrafficlightData
+  };
   this.htmlsource = sHTMLSource;
-  this.icons = { 'up' : '<span class="glyphicon glyphicon-arrow-up"></span>', 'down' : '<span class="glyphicon glyphicon-arrow-down"></span>', 'stable' : '<span class="glyphicon glyphicon-minus"></span>' };
+  this.icons = { 'up': '<span class="glyphicon glyphicon-arrow-up"></span>', 'down': '<span class="glyphicon glyphicon-arrow-down"></span>', 'stable': '<span class="glyphicon glyphicon-minus"></span>' };
 };
-var liveDemandStreamData={};
-var liveCurrentOccupancyBySectorData={};
-var trafficlightData={};
+var liveDemandStreamData = {};
+var liveCurrentOccupancyBySectorData = {};
+var trafficlightData = {};
 
-App.prototype.loadHTML = function() {
+App.prototype.loadHTML = function () {
   var o = this;
-  $( o.selectors.display ).load( o.htmlsource + ' ' + o.selectors.sourcelist, function() { o.loadData(); } );
+  $(o.selectors.display).load(o.htmlsource + ' ' + o.selectors.sourcelist, function () { o.loadData(); });
 };
 //processData
-App.prototype.loadDataOnly = function() {
+App.prototype.loadDataOnly = function () {
   var o = this;
-  $.ajax({ type: "GET", url: o.urls.jsonmeasures,  async:false,dataType: "json",
-  error:function(jqXHR, exception){
-       o.errorHandle(jqXHR, exception);
+  $.ajax({
+    type: "GET", url: o.urls.jsonmeasures, async: false, dataType: "json",
+    error: function (jqXHR, exception) {
+      o.errorHandle(jqXHR, exception);
     },
-   success: function(data) { o.processData(data);  $('#post').html(""); } });
-  $.ajax({ type: "GET", url: o.urls.jsonnarratives, async:false, dataType: "json",
-  error:function(jqXHR, exception){
-    o.errorHandle(jqXHR, exception);
+    success: function (data) { o.processData(data); $('#post').html(""); }
+  });
+  $.ajax({
+    type: "GET", url: o.urls.jsonnarratives, async: false, dataType: "json",
+    error: function (jqXHR, exception) {
+      o.errorHandle(jqXHR, exception);
     },
-   success: function(data) { o.narratives = data;  $('#post').html(""); } });
+    success: function (data) { o.narratives = data; $('#post').html(""); }
+  });
 };
 
-App.prototype.loadData = function() {
+App.prototype.loadData = function () {
   var o = this;
-  $.ajax({ type: "GET", url: o.urls.jsonmeasures,  async:false, dataType: "json",
-  error:function(jqXHR, exception){
-    o.errorHandle(jqXHR, exception);
+  $.ajax({
+    type: "GET", url: o.urls.jsonmeasures, async: false, dataType: "json",
+    error: function (jqXHR, exception) {
+      o.errorHandle(jqXHR, exception);
     },
-   success: function(data) { o.drawIndex(data);  $('#post').html(""); } });
-  $.ajax({ type: "GET", url: o.urls.jsonnarratives,   async:false,dataType: "json",
-  error:function(jqXHR, exception){
-    o.errorHandle(jqXHR, exception);
+    success: function (data) { o.drawIndex(data); $('#post').html(""); }
+  });
+  $.ajax({
+    type: "GET", url: o.urls.jsonnarratives, async: false, dataType: "json",
+    error: function (jqXHR, exception) {
+      o.errorHandle(jqXHR, exception);
     },
-   success: function(data) { o.narratives = data; $('#post').html(""); } });
+    success: function (data) { o.narratives = data; $('#post').html(""); }
+  });
 };
 
 /*load traffic light data*/
-App.prototype.loadTrafficLightData= function(urlOfTrafficLight){
+App.prototype.loadTrafficLightData = function (urlOfTrafficLight) {
   var o = this;
-  trafficlightData={};
-   $.ajax({ type: "GET", url: urlOfTrafficLight, async:false, dataType: "json", 
-   error:function(jqXHR, exception){
-    o.errorHandle(jqXHR, exception);
-   },
-   success: function(data) {
-    trafficlightData=data;
-     $('#post').html("");
-   }
+  trafficlightData = {};
+  $.ajax({
+    type: "GET", url: urlOfTrafficLight, async: false, dataType: "json",
+    error: function (jqXHR, exception) {
+      o.errorHandle(jqXHR, exception);
+    },
+    success: function (data) {
+      trafficlightData = data;
+      $('#post').html("");
+    }
   });
 };
 
 /*load LiveDemmandStreamData*/
-App.prototype.loadLiveDemmandStreamData= function(){
+App.prototype.loadLiveDemmandStreamData = function () {
   var o = this;
-  liveDemandStreamData={};
-   $.ajax({ type: "GET", url: o.urls.jsonliveData, async:false, dataType: "json", 
-   error:function(jqXHR, exception){
-    o.errorHandle(jqXHR, exception);
+  liveDemandStreamData = {};
+  $.ajax({
+    type: "GET", url: o.urls.jsonliveData, async: false, dataType: "json",
+    error: function (jqXHR, exception) {
+      o.errorHandle(jqXHR, exception);
     },
-   success: function(data) {
-    liveDemandStreamData=data;
-     $('#post').html("");
-   }
+    success: function (data) {
+      liveDemandStreamData = data;
+      $('#post').html("");
+    }
   });
 };
 
-App.prototype.errorHandle = function(jqXHR, exception){
-/*
-  if (inter_handle_livedemandstream!=null)
-     clearInterval(inter_handle_livedemandstream);
-  if (inter_handle_live!=null)
-     clearInterval(inter_handle_live);
-*/     
-var msg = '';
-if (jqXHx.status === 0) {
+App.prototype.errorHandle = function (jqXHR, exception) {
+  /*
+    if (inter_handle_livedemandstream!=null)
+       clearInterval(inter_handle_livedemandstream);
+    if (inter_handle_live!=null)
+       clearInterval(inter_handle_live);
+  */
+  var msg = '';
+  if (jqXHx.status === 0) {
     msg = 'Due to network issues, the live stream is currently unavailable.';
-} else if (jqXHR.status == 404) {
+  } else if (jqXHR.status == 404) {
     //msg = 'Requested page not found. [404]'+jqXHR.responseText.toString();
     msg = 'Requested page not found. [404]'
-} else if (jqXHR.status == 500) {
+  } else if (jqXHR.status == 500) {
     msg = 'Internal Server Error [500].';
-} else if (exception === 'parsererror') {
+  } else if (exception === 'parsererror') {
     msg = 'Error reading data file.';
-} else if (exception === 'timeout') {
+  } else if (exception === 'timeout') {
     msg = 'Time out error.';
-} else if (exception === 'abort') {
+  } else if (exception === 'abort') {
     msg = 'Ajax request aborted.';
-} else {
+  } else {
     msg = 'Uncaught Error.\n' + jqXHR.responseText;
-}
-$('#post').html("<font size='2' color='#cc0000'>"+msg+"</font>");
+  }
+  $('#post').html("<font size='2' color='#cc0000'>" + msg + "</font>");
 };
- 
-App.prototype.processData = function(d) {
+
+App.prototype.processData = function (d) {
   var o = this;
-  $('#searchtext').keydown( function(e) {
+  $('#searchtext').keydown(function (e) {
     var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-    if(key == 13) { o.search( $( '#searchtext' ).val() ); }
-    if(key == 27) { o.resetsearch( '#searchtext' ); }
+    if (key == 13) { o.search($('#searchtext').val()); }
+    if (key == 27) { o.resetsearch('#searchtext'); }
   });
   //key as measures from jsonfile
   o.measures = d.measures;
-  $.each( d.categories, function(i,citem) {
+  $.each(d.categories, function (i, citem) {
     o.measures[citem] = [];
   });
-  d.measures.sort(function(a, b){	return (a.id - b.id);});
-  $.each( d.measures, function(i,mitem) {
+  d.measures.sort(function (a, b) { return (a.id - b.id); });
+  $.each(d.measures, function (i, mitem) {
     o.measures[mitem.id] = mitem;
     m = mitem;
-    $.each( mitem.c, function(j,ditem) {
-      o.measures[ ditem ].push( m );
-      o.drawMeasure( m, ditem,false );
-  });//inner loop end
+    $.each(mitem.c, function (j, ditem) {
+      o.measures[ditem].push(m);
+      o.drawMeasure(m, ditem, false);
+    });//inner loop end
   });//out loop end
 };
-App.prototype.drawIndex = function(d) {
+App.prototype.drawIndex = function (d) {
   var o = this;
-  $('#searchtext').keydown( function(e) {
+  $('#searchtext').keydown(function (e) {
     var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-    if(key == 13) { o.search( $( '#searchtext' ).val() ); }
-    if(key == 27) { o.resetsearch( '#searchtext' ); }
+    if (key == 13) { o.search($('#searchtext').val()); }
+    if (key == 27) { o.resetsearch('#searchtext'); }
   });
   //key as measures from jsonfile
   o.measures = d.measures;
-  $.each( d.categories, function(i,citem) {
+  $.each(d.categories, function (i, citem) {
     o.measures[citem] = [];
-    o.createTab(citem, i );
+    o.createTab(citem, i);
   });
-  d.measures.sort(function(a, b){	return (a.id - b.id);});
-  $.each( d.measures, function(i,mitem) {
+  d.measures.sort(function (a, b) { return (a.id - b.id); });
+  $.each(d.measures, function (i, mitem) {
     o.measures[mitem.id] = mitem;
     m = mitem;
-    $.each( mitem.c, function(j,ditem) {
-      o.measures[ ditem ].push( m );
-      o.drawMeasure( m, ditem,true );
-  });//inner loop end
+    $.each(mitem.c, function (j, ditem) {
+      o.measures[ditem].push(m);
+      o.drawMeasure(m, ditem, true);
+    });//inner loop end
   });//out loop end
 
-  $( "#measureChxBoxPDF" ).append( '<select id="pdfcat" multiple="multiple" style="display: none;"></select>' );
-  $( "#measureChxBoxExcel" ).append( '<select id="excelcat" multiple="multiple" style="display: none;"></select>' );
-  $.each( d.categories, function(i,citem) {
-    $( "#pdfcat, #excelcat" ).append( '<optgroup label="' +  citem + '"></optgroup' );
-    $.each(o.measures[ citem ], function(j, mitem) {
-      $( "#pdfcat, #excelcat" ).append( '<option value="' + mitem.id + '">' + mitem.m + '</option>' );
+  $("#measureChxBoxPDF").append('<select id="pdfcat" multiple="multiple" style="display: none;"></select>');
+  $("#measureChxBoxExcel").append('<select id="excelcat" multiple="multiple" style="display: none;"></select>');
+  $.each(d.categories, function (i, citem) {
+    $("#pdfcat, #excelcat").append('<optgroup label="' + citem + '"></optgroup');
+    $.each(o.measures[citem], function (j, mitem) {
+      $("#pdfcat, #excelcat").append('<option value="' + mitem.id + '">' + mitem.m + '</option>');
     });
   });
-  $( "#pdfcat, #excelcat").multiselect({includeSelectAllOption: true, numberDisplayed:1, enableClickableOptGroups: true, enableCollapsibleOptGroups: true});
+  $("#pdfcat, #excelcat").multiselect({ includeSelectAllOption: true, numberDisplayed: 1, enableClickableOptGroups: true, enableCollapsibleOptGroups: true });
   o.targets = d.targets[0];
-  $('.aindicator.nonactive').bind('click', function() { o.measureClick( this );});
+  $('.aindicator.nonactive').bind('click', function () { o.measureClick(this); });
   setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
@@ -193,15 +205,15 @@ App.prototype.drawIndex = function(d) {
   setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
   setConsistentHeightDASHBOARD("#dashboard_indicators", ".explanation");
 };
-App.prototype.measureClick = function( m ) {
- 
-  if ($( m ).hasClass("active")) {$( m ).removeClass("active"); return;}
+App.prototype.measureClick = function (m) {
+
+  if ($(m).hasClass("active")) { $(m).removeClass("active"); return; }
   o = this;
-  $( m ).unbind('click');
-  $( m ).removeClass("nonactive");
-  $( m ).addClass("active");
-  $( ".aindicator" ).addClass("hide");
-  $( ".aindicator.active, .aindicator.active .measuredetail" ).removeClass("hide");
+  $(m).unbind('click');
+  $(m).removeClass("nonactive");
+  $(m).addClass("active");
+  $(".aindicator").addClass("hide");
+  $(".aindicator.active, .aindicator.active .measuredetail").removeClass("hide");
   //load data firstly 
   o.loadDataOnly();
   o.loadLiveDemmandStreamData();
@@ -209,189 +221,189 @@ App.prototype.measureClick = function( m ) {
   o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
   var row = this.measures[$(m).attr("id")];
   var category = row.c[0];
-  if (category=="Live Stream"){
-       //mxgraph
-      if(row.chartType=="mxgraph"){
-        o.drawlivedemandstream.call(o,liveDemandStreamData['LSD'],m);
+  if (category == "Live Stream") {
+    //mxgraph
+    if (row.chartType == "mxgraph") {
+      o.drawlivedemandstream.call(o, liveDemandStreamData['LSD'], m);
+      var intervalTime = parseInt(row.intervalTime.toString(), 10);
+      inter_handle_livedemandstream = setInterval(function () { dashboard.showLiveDemmandStream(row); }, intervalTime);//6 seconds
+      return;
+    }
+    else if (row.chartType == "map") {
+      o.drawliveMap.call(o, liveDemandStreamData['map'], m);
+      var intervalTime = parseInt(row.intervalTime.toString(), 10);
+      inter_handle_live = setInterval(function () { dashboard.showLiveMap(row); }, intervalTime);//6 seconds
+      return;
+    }
+    else {
+      //byPassPeriod
+      if (row.byPassPeriod == "True") {
+        o.paintDetailByPassPeriod.call(o, row);
         var intervalTime = parseInt(row.intervalTime.toString(), 10);
-        inter_handle_livedemandstream=setInterval(function() {dashboard.showLiveDemmandStream(row);},intervalTime);//6 seconds
+        inter_handle_live = setInterval(function () { o.paintDetailByPassPeriod.call(o, row); }, intervalTime);//6 seconds
         return;
       }
-      else if (row.chartType=="map"){
-        o.drawliveMap.call(o,liveDemandStreamData['map'],m);
-        var intervalTime = parseInt(row.intervalTime.toString(), 10);
-        inter_handle_live=setInterval(function() {dashboard.showLiveMap(row);},intervalTime);//6 seconds
-        return;
-     }
       else {
-        //byPassPeriod
-        if (row.byPassPeriod=="True"){
-            o.paintDetailByPassPeriod.call(o, row);
-            var intervalTime = parseInt(row.intervalTime.toString(), 10);
-            inter_handle_live=setInterval(function() {o.paintDetailByPassPeriod.call(o, row);},intervalTime);//6 seconds
-            return ;
-        }
-        else {
-            o.paintDetail.call(o, row );
-            var intervalTime = parseInt(row.intervalTime.toString(), 10);
-            inter_handle_live=setInterval(function() {o.paintDetail.call(o, row );},intervalTime);//6 seconds
-            return;
-           }
-       }
+        o.paintDetail.call(o, row);
+        var intervalTime = parseInt(row.intervalTime.toString(), 10);
+        inter_handle_live = setInterval(function () { o.paintDetail.call(o, row); }, intervalTime);//6 seconds
+        return;
+      }
     }
+  }
   //non live stream     
   else {
-     if (row.chartType=="RYG"){
-      if (category=='Nightly Summary'){
-          o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
-          o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
-          return;
-     }
-     // historicaldemandtrafficlight
-      else if (category=='Historical Demand'){
-           o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
-           o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
-           return;
-       }
-     }
-     //non RYG
-     else {
-      if (row.byPassPeriod=="True"){
-          o.paintDetailByPassPeriod.call(o, m );
-          return;
+    if (row.chartType == "RYG") {
+      if (category == 'Nightly Summary') {
+        o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
+        o.drawtrafficlight.call(o, trafficlightData['RYG'], m);
+        return;
+      }
+      // historicaldemandtrafficlight
+      else if (category == 'Historical Demand') {
+        o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
+        o.drawtrafficlight.call(o, trafficlightData['RYG'], m);
+        return;
+      }
+    }
+    //non RYG
+    else {
+      if (row.byPassPeriod == "True") {
+        o.paintDetailByPassPeriod.call(o, m);
+        return;
       }
       else {
-          o.paintDetail.call(o, m );
-         return;
+        o.paintDetail.call(o, m);
+        return;
       }
-     }
     }
-  };
-
-  /*
-  if (row.chartType=="mxgraph" && category=="Live Stream"){
-      // o.loadLiveDemmandStreamData();
-       o.drawlivedemandstream.call(o,liveDemandStreamData['LSD'],m);
-       var intervalTime = parseInt(row.intervalTime.toString(), 10);
-       inter_handle_livedemandstream=setInterval(function() {dashboard.showLiveDemmandStream(row);},intervalTime);//6 seconds
-       return;
   }
-  //&& row.id=="1.46"
-  else if (category=="Live Stream" && row.id=="1.46"){//CurrentOccupancybySector
-           //o.loadDataOnly();
-           if (row.byPassPeriod=="True")
-               o.paintDetailByPassPeriod.call(o, m );
-           else     
-               o.paintDetail.call(o, row );
-               var intervalTime = parseInt(row.intervalTime.toString(), 10);
-           inter_handle_live=setInterval(function() {
-           o.showLiveData(row);
-           },intervalTime);//6 seconds
-           return;
+};
+
+/*
+if (row.chartType=="mxgraph" && category=="Live Stream"){
+    // o.loadLiveDemmandStreamData();
+     o.drawlivedemandstream.call(o,liveDemandStreamData['LSD'],m);
+     var intervalTime = parseInt(row.intervalTime.toString(), 10);
+     inter_handle_livedemandstream=setInterval(function() {dashboard.showLiveDemmandStream(row);},intervalTime);//6 seconds
+     return;
 }
-  else if (category=="Live Stream" && row.id=="1.45" ){//CurrentOccupancybySector
-        // o.loadDataOnly();
+//&& row.id=="1.46"
+else if (category=="Live Stream" && row.id=="1.46"){//CurrentOccupancybySector
+         //o.loadDataOnly();
          if (row.byPassPeriod=="True")
-             o.paintDetailByPassPeriod.call(o, row );
-         else 
-         o.paintDetail.call(o,row);
-         var intervalTime = parseInt(row.intervalTime.toString(), 10);
+             o.paintDetailByPassPeriod.call(o, m );
+         else     
+             o.paintDetail.call(o, row );
+             var intervalTime = parseInt(row.intervalTime.toString(), 10);
          inter_handle_live=setInterval(function() {
          o.showLiveData(row);
-  },intervalTime);//6 seconds
-  return;
+         },intervalTime);//6 seconds
+         return;
 }
- else if (category=="Live Stream" && row.id=="2.18" ){//CurrentOccupancybySector
-        //o.loadDataOnly();
-        if (row.byPassPeriod=="True")
-            o.paintDetailByPassPeriod.call(o, row );
-        else 
-            o.paintDetail.call(o,row);
-        var intervalTime = parseInt(row.intervalTime.toString(), 10);
-        inter_handle_live=setInterval(function() {o.showLiveData(row);},intervalTime);//x seconds calling  
-        return;
+else if (category=="Live Stream" && row.id=="1.45" ){//CurrentOccupancybySector
+      // o.loadDataOnly();
+       if (row.byPassPeriod=="True")
+           o.paintDetailByPassPeriod.call(o, row );
+       else 
+       o.paintDetail.call(o,row);
+       var intervalTime = parseInt(row.intervalTime.toString(), 10);
+       inter_handle_live=setInterval(function() {
+       o.showLiveData(row);
+},intervalTime);//6 seconds
+return;
+}
+else if (category=="Live Stream" && row.id=="2.18" ){//CurrentOccupancybySector
+      //o.loadDataOnly();
+      if (row.byPassPeriod=="True")
+          o.paintDetailByPassPeriod.call(o, row );
+      else 
+          o.paintDetail.call(o,row);
+      var intervalTime = parseInt(row.intervalTime.toString(), 10);
+      inter_handle_live=setInterval(function() {o.showLiveData(row);},intervalTime);//x seconds calling  
+      return;
 }
 //nightlysummarytrafficlight 
 //hard code ?? I do not like it ,finally will be change it.
- else if (row.chartType=="RYG"){
-       if (category=='Nightly Summary'){
-          // o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
-           o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
-           return;
-      }
-      // historicaldemandtrafficlight
- else if (category=='Historical Demand'){
-       // o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
-        o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
-        return;
-        }
-    }
-  else {
-    if (row.byPassPeriod=="True"){
-        o.paintDetailByPassPeriod.call(o, m );
-        return;
-      }
-    else {
-        o.paintDetail.call(o, m );
+else if (row.chartType=="RYG"){
+     if (category=='Nightly Summary'){
+        // o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
+         o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
          return;
+    }
+    // historicaldemandtrafficlight
+else if (category=='Historical Demand'){
+     // o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
+      o.drawtrafficlight.call(o,trafficlightData['RYG'],m);
+      return;
       }
   }
-  */
+else {
+  if (row.byPassPeriod=="True"){
+      o.paintDetailByPassPeriod.call(o, m );
+      return;
+    }
+  else {
+      o.paintDetail.call(o, m );
+       return;
+    }
+}
+*/
 
-App.prototype.closeDetail = function() {
-  if (inter_handle_livedemandstream!=null)
-     clearInterval(inter_handle_livedemandstream);
-  if (inter_handle_live!=null) 
-     clearInterval(inter_handle_live);
+App.prototype.closeDetail = function () {
+  if (inter_handle_livedemandstream != null)
+    clearInterval(inter_handle_livedemandstream);
+  if (inter_handle_live != null)
+    clearInterval(inter_handle_live);
   var o = this;
   delete this.chart;
   delete this.table;
-  $( "#measurechart, #measuretable").remove();
-  $( ".aindicator.active" ).removeAttr("style");
-  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).removeAttr("style");
-  $( ".aindicator.active .measuredetail, #measurechart" ).html("");
-  $( ".aindicator.active .measuredetail" ).addClass("hide");
-  $( ".aindicator.active" ).addClass("nonactive");
-  $( ".aindicator.active").bind('click', function() { o.measureClick( this );});
-  $( ".aindicator" ).removeClass( "hide" );
+  $("#measurechart, #measuretable").remove();
+  $(".aindicator.active").removeAttr("style");
+  $(".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav").removeAttr("style");
+  $(".aindicator.active .measuredetail, #measurechart").html("");
+  $(".aindicator.active .measuredetail").addClass("hide");
+  $(".aindicator.active").addClass("nonactive");
+  $(".aindicator.active").bind('click', function () { o.measureClick(this); });
+  $(".aindicator").removeClass("hide");
   setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
 };
 /*
 reload Live data and show on screen
 
-*/ 
-App.prototype.showLiveDemmandStream = function(m) {
-  $('#div_loading_1').css("display","block");
+*/
+App.prototype.showLiveDemmandStream = function (m) {
+  $('#div_loading_1').css("display", "block");
   var o = this;
   o.loadLiveDemmandStreamData();
   //LSD
-  data_LSD=liveDemandStreamData['LSD'];
-  o.drawlivedemandstream.call(o,data_LSD,m);
- 
+  data_LSD = liveDemandStreamData['LSD'];
+  o.drawlivedemandstream.call(o, data_LSD, m);
+
 };
 
 /*
 reload Live map data and show on screen
 
-*/ 
-App.prototype.showLiveMap = function(m) {
-  $('#div_loading_1').css("display","block");
+*/
+App.prototype.showLiveMap = function (m) {
+  $('#div_loading_1').css("display", "block");
   var o = this;
   o.loadLiveDemmandStreamData();
   //map
-  data_map=liveDemandStreamData['map'];
-  o.drawliveMap.call(o,data_map,m);
+  data_map = liveDemandStreamData['map'];
+  o.drawliveMap.call(o, data_map, m);
 };
 
 
-App.prototype.showLiveData = function(m) {
-  $('#div_loading_1').css("display","block");
+App.prototype.showLiveData = function (m) {
+  $('#div_loading_1').css("display", "block");
   var o = this;
   o.loadDataOnly();
-  if (m.byPassPeriod=="True")
-     o.paintDetailByPassPeriod.call(o, m );
-  else   
-     o.paintDetail.call(o,m);
+  if (m.byPassPeriod == "True")
+    o.paintDetailByPassPeriod.call(o, m);
+  else
+    o.paintDetail.call(o, m);
 };
 
 
@@ -473,410 +485,431 @@ App.prototype.getAnalysis = function(m, compVal1, compVal2, strTitle, blnTarget,
 /*
 *set control button status and back ground color
 */
-function setControl(item){
-  var controlList=liveDemandStreamData['map'].controls;
-  var curControlID=item["id"];
-  for (var key in controlList){
-    if (controlList.hasOwnProperty(key)){
-        var  controlID=controlList[key].id;
-    if  (curControlID==controlID){
-         controlList[key]=item;
-         return;
-     }
-   }
- }
+function setControl(item) {
+  var controlList = liveDemandStreamData['map'].controls;
+  var curControlID = item["id"];
+  for (var key in controlList) {
+    if (controlList.hasOwnProperty(key)) {
+      var controlID = controlList[key].id;
+      if (curControlID == controlID) {
+        controlList[key] = item;
+        return;
+      }
+    }
+  }
 }
 
-function setMarkers(item){
-  var markerList=liveDemandStreamData['map'].markers;
-  var curType=item["type"];
-  for (var key in markerList){
-    if (markerList.hasOwnProperty(key)){
-    if  (curType==markerList[key].type){
-         markerList[key].status=item["status"];
-     }
-   }
- }
+function setMarkers(item) {
+  var markerList = liveDemandStreamData['map'].markers;
+  var curType = item["type"];
+  for (var key in markerList) {
+    if (markerList.hasOwnProperty(key)) {
+      if (curType == markerList[key].type) {
+        markerList[key].status = item["status"];
+      }
+    }
+  }
 }
 
-function setMapDataTable(dataList,item){
-  var dataTableRowsList=dataList.rows;
-  var curType=item["type"];
-  var curStatus=item["status"];
-  for (var key in dataTableRowsList){
-    if (dataTableRowsList.hasOwnProperty(key)){
-    if  (curType==dataTableRowsList[key].type){
-         dataTableRowsList[key].status=item["status"];
-     }
-   }
- }
+function setMapDataTable(dataList, item) {
+  var dataTableRowsList = dataList.rows;
+  var curType = item["type"];
+  var curStatus = item["status"];
+  for (var key in dataTableRowsList) {
+    if (dataTableRowsList.hasOwnProperty(key)) {
+      if (curType == dataTableRowsList[key].type) {
+        dataTableRowsList[key].status = item["status"];
+      }
+    }
+  }
 }
 
-function setDataListByStatus(data){
-  var data_Rows=[];
-  var status="1";
+function setDataListByStatus(data) {
+  var data_Rows = [];
+  var status = "1";
   //alert(JSON.stringify("data rows:"+data["rows"]));
-  for (var key in data.rows){
-    if (data.hasOwnProperty(key)){
-    if  (status==data[key].status){
+  for (var key in data.rows) {
+    if (data.hasOwnProperty(key)) {
+      if (status == data[key].status) {
         data_Rows.push(data[key]);
-     }
-   }
- }
-   data["rows"]=data_Rows;
+      }
+    }
+  }
+  data["rows"] = data_Rows;
 
 }
 function removeByStatus(arr, item) {
-  for(var i = arr.length; i--;) {
-      if(arr[i].status === item) {
-          arr.splice(i, 1);
-      }
+  for (var i = arr.length; i--;) {
+    if (arr[i].status === item) {
+      arr.splice(i, 1);
+    }
   }
 }
-function processFilter(item){
-         if (item["status"]=="1") {
-           item["status"]="0";
-           item.style.background="lightgrey";  
-         }
-         else if (item["status"]=="0"){
-          item["status"]="1";
-          item.style.background="#5bc0de";  
-         }
-         setControl(item);
-         setMarkers(item);
-         var container_map =$('#div_liveMap').get(0);
-         var data_map=liveDemandStreamData['map'];
-         drawMap(container_map,data_map);
-         var container_table=$('#div_liveMap_datatable')[0];
-         var data_datatable={};
-         data_datatable=liveDemandStreamData['map'].map_datatable;
-         setMapDataTable(data_datatable,item);
-         var datatable ={};
-         datatable=jQuery.extend(true, {}, data_datatable);//clone  map_datatable to datatable
-         /*remove status == 0*/
-         removeByStatus(datatable.rows, "0");
-         var dataTable=new google.visualization.DataTable();
-         dataTable=drawtabledata(container_table,datatable,'90%','100%',false);
-         $("#excelexport").unbind().click(function(){
-           downloadLiveCSV_Map(dataTable);
-           datatable = null;
-      });
-    
+function processFilter(item) {
+  if (item["status"] == "1") {
+    item["status"] = "0";
+    item.style.background = "lightgrey";
+    item.style.color = "#000000";
+  }
+  else if (item["status"] == "0") {
+    item["status"] = "1";
+    if (item["type"] == "C") {
+      item.style.background = "#fbacfd";
+      item.style.color = "#ffffff";
+    }
+    else if (item["type"] == "F") {
+      item.style.background = "#98ec7d";
+      item.style.color = "#ffffff";
+    }
+    else if (item["type"] == "M") {
+      item.style.background = "#3a5fb7";
+      item.style.color = "#ffffff";
+    }
+    else if (item["type"] == "W") {
+      item.style.background = "#ca9e7b";
+      item.style.color = "#ffffff";
+    }
+    else if (item["type"] == "Y") {
+      item.style.background = "#ff776b";
+      item.style.color = "#ffffff";
+    }
+  }
+  setControl(item);
+  setMarkers(item);
+  var container_map = $('#div_liveMap').get(0);
+  var data_map = liveDemandStreamData['map'];
+  drawMap(container_map, data_map);
+  var container_table = $('#div_liveMap_datatable')[0];
+  var data_datatable = {};
+  data_datatable = liveDemandStreamData['map'].map_datatable;
+  setMapDataTable(data_datatable, item);
+  var datatable = {};
+  datatable = jQuery.extend(true, {}, data_datatable);//clone  map_datatable to datatable
+  /*remove status == 0*/
+  removeByStatus(datatable.rows, "0");
+  var dataTable = new google.visualization.DataTable();
+  dataTable = drawtabledata(container_table, datatable, '90%', '100%', false);
+  $("#excelexport").unbind().click(function () {
+    downloadLiveCSV_Map(dataTable);
+    datatable = null;
+  });
+
 }
-function loadMarker(item){
+function loadMarker(item) {
   map.addMarker({
-    lat:item['lat'],
+    lat: item['lat'],
     lng: item['lng'],
     title: item['title'],
     icon: item['icon'],
-    infoWindow:item['infoWindow'],
-    mouseover: function(){item['mouseover']},
-    mouseout: function(){item['mouseout']},
-    click:function(e){item['click']}
+    infoWindow: item['infoWindow'],
+    mouseover: function () { item['mouseover'] },
+    mouseout: function () { item['mouseout'] },
+    click: function (e) { item['click'] }
   });
 }
-function loadControl(item){
+function loadControl(item) {
   map.addControl({
     position: item["position"],
     content: item["content"],
     style: item["style"],
-    events:{click: function(){
-      processFilter(item);
+    events: {
+      click: function () {
+        processFilter(item);
+      }
     }
-  }
   });
 }
 
 
-function loadMarkers(data){
-      $.each(data["markers"], function(i,item){
-        if (item["status"]=="1") //show 
-            loadMarker(item);
-      });
-  }
+function loadMarkers(data) {
+  $.each(data["markers"], function (i, item) {
+    if (item["status"] == "1") //show 
+      loadMarker(item);
+  });
+}
 
-  function  loadControls(data){
-    $.each(data["controls"], function(i,item){
-      loadControl(item);
-    });
+function loadControls(data) {
+  $.each(data["controls"], function (i, item) {
+    loadControl(item);
+  });
 }
 /*drawMap*/
 
-function drawMap(container,data){
- map = new GMaps({
-  el: container,
-  lat: 43.6532,
-  lng: -79.3832,
-  zoomControl : true,
-  zoomControlOpt: {
-      style : 'SMALL',
+function drawMap(container, data) {
+  map = new GMaps({
+    el: container,
+    lat: 43.6532,
+    lng: -79.3832,
+    zoomControl: true,
+    zoomControlOpt: {
+      style: 'SMALL',
       position: 'TOP_LEFT'
-  },
-  panControl : false,
-  streetViewControl : false,
-  mapTypeControl: false,
-  overviewMapControl: false
-});
-//load markers
-loadMarkers(data);
-loadControls(data);
-map.fitZoom();
+    },
+    panControl: false,
+    streetViewControl: false,
+    mapTypeControl: false,
+    overviewMapControl: false
+  });
+  //load markers
+  loadMarkers(data);
+  loadControls(data);
+  map.fitZoom();
 };
 
 /*drawmxgraph*/
-function drawmxgraph (container,dataSource){
-   /*add listener */
-   $('#div_button').html("");
-    /*
-   $('#details').on('switchChange.bootstrapSwitch', function(event, state) {
-      secondLabelVisible =state;
-      $(container).empty();
-      drawmxgraph (container,dataSource);
-      if (!secondLabelVisible)
-       var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE'];
-      else 
-      var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE_DETAILS'];
-      var container_table=$('#div_livedemandstream_datatable')[0];
-      var dataTable=new google.visualization.DataTable();
-      dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
-      $("#excelexport").unbind().click(function(){
-        downloadLiveCSV_Map(dataTable);
-        datatable = null;
-   });
-  }
+function drawmxgraph(container, dataSource) {
+
+  /*add listener */
+  $('#div_button').html("");
+  /*
+ $('#details').on('switchChange.bootstrapSwitch', function(event, state) {
+    secondLabelVisible =state;
+    $(container).empty();
+    drawmxgraph (container,dataSource);
+    if (!secondLabelVisible)
+     var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE'];
+    else 
+    var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE_DETAILS'];
+    var container_table=$('#div_livedemandstream_datatable')[0];
+    var dataTable=new google.visualization.DataTable();
+    dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
+    $("#excelexport").unbind().click(function(){
+      downloadLiveCSV_Map(dataTable);
+      datatable = null;
+ });
+}
 );
 */
+  var caption = "";
+  if (secondLabelVisible) caption = 'Hide Details';
+  else caption = 'Show Details';
+  $('#div_button').append(mxUtils.button(caption,
+    function (evt) {
+      secondLabelVisible = !secondLabelVisible;
+      $(container).empty();
+      drawmxgraph(container, dataSource);
+      if (!secondLabelVisible)
+        var data_datatable = (liveDemandStreamData['LSD'])['LSD_DATATABLE'];
+      else
+        var data_datatable = (liveDemandStreamData['LSD'])['LSD_DATATABLE_DETAILS'];
+      var container_table = $('#div_livedemandstream_datatable')[0];
+      var dataTable = new google.visualization.DataTable();
+      dataTable = drawtabledata(container_table, data_datatable, '90%', '100%', false);
+      $("#excelexport").unbind().click(function () {
+        downloadLiveCSV_Map(dataTable);
+        datatable = null;
+      });
 
-   $('#div_button').append(mxUtils.button('Details',
-   function(evt)
-   {
-        secondLabelVisible = !secondLabelVisible;
-        $(container).empty();
-        drawmxgraph (container,dataSource);
-        if (!secondLabelVisible)
-         var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE'];
-        else 
-        var data_datatable=(liveDemandStreamData['LSD'])['LSD_DATATABLE_DETAILS'];
-        var container_table=$('#div_livedemandstream_datatable')[0];
-        var dataTable=new google.visualization.DataTable();
-        dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
-        $("#excelexport").unbind().click(function(){
-          downloadLiveCSV_Map(dataTable);
-          datatable = null;
-     });
 
-
-   }
- ));
- 
-    if (!mxClient.isBrowserSupported()){
-      mxUtils.error('Browser is not supported!', 200, false);
     }
-    else{
-      mxEvent.disableContextMenu(container);
-      var graph = new mxGraph(container);
-      var parent = graph.getDefaultParent();
-      var data=dataSource;
-  
-      //secondlable
-      graph.getSecondLabel = function(cell){
-        if (!this.model.isEdge(cell)&&secondLabelVisible==true){
-          var value=getSecondLableValueByID(cell.getId(),data.vertexes);
-          return  value;
-        }
-        return null;
-      };
-      var relativeChildVerticesVisible = true;
-      graph.isCellVisible = function(cell){
-        return !this.model.isVertex(cell) || cell.geometry == null ||
-          !cell.geometry.relative ||
-          cell.geometry.relative == relativeChildVerticesVisible;
-      };
-      var redrawShape = graph.cellRenderer.redrawShape;
-      graph.cellRenderer.redrawShape = function(state, force, rendering){
-        var result = redrawShape.apply(this, arguments);
-        if (result && secondLabelVisible && state.cell.geometry != null && !state.cell.geometry.relative){
-          var secondLabel = graph.getSecondLabel(state.cell);
-          if (secondLabel != null && state.shape != null && state.secondLabel == null){
-            state.secondLabel = new mxText(secondLabel, new mxRectangle(),
+  ));
+  $('#div_button').children().prop("class", "btn btn-primary");
+
+  if (!mxClient.isBrowserSupported()) {
+    mxUtils.error('Browser is not supported!', 200, false);
+  }
+  else {
+    mxEvent.disableContextMenu(container);
+    var graph = new mxGraph(container);
+    var parent = graph.getDefaultParent();
+    var data = dataSource;
+
+    //secondlable
+    graph.getSecondLabel = function (cell) {
+      if (!this.model.isEdge(cell) && secondLabelVisible == true) {
+        var value = getSecondLableValueByID(cell.getId(), data.vertexes);
+        return value;
+      }
+      return null;
+    };
+    var relativeChildVerticesVisible = true;
+    graph.isCellVisible = function (cell) {
+      return !this.model.isVertex(cell) || cell.geometry == null ||
+        !cell.geometry.relative ||
+        cell.geometry.relative == relativeChildVerticesVisible;
+    };
+    var redrawShape = graph.cellRenderer.redrawShape;
+    graph.cellRenderer.redrawShape = function (state, force, rendering) {
+      var result = redrawShape.apply(this, arguments);
+      if (result && secondLabelVisible && state.cell.geometry != null && !state.cell.geometry.relative) {
+        var secondLabel = graph.getSecondLabel(state.cell);
+        if (secondLabel != null && state.shape != null && state.secondLabel == null) {
+          state.secondLabel = new mxText(secondLabel, new mxRectangle(),
             //  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_BOTTOM);
             mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP);
-            state.secondLabel.color = getSecondLabelColorByID(state.cell.getId(),data.vertexes);
-            state.secondLabel.family =getSecondLabelFontNameByID(state.cell.getId(),data.vertexes);
-            state.secondLabel.size = getSecondLabelFontSizeByID(state.cell.getId(),data.vertexes);
-            state.secondLabel.background = getSecondLabelBackGroundColorByID(state.cell.getId(),data.vertexes);
-            state.secondLabel.valign = getSecondLabelValignByID(state.cell.getId(),data.vertexes);
-              //state.secondLabel.valign = 'top';
-             // state.secondLabel.background = 'yellow';
-						//	state.secondLabel.border = 'black';
-            state.secondLabel.dialect = state.shape.dialect;
-            state.secondLabel.dialect = mxConstants.DIALECT_STRICTHTML;
-            state.secondLabel.wrap = true;
-            graph.cellRenderer.initializeLabel(state, state.secondLabel);
-          }
+          state.secondLabel.color = getSecondLabelColorByID(state.cell.getId(), data.vertexes);
+          state.secondLabel.family = getSecondLabelFontNameByID(state.cell.getId(), data.vertexes);
+          state.secondLabel.size = getSecondLabelFontSizeByID(state.cell.getId(), data.vertexes);
+          state.secondLabel.background = getSecondLabelBackGroundColorByID(state.cell.getId(), data.vertexes);
+          state.secondLabel.valign = getSecondLabelValignByID(state.cell.getId(), data.vertexes);
+          //state.secondLabel.valign = 'top';
+          // state.secondLabel.background = 'yellow';
+          //	state.secondLabel.border = 'black';
+          state.secondLabel.dialect = state.shape.dialect;
+          state.secondLabel.dialect = mxConstants.DIALECT_STRICTHTML;
+          state.secondLabel.wrap = true;
+          graph.cellRenderer.initializeLabel(state, state.secondLabel);
         }
+      }
 
-        if (state.secondLabel != null)
-        {
-          var scale = graph.getView().getScale();
-          var bounds = new mxRectangle(state.x + state.width - 8 * scale+17, state.y + 8 * scale, 35, 0);
-         //var bounds = new mxRectangle(state.x + state.width + 8 * scale, state.y + 8 * scale+100, 35, 0);
-          state.secondLabel.state = state;
-          state.secondLabel.value = graph.getSecondLabel(state.cell);
-          state.secondLabel.scale = scale;
-          state.secondLabel.bounds = bounds;
-          state.secondLabel.redraw();
-        }
-        return result;
-      };
+      if (state.secondLabel != null) {
+        var scale = graph.getView().getScale();
+        var bounds = new mxRectangle(state.x + state.width - 8 * scale + 17, state.y + 8 * scale, 35, 0);
+        //var bounds = new mxRectangle(state.x + state.width + 8 * scale, state.y + 8 * scale+100, 35, 0);
+        state.secondLabel.state = state;
+        state.secondLabel.value = graph.getSecondLabel(state.cell);
+        state.secondLabel.scale = scale;
+        state.secondLabel.bounds = bounds;
+        state.secondLabel.redraw();
+      }
+      return result;
+    };
 
-      // Destroys the shape number
-      var destroy = graph.cellRenderer.destroy;
-      graph.cellRenderer.destroy = function(state){
-        destroy.apply(this, arguments);
-        if (state.secondLabel != null){
-          state.secondLabel.destroy();
-          state.secondLabel = null;
-        }
-      };
-      graph.cellRenderer.getShapesForState = function(state){
-        return [state.shape, state.text, state.secondLabel, state.control];
-      };
-      /*end */
-     /*
-      graph.addListener(mxEvent.CLICK, function(sender, event){
-         var mouseEvent = event.getProperty('event');
-         var selectedCell = event.getProperty('cell');
-         //alert(mouseEvent.currentTarget.innerHTML);
-          if (selectedCell.isVertex()){
-            secondLabelVisible = !secondLabelVisible;
-            //graph.refresh();
-            $(container).empty();
-            drawmxgraph (container,dataSource);
-          }
-              //alert(graph.getSecondLabel(selectedCell));
-              
-        });
+    // Destroys the shape number
+    var destroy = graph.cellRenderer.destroy;
+    graph.cellRenderer.destroy = function (state) {
+      destroy.apply(this, arguments);
+      if (state.secondLabel != null) {
+        state.secondLabel.destroy();
+        state.secondLabel = null;
+      }
+    };
+    graph.cellRenderer.getShapesForState = function (state) {
+      return [state.shape, state.text, state.secondLabel, state.control];
+    };
+    /*end */
+    /*
+     graph.addListener(mxEvent.CLICK, function(sender, event){
+        var mouseEvent = event.getProperty('event');
+        var selectedCell = event.getProperty('cell');
+        //alert(mouseEvent.currentTarget.innerHTML);
+         if (selectedCell.isVertex()){
+           secondLabelVisible = !secondLabelVisible;
+           //graph.refresh();
+           $(container).empty();
+           drawmxgraph (container,dataSource);
+         }
+             //alert(graph.getSecondLabel(selectedCell));
+             
+       });
 */
-       
-      /*start of font size change*/
-      graph.processChange = function(change){
-        if (change instanceof mxGeometryChange) {
-          this.view.removeState(change.cell);
-        }
-        mxGraph.prototype.processChange.apply(this, arguments);
-      };
-      // Returns dynamic fontsize based on geometry
-      graph.model.getStyle = function(cell){
-        var geometry = this.getGeometry(cell);
-        var fs = mxConstants.DEFAULT_FONTSIZE;
-        if (geometry != null)  {
-          fs = Math.max(fs, geometry.width/10);
-        }
-        return mxGraphModel.prototype.getStyle.apply(this, arguments) + ';fontSize=' + fs;
-      };
-   /*end of font size change*/
-      new mxRubberband(graph);
-      graph.setEnabled(true);
-      graph.setHtmlLabels(true);
-      graph.setCellsLocked(true);
-      graph.setConnectable(true);
-      graph.setTooltips(false);
-      graph.setAllowDanglingEdges(false);
-      graph.setMultigraph(false);
-      graph.setAutoSizeCells(true);
-      graph.setCellsResizable(false);
-      graph.setCellsMovable(false);
-      graph.centerZoom = true;
-      graph.setCellsSelectable(false);
-      var style_cell = new Object();
-     // style_cell[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
-      //style_cell[mxConstants.STYLE_SHAPE] = mxConstants.ROUNDED;
-      style_cell[mxConstants.STYLE_ROUNDED] = true;
-      //style_cell[mxConstants.STYLE_CURVED] = '1';
-      graph.getStylesheet().putCellStyle('myshape', style_cell);
-      var style =graph.getStylesheet().getDefaultEdgeStyle();
-      style[mxConstants.STYLE_ROUNDED] = true;
-      style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
-      //style[mxConstants.STYLE_SHADOW] = true;
-      graph.getStylesheet().putDefaultEdgeStyle(style);
-      graph.getModel().beginUpdate();
-      try
-      {
-        //get vertexes
-        var X2={}; //my namespace:)
-        X2.Eval=function(code){
-        if(!!(window.attachEvent && !window.opera)){//ie
+
+    /*start of font size change*/
+    graph.processChange = function (change) {
+      if (change instanceof mxGeometryChange) {
+        this.view.removeState(change.cell);
+      }
+      mxGraph.prototype.processChange.apply(this, arguments);
+    };
+    // Returns dynamic fontsize based on geometry
+    graph.model.getStyle = function (cell) {
+      var geometry = this.getGeometry(cell);
+      var fs = mxConstants.DEFAULT_FONTSIZE;
+      if (geometry != null) {
+        fs = Math.max(fs, geometry.width / 10);
+      }
+      return mxGraphModel.prototype.getStyle.apply(this, arguments) + ';fontSize=' + fs;
+    };
+    /*end of font size change*/
+    new mxRubberband(graph);
+    graph.setEnabled(true);
+    graph.setHtmlLabels(true);
+    graph.setCellsLocked(true);
+    graph.setConnectable(true);
+    graph.setTooltips(false);
+    graph.setAllowDanglingEdges(false);
+    graph.setMultigraph(false);
+    graph.setAutoSizeCells(true);
+    graph.setCellsResizable(false);
+    graph.setCellsMovable(false);
+    graph.centerZoom = true;
+    graph.setCellsSelectable(false);
+    var style_cell = new Object();
+    // style_cell[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
+    //style_cell[mxConstants.STYLE_SHAPE] = mxConstants.ROUNDED;
+    style_cell[mxConstants.STYLE_ROUNDED] = true;
+    //style_cell[mxConstants.STYLE_CURVED] = '1';
+    graph.getStylesheet().putCellStyle('myshape', style_cell);
+    var style = graph.getStylesheet().getDefaultEdgeStyle();
+    style[mxConstants.STYLE_ROUNDED] = true;
+    style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+    //style[mxConstants.STYLE_SHADOW] = true;
+    graph.getStylesheet().putDefaultEdgeStyle(style);
+    graph.getModel().beginUpdate();
+    try {
+      //get vertexes
+      var X2 = {}; //my namespace:)
+      X2.Eval = function (code) {
+        if (!!(window.attachEvent && !window.opera)) {//ie
           execScript(code);
-        }else{
+        } else {
           window.eval(code);
         }
       }
-        var vertexes=data['vertexes'];
-        var vertext_name='';
-        var model=graph.getModel();
-        var vertex_data_array=new Array();
-        for (var key in vertexes) {
-          if (vertexes.hasOwnProperty(key)) {
-            var id= vertexes[key].id;
-            var value=vertexes[key].value;
-            var left=vertexes[key].left;
-            var top=vertexes[key].top;
-            var width=vertexes[key].width;
-            var height=vertexes[key].height;
-            var style=vertexes[key].style;
-            v_tmp=graph.insertVertex(parent, id, value,left,top,width,height,style,false);
-            vertext_name=vertexes[key].id;
-            X2.Eval('var '+ vertext_name+'='+'v_tmp'+';');
-            vertex_data_array.push({'id':id,'vertex':v_tmp});
-            model.setValue(v_tmp,value);//update model
-          }
-        }//end loop vertexes
-       /*get edges*/
-        var edges=data['edges'];
-        var edge_name='';
-        //start to loop edge
-        for (var key in edges) {
-          if (edges.hasOwnProperty(key)) {
-            var id= edges[key].id;
-            var value=edges[key].value;
-            var from=getVertexByID(vertex_data_array,edges[key].from);
-            var to=getVertexByID(vertex_data_array,edges[key].to);
-            var style=graph.getStylesheet().getDefaultEdgeStyle();
-            e_tmp=graph.insertEdge(parent, null, '', from,to,style);
-            edge_name=edges[key].id;
-            X2.Eval('var '+ edge_name+'='+'e_tmp'+';');
-          }
+      var vertexes = data['vertexes'];
+      var vertext_name = '';
+      var model = graph.getModel();
+      var vertex_data_array = new Array();
+      for (var key in vertexes) {
+        if (vertexes.hasOwnProperty(key)) {
+          var id = vertexes[key].id;
+          var value = vertexes[key].value;
+          var left = vertexes[key].left;
+          var top = vertexes[key].top;
+          var width = vertexes[key].width;
+          var height = vertexes[key].height;
+          var style = vertexes[key].style;
+          v_tmp = graph.insertVertex(parent, id, value, left, top, width, height, style, false);
+          vertext_name = vertexes[key].id;
+          X2.Eval('var ' + vertext_name + '=' + 'v_tmp' + ';');
+          vertex_data_array.push({ 'id': id, 'vertex': v_tmp });
+          model.setValue(v_tmp, value);//update model
+        }
+      }//end loop vertexes
+      /*get edges*/
+      var edges = data['edges'];
+      var edge_name = '';
+      //start to loop edge
+      for (var key in edges) {
+        if (edges.hasOwnProperty(key)) {
+          var id = edges[key].id;
+          var value = edges[key].value;
+          var from = getVertexByID(vertex_data_array, edges[key].from);
+          var to = getVertexByID(vertex_data_array, edges[key].to);
+          var style = graph.getStylesheet().getDefaultEdgeStyle();
+          e_tmp = graph.insertEdge(parent, null, '', from, to, style);
+          edge_name = edges[key].id;
+          X2.Eval('var ' + edge_name + '=' + 'e_tmp' + ';');
+        }
 
-        }//end loop edges
-      }
-      finally
-      {
-        // Updates the display
-        
-          graphCentered(graph);
-          //graph.refresh();
-          graph.getModel().endUpdate();
-      }
-
+      }//end loop edges
     }
+    finally {
+      // Updates the display
+
+      graphCentered(graph);
+      //graph.refresh();
+      graph.getModel().endUpdate();
+    }
+
+  }
 };
-function graphCentered(graph){
+function graphCentered(graph) {
   var margin = 2;
   var bounds = graph.getGraphBounds();
   //alert(graph.container.clientWidth);
-  if (graph.container.clientWidth>=1000)
-  var max = 1.2;
-  if (graph.container.clientWidth>=803 && graph.container.clientWidth<1000)
-  var max = 1;
-  else if (graph.container.clientWidth>=574 && graph.container.clientWidth<803)
-  var max = 0.98;
-  else if (graph.container.clientWidth>=570 && graph.container.clientWidth<574)
-  var max = 0.72;
-  else if (graph.container.clientWidth>=360 && graph.container.clientWidth<570)
-  var max = 0.61;
-  else if (graph.container.clientWidth<360)
-  var max = 0.32;
+  if (graph.container.clientWidth >= 1000)
+    var max = 1.2;
+  if (graph.container.clientWidth >= 803 && graph.container.clientWidth < 1000)
+    var max = 1;
+  else if (graph.container.clientWidth >= 574 && graph.container.clientWidth < 803)
+    var max = 0.98;
+  else if (graph.container.clientWidth >= 570 && graph.container.clientWidth < 574)
+    var max = 0.72;
+  else if (graph.container.clientWidth >= 360 && graph.container.clientWidth < 570)
+    var max = 0.61;
+  else if (graph.container.clientWidth < 360)
+    var max = 0.32;
   var cw = graph.container.clientWidth - margin;
   var ch = graph.container.clientHeight - margin;
   var w = bounds.width / graph.view.scale;
@@ -887,92 +920,92 @@ function graphCentered(graph){
     (margin + ch - h * s) / (4.5 * s) - bounds.y / graph.view.scale);
 
 }
-function getMeasureByID(id,list){
-  for (var key in list){
-    if (list.hasOwnProperty(key)){
-        var  cellID= list[key].id;
-     if  (cellID==id)
-     return list[key];
-}
-}
-}
-function getVertexByID(vertexes_array,vertexID){
-  for (var i = 0; i < vertexes_array.length; i++) {
-    if (vertexes_array[i].id==vertexID){
-      var v=vertexes_array[i].vertex;
-      return  v;
+function getMeasureByID(id, list) {
+  for (var key in list) {
+    if (list.hasOwnProperty(key)) {
+      var cellID = list[key].id;
+      if (cellID == id)
+        return list[key];
     }
   }
 }
-function getSecondLableValueByID(vertexID,vertexList){
-  for (var key in vertexList){
-      if (vertexList.hasOwnProperty(key)){
-          var  cellID= vertexList[key].id;
-  if  (cellID==vertexID)
-       return vertexList[key].secondLabel.value; 
-  }
-  }
-}
-function getSecondLabelColorByID(vertexID,vertexList){
-for (var key in vertexList){
-      if (vertexList.hasOwnProperty(key)){
-          var  cellID= vertexList[key].id;
-  if  (cellID==vertexID)
-       return vertexList[key].secondLabel.color; 
-  }
+function getVertexByID(vertexes_array, vertexID) {
+  for (var i = 0; i < vertexes_array.length; i++) {
+    if (vertexes_array[i].id == vertexID) {
+      var v = vertexes_array[i].vertex;
+      return v;
+    }
   }
 }
-
-function getSecondLabelFontNameByID(vertexID,vertexList){
-for (var key in vertexList){
-      if (vertexList.hasOwnProperty(key)){
-          var  cellID= vertexList[key].id;
-  if  (cellID==vertexID)
-       return vertexList[key].secondLabel.family; 
+function getSecondLableValueByID(vertexID, vertexList) {
+  for (var key in vertexList) {
+    if (vertexList.hasOwnProperty(key)) {
+      var cellID = vertexList[key].id;
+      if (cellID == vertexID)
+        return vertexList[key].secondLabel.value;
+    }
   }
+}
+function getSecondLabelColorByID(vertexID, vertexList) {
+  for (var key in vertexList) {
+    if (vertexList.hasOwnProperty(key)) {
+      var cellID = vertexList[key].id;
+      if (cellID == vertexID)
+        return vertexList[key].secondLabel.color;
+    }
   }
 }
 
-function getSecondLabelFontSizeByID(vertexID,vertexList){
-for (var key in vertexList){
-      if (vertexList.hasOwnProperty(key)){
-          var  cellID= vertexList[key].id;
-  if  (cellID==vertexID)
-       return vertexList[key].secondLabel.size; 
-  }
-  }
-}
-
-function getSecondLabelFontSizeByID(vertexID,vertexList){
-for (var key in vertexList){
-      if (vertexList.hasOwnProperty(key)){
-          var  cellID= vertexList[key].id;
-  if  (cellID==vertexID)
-       return vertexList[key].secondLabel.size; 
-  }
-  }
-}
-function getSecondLabelBackGroundColorByID(vertexID,vertexList){
-for (var key in vertexList){
-      if (vertexList.hasOwnProperty(key)){
-          var  cellID= vertexList[key].id;
-  if  (cellID==vertexID)
-       return vertexList[key].secondLabel.background; 
-  }
+function getSecondLabelFontNameByID(vertexID, vertexList) {
+  for (var key in vertexList) {
+    if (vertexList.hasOwnProperty(key)) {
+      var cellID = vertexList[key].id;
+      if (cellID == vertexID)
+        return vertexList[key].secondLabel.family;
+    }
   }
 }
 
-function getSecondLabelValignByID(vertexID,vertexList){
-for (var key in vertexList){
-      if (vertexList.hasOwnProperty(key)){
-          var  cellID= vertexList[key].id;
-  if  (cellID==vertexID)
-       return vertexList[key].secondLabel.valign; 
-  }
+function getSecondLabelFontSizeByID(vertexID, vertexList) {
+  for (var key in vertexList) {
+    if (vertexList.hasOwnProperty(key)) {
+      var cellID = vertexList[key].id;
+      if (cellID == vertexID)
+        return vertexList[key].secondLabel.size;
+    }
   }
 }
 
-function drawtabledata(container,data,swidth,sheight,paging){
+function getSecondLabelFontSizeByID(vertexID, vertexList) {
+  for (var key in vertexList) {
+    if (vertexList.hasOwnProperty(key)) {
+      var cellID = vertexList[key].id;
+      if (cellID == vertexID)
+        return vertexList[key].secondLabel.size;
+    }
+  }
+}
+function getSecondLabelBackGroundColorByID(vertexID, vertexList) {
+  for (var key in vertexList) {
+    if (vertexList.hasOwnProperty(key)) {
+      var cellID = vertexList[key].id;
+      if (cellID == vertexID)
+        return vertexList[key].secondLabel.background;
+    }
+  }
+}
+
+function getSecondLabelValignByID(vertexID, vertexList) {
+  for (var key in vertexList) {
+    if (vertexList.hasOwnProperty(key)) {
+      var cellID = vertexList[key].id;
+      if (cellID == vertexID)
+        return vertexList[key].secondLabel.valign;
+    }
+  }
+}
+
+function drawtabledata(container, data, swidth, sheight, paging) {
   var cssClassNames = {
     'headerRow': '',
     'tableRow': '',
@@ -981,450 +1014,469 @@ function drawtabledata(container,data,swidth,sheight,paging){
     'hoverTableRow': '',
     'headerCell': 'bold_column_font',
     'tableCell': 'data_cell_font',
-    'rowNumberCell': ''};
+    'rowNumberCell': ''
+  };
   //  setDataListByStatus(data);
   var datatable = new google.visualization.DataTable(data);
   var table = new google.visualization.Table(container);
   if (paging)
-  table.draw(datatable,{page:'enable',pageSize:'18',showRowNumber: false, width: swidth.toString(), height:sheight.toString(), allowHtml: true,
-  cssClassNames:cssClassNames});
-  else{
-  var tableoptions = {showRowNumber: false, width:swidth.toString(), height:sheight.toString(),
-  allowHtml: true,
-  cssClassNames:cssClassNames};
-  table.draw(datatable,tableoptions);
+    table.draw(datatable, {
+      page: 'enable', pageSize: '18', showRowNumber: false, width: swidth.toString(), height: sheight.toString(), allowHtml: true,
+      cssClassNames: cssClassNames
+    });
+  else {
+    var tableoptions = {
+      showRowNumber: false, width: swidth.toString(), height: sheight.toString(),
+      allowHtml: true,
+      cssClassNames: cssClassNames
+    };
+    table.draw(datatable, tableoptions);
   }
   return datatable;
 }
 /*drawlivedemandstream*/
-App.prototype.drawlivedemandstream= function(data,m ) {
+App.prototype.drawlivedemandstream = function (data, m) {
+  secondLabelVisible = false;
   var o = this;
-  var data_mxgraph=data['LSD_MXGRAPH'];
-  var data_datatable=data['LSD_DATATABLE'];
-  var data_datatable_details=data['LSD_DATATABLE_DETAILS'];
-  var strHTML =""+
-  "<div  class='btn-group'>"+
-  "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>"+
-   "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>"+
-   "</div>"+
-  "</div>"+
-  "<font size='2'><strong><div id='div_loading_1'>"+
-  "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
-  "</div></strong></font>"+
-  "<h4 class='tabletitle'>"+"Chart:Live Demand Stream"+"</h4>"+
-  "<section id='chartcontrols_1'>"+
-  "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
-  "</section>"+
- "<div class='tabletitle'><h4>"+"Data Table:Live Demand Stream"+"</h4>"+
- "<button id='excelexport' disabled disabled  class='btnbs btn-primary popoverbs' type='button' onclick='' data-placement='top'  title='Export this data into an excel spreadsheet'>"+
- "<img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/>"+
-  "Export Data</button>"+
- "</div>"+
- "<section id='chartcontrols_2' class='chartcontrols'>"+
- "<img id='loading2' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
- "<div id='div_livedemandstream_datatable'></div>";
- "</section>"
- strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";    
-$( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
+  var data_mxgraph = data['LSD_MXGRAPH'];
+  var data_datatable = data['LSD_DATATABLE'];
+  var data_datatable_details = data['LSD_DATATABLE_DETAILS'];
+  var strHTML = "" +
+    "<div  class='btn-group'>" +
+    "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>" +
+    "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>" +
+    "</div>" +
+    "</div>" +
+    "<font size='2'><strong><div id='div_loading_1'>" +
+    "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>" +
+    "</div></strong></font>" +
+    "<h4 class='tabletitle'>" + "Chart:Live Demand Stream" + "</h4>" +
+    "<section id='chartcontrols_1'>" +
+    "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>" +
+    "</section>" +
+    "<div class='tabletitle'><h4>" + "Data Table:Live Demand Stream" + "</h4>" +
+    "<button id='excelexport' disabled disabled  class='btnbs btn-primary popoverbs' type='button' onclick='' data-placement='top'  title='Export this data into an excel spreadsheet'>" +
+    "<img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/>" +
+    "Export Data</button>" +
+    "</div>" +
+    "<section id='chartcontrols_2' class='chartcontrols'>" +
+    "<img id='loading2' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>" +
+    "<div id='div_livedemandstream_datatable'></div>";
+  "</section>"
+  strHTML += (o.narratives[m.id] != null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
+  $(".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav").animate({
     opacity: 0,
     height: 1
- }, 900 );
- 
- $( ".aindicator.active .measuredetail" ).html( strHTML );
- $( ".aindicator.active .measuredetail" ).animate({
+  }, 900);
+
+  $(".aindicator.active .measuredetail").html(strHTML);
+  $(".aindicator.active .measuredetail").animate({
     opacity: 1
-  }, 1 );
-  $( ".aindicator.active" ).animate({
+  }, 1);
+  $(".aindicator.active").animate({
     width: "100%"
-  }, 1000, function(){
-    $('#chartcontrols_1').append("<div id='div_button' data-toggle='buttons'></div> ");  
+  }, 1000, function () {
+    $('#chartcontrols_1').append("<div id='div_button' data-toggle='buttons'></div> ");
     //$('#div_button').append("<label for='details'></label><input type='checkbox' id='details' name='details' data-on-text='On' data-off-text='Off' data-handle-width='50' checked>");
-   // $("#details").bootstrapSwitch();  
-    $('#chartcontrols_1').append("<div id='div_livedemandstream_mxgraph' style='align:center;text-align:center;margin:0 auto;'></div>");    
+    // $("#details").bootstrapSwitch();  
+    $('#chartcontrols_1').append("<div id='div_livedemandstream_mxgraph' style='align:center;text-align:center;margin:0 auto;'></div>");
     $('#chartcontrols_1').append("<br/>");
     $('#chartcontrols_1').append("<br/>");
     $('#div_livedemandstream_mxgraph').html("");
     $('#div_livedemandstream_datatable').html("");
-    $('#div_loading_1').css("display","block");
-     var container_mxgraph =$('#div_livedemandstream_mxgraph').get(0);
-    
-      drawmxgraph(container_mxgraph,data_mxgraph);
-       $('#chartcontrols_1').children("#loading1").remove();
-      var container_table=$('#div_livedemandstream_datatable')[0];
-      var dataTable=new google.visualization.DataTable();
-      if (!secondLabelVisible)
-      dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
-      else 
-      dataTable=drawtabledata(container_table,data_datatable_details,'90%','100%',false);
-      $('#chartcontrols_2').children("#loading2").remove();
-      $('#div_loading_1').text("As of: "+getCurrentTime());
-      $('#closeDetail').prop('disabled', false);
-      $('#excelexport').prop('disabled', false);
-      $("#excelexport").click(function(){
-        o.downloadLiveCSV(dataTable);
+    $('#div_loading_1').css("display", "block");
+    var container_mxgraph = $('#div_livedemandstream_mxgraph').get(0);
+
+    drawmxgraph(container_mxgraph, data_mxgraph);
+    $('#chartcontrols_1').children("#loading1").remove();
+    var container_table = $('#div_livedemandstream_datatable')[0];
+    var dataTable = new google.visualization.DataTable();
+    if (!secondLabelVisible)
+      dataTable = drawtabledata(container_table, data_datatable, '90%', '100%', false);
+    else
+      dataTable = drawtabledata(container_table, data_datatable_details, '90%', '100%', false);
+    $('#chartcontrols_2').children("#loading2").remove();
+    $('#div_loading_1').text("As of: " + getCurrentTime());
+    $('#closeDetail').prop('disabled', false);
+    $('#excelexport').prop('disabled', false);
+    $("#excelexport").click(function () {
+      o.downloadLiveCSV(dataTable);
     });
 
-   }
+  }
   );
 };
 
 //draw google map
-App.prototype.drawliveMap= function(data,m ) {
+App.prototype.drawliveMap = function (data, m) {
   var o = this;
-  var data_map=data;
-  var data_datatable=data['map_datatable'];
-  var strHTML =""+
-  "<div  class='btn-group'>"+
-  "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>"+
-   "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>"+
-   "</div>"+
-  "</div>"+
-  "<font size='2'><strong><div id='div_loading_1'>"+
-  "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
-  "</div></strong></font>"+
-  "<h4 class='tabletitle'>"+"Chart:Shelter Locations and Vacancies Mapped"+"</h4>"+
-  "<section id='chartcontrols_1'>"+
-  "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
-  "</section>"+
- "<div class='tabletitle'><h4>"+"Data Table:Shelter Locations and Vacancies"+"</h4>"+
- "<button id='excelexport' disabled disabled  class='btnbs btn-primary popoverbs' type='button' onclick='' data-placement='top'  title='Export this data into an excel spreadsheet'>"+
- "<img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/>"+
-  "Export Data</button>"+
- "</div>"+
- "<section id='chartcontrols_2' class='chartcontrols'>"+
- "<img id='loading2' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
- "<div id='div_liveMap_datatable'></div>";
- "</section>"
- strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";    
-$( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
+  var data_map = data;
+  var data_datatable = data['map_datatable'];
+  var strHTML = "" +
+    "<div  class='btn-group'>" +
+    "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>" +
+    "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>" +
+    "</div>" +
+    "</div>" +
+    "<font size='2'><strong><div id='div_loading_1'>" +
+    "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>" +
+    "</div></strong></font>" +
+    "<h4 class='tabletitle'>" + "Chart:Shelter Locations and Vacancies Mapped" + "</h4>" +
+    "<section id='chartcontrols_1'>" +
+    "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>" +
+    "</section>" +
+    "<div class='tabletitle'><h4>" + "Data Table:Shelter Locations and Vacancies" + "</h4>" +
+    "<button id='excelexport' disabled disabled  class='btnbs btn-primary popoverbs' type='button' onclick='' data-placement='top'  title='Export this data into an excel spreadsheet'>" +
+    "<img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/>" +
+    "Export Data</button>" +
+    "</div>" +
+    "<section id='chartcontrols_2' class='chartcontrols'>" +
+    "<img id='loading2' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>" +
+    "<div id='div_liveMap_datatable'></div>";
+  "</section>"
+  strHTML += (o.narratives[m.id] != null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
+  $(".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav").animate({
     opacity: 0,
     height: 1
- }, 900 );
- 
- $( ".aindicator.active .measuredetail" ).html( strHTML );
- $( ".aindicator.active .measuredetail" ).animate({
+  }, 900);
+
+  $(".aindicator.active .measuredetail").html(strHTML);
+  $(".aindicator.active .measuredetail").animate({
     opacity: 1
-  }, 1 );
-  $( ".aindicator.active" ).animate({
+  }, 1);
+  $(".aindicator.active").animate({
     width: "100%"
-  }, 1000, function(){
+  }, 1000, function () {
     //$('#chartcontrols_1').append("<div style='align:center;text-align:center;display:table;margin:0 auto;'><div style='align:center;text-align:center;display:table-row;margin:0 auto;'><div id='div_livedemandstream_mxgraph' style='align:center;text-align:center;display:table-cell;margin:0 auto;'></div></div></div>");    
-    $('#chartcontrols_1').append("<div id='div_liveMap' style='align:center;text-align:center;margin:0 auto;height:400px; width:100%;'></div>");    
-   // $('#chartcontrols_1').append("<br/>");
-   // $('#chartcontrols_1').append("<br/>");
+    $('#chartcontrols_1').append("<div id='div_liveMap' style='align:center;text-align:center;margin:0 auto;height:400px; width:100%;'></div>");
+    // $('#chartcontrols_1').append("<br/>");
+    // $('#chartcontrols_1').append("<br/>");
     $('#div_liveMap').html("");
     $('#div_liveMap_datatable').html("");
-    $('#div_loading_1').css("display","block");
-     var container_map =$('#div_liveMap').get(0);
-      //drawmxgraph(container_map,data_mxgraph);
-      drawMap(container_map,data_map);
-       $('#chartcontrols_1').children("#loading1").remove();
-      var container_table=$('#div_liveMap_datatable')[0];
-      var dataTable=new google.visualization.DataTable();
-      dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
-      $('#chartcontrols_2').children("#loading2").remove();
-      $('#div_loading_1').text("As of: "+getCurrentTime());
-      $('#closeDetail').prop('disabled', false);
-      $('#excelexport').prop('disabled', false);
-      $("#excelexport").click(function(){
-        o.downloadLiveCSV(dataTable);
+    $('#div_loading_1').css("display", "block");
+    var container_map = $('#div_liveMap').get(0);
+    //drawmxgraph(container_map,data_mxgraph);
+    drawMap(container_map, data_map);
+    $('#chartcontrols_1').children("#loading1").remove();
+    var container_table = $('#div_liveMap_datatable')[0];
+    var dataTable = new google.visualization.DataTable();
+    dataTable = drawtabledata(container_table, data_datatable, '90%', '100%', false);
+    $('#chartcontrols_2').children("#loading2").remove();
+    $('#div_loading_1').text("As of: " + getCurrentTime());
+    $('#closeDetail').prop('disabled', false);
+    $('#excelexport').prop('disabled', false);
+    $("#excelexport").click(function () {
+      o.downloadLiveCSV(dataTable);
     });
- }
+  }
   );
 };
 
 
 
- /*draw RBG*/
- function drawRYG(dataset,options){
-var options_M=options['M'];
-var options_R=options['R'];
-var options_Y=options['Y'];
-var options_G=options.G;
-var options_R_V=options.R_V;
-var options_Y_V=options.Y_V;
-var options_G_V=options.G_V;
-var value_R=dataset.R;
-var value_Y=dataset.Y;
-var value_G=dataset.G;
-$("#ryg_div").css(options_M);
-$("#r_div").css(options_R);
-$("#y_div").css(options_Y);
-$("#g_div").css(options_G);
-$("#r_value_div").css(options_R_V);
-$("#y_value_div").css(options_Y_V);
-$("#g_value_div").css(options_G_V);
-$('#r_value_div').html(value_R);
-$('#y_value_div').html(value_Y);
-$('#g_value_div').html(value_G);
+/*draw RBG*/
+function drawRYG(dataset, options) {
+  var options_M = options['M'];
+  var options_R = options['R'];
+  var options_Y = options['Y'];
+  var options_G = options.G;
+  var options_R_V = options.R_V;
+  var options_Y_V = options.Y_V;
+  var options_G_V = options.G_V;
+  var value_R = dataset.R;
+  var value_Y = dataset.Y;
+  var value_G = dataset.G;
+  $("#ryg_div").css(options_M);
+  $("#r_div").css(options_R);
+  $("#y_div").css(options_Y);
+  $("#g_div").css(options_G);
+  $("#r_value_div").css(options_R_V);
+  $("#y_value_div").css(options_Y_V);
+  $("#g_value_div").css(options_G_V);
+  $('#r_value_div').html(value_R);
+  $('#y_value_div').html(value_Y);
+  $('#g_value_div').html(value_G);
 };
 
-App.prototype.drawtrafficlight = function(data,m) {
+App.prototype.drawtrafficlight = function (data, m) {
   var o = this;
-  var dataset=data["dataset"];
-  var options=data["options"];
-  var data_datatable=data['RYG_DATATABLE'];
-  var data_datatable_1=data['RYG_DATATABLE_1'];
-  var strHTML =""+
-  "<div  class='btn-group'>"+
-  "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>"+
-   "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>"+
-   "</div>"+
-  "</div>"+
-  "<font size='2'><strong><div id='div_loading_1'>"+
-  "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
-  "</div></strong></font>"+
-  "<h4 class='tabletitle'>"+"Chart: Red Yellow Green"+"</h4>"+
-  "<section id='chartcontrols_3'>"+
-  "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
- "<div id='trafficLight_div'>"+
-  "<div id='ryg_div' style='display:inline;border:none;vertical-align: middle;text-align:center;'>"+
-  "<div id='r_div'><div id='r_value_div' style='color:white'></div></div>"+
-  "<div id='y_div'><div id='y_value_div' style='color:white'></div></div>"+
-  "<div id='g_div'><div id='g_value_div' style='color:white'></div></div>"+
-   "</div>"+
-   "<div id='div_RYG_datatable_1' style='display:inline;'></div>"+ 
-   "</div>"+
-  "</section>"+
- "<div class='tabletitle'><h4>"+"Data Table: Red Yellow Green"+"</h4>"+
- "<button id='excelexport' disabled disabled  class='btnbs btn-primary popoverbs' type='button' onclick='' data-placement='top'  title='Export this data into an excel spreadsheet'>"+
- "<img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/>"+
-  "Export Data</button>"+
- "</div>"+
- "<section id='chartcontrols_2' class='chartcontrols'>"+
- "<img id='loading2'  src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
- "<div id='div_RYG_datatable'></div>"+
- "</section>";
- 
+  var dataset = data["dataset"];
+  var options = data["options"];
+  var data_datatable = data['RYG_DATATABLE'];
+  var data_datatable_1 = data['RYG_DATATABLE_1'];
+  var strHTML = "" +
+    "<div  class='btn-group'>" +
+    "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>" +
+    "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>" +
+    "</div>" +
+    "</div>" +
+    "<font size='2'><strong><div id='div_loading_1'>" +
+    "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>" +
+    "</div></strong></font>" +
+    "<section id='chartcontrols_4'>" +
+    "<h5 class='charttitle'>Chose a Day:</h5>" +
+    "<input data-provide='datepicker' id='datepicker' class='form_datetime'>&nbsp&nbsp&nbsp" +
+    "<button id='start' class='btn btn-primary' type='button' onclick=''>Update</button>" +
+    "</section>" +
+    "<h4 class='tabletitle'>" + "Chart: Red Yellow Green" + "</h4>" +
+    "<section id='chartcontrols_3'>" +
+    "<img id='loading1' src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>" +
+    "<div id='trafficLight_div'>" +
+    "<div id='ryg_div' style='display:inline;border:none;vertical-align: middle;text-align:center;'>" +
+    "<div id='r_div'><div id='r_value_div' style='color:white'></div></div>" +
+    "<div id='y_div'><div id='y_value_div' style='color:white'></div></div>" +
+    "<div id='g_div'><div id='g_value_div' style='color:white'></div></div>" +
+    "</div>" +
+    "<div id='div_RYG_datatable_1' style='display:inline;'></div>" +
+    "</div>" +
+    "</section>" +
+    "<div class='tabletitle'><h4>" + "Data Table: Red Yellow Green" + "</h4>" +
+    "<button id='excelexport' disabled disabled  class='btnbs btn-primary popoverbs' type='button' onclick='' data-placement='top'  title='Export this data into an excel spreadsheet'>" +
+    "<img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/>" +
+    "Export Data</button>" +
+    "</div>" +
+    "<section id='chartcontrols_2' class='chartcontrols'>" +
+    "<img id='loading2'  src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>" +
+    "<div id='div_RYG_datatable'></div>" +
+    "</section>";
 
- strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
- $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
+
+  strHTML += (o.narratives[m.id] != null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
+
+  $(".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav").animate({
     opacity: 0,
     height: 1
- }, 900 );
- 
- $( ".aindicator.active .measuredetail" ).html( strHTML );
- $( ".aindicator.active .measuredetail" ).animate({
+  }, 900);
+
+
+
+
+  $(".aindicator.active .measuredetail").html(strHTML);
+  $(".aindicator.active .measuredetail").animate({
     opacity: 1
-  }, 1 );
-  $( ".aindicator.active" ).animate({
+  }, 1);
+  $(".aindicator.active").animate({
     width: "100%"
-  }, 1000, function(){
+  }, 1000, function () {
     $('#div_RYG_datatable').html("");
-    $('#div_loading_1').css("display","block");
-      var container_mxgraph =$('#ryg_div').get(0);
-      drawRYG(dataset,options);
-       $('#chartcontrols_3').children("#loading1").remove();
-      var container_table=$('#div_RYG_datatable')[0];
-      var container_table_1=$('#div_RYG_datatable_1')[0];
-      var dataTable_1=new google.visualization.DataTable();
-      var dataTable_1=drawtabledata(container_table_1,data_datatable_1,'70%','80%',true);
-      var dataTable=new google.visualization.DataTable();
-      dataTable=drawtabledata(container_table,data_datatable,'90%','100%',false);
-      $('#chartcontrols_2').children("#loading2").remove();
-      $('#div_loading_1').text("As of: "+getCurrentTime());
-      $('#closeDetail').prop('disabled', false);
-      $('#excelexport').prop('disabled', false);
-      $("#excelexport").click(function(){
-        o.downloadLiveCSV(dataTable);
+    $('#div_loading_1').css("display", "block");
+    var container_mxgraph = $('#ryg_div').get(0);
+    drawRYG(dataset, options);
+    $('#chartcontrols_3').children("#loading1").remove();
+    var container_table = $('#div_RYG_datatable')[0];
+    var container_table_1 = $('#div_RYG_datatable_1')[0];
+    var dataTable_1 = new google.visualization.DataTable();
+    var dataTable_1 = drawtabledata(container_table_1, data_datatable_1, '70%', '80%', false);
+    var dataTable = new google.visualization.DataTable();
+    dataTable = drawtabledata(container_table, data_datatable, '90%', '100%', false);
+    $('#chartcontrols_2').children("#loading2").remove();
+    $('#div_loading_1').text("As of: " + getCurrentTime());
+    $('#closeDetail').prop('disabled', false);
+    $('#excelexport').prop('disabled', false);
+    var datepicker_options = { showDropdowns: true, changeMonth: true, changeYear: true, showOnFocus: true, todayBtn: 'linked', clearBtn: true, todayHighlight: true, title: 'Chose a day', autoclose: true, format: 'yyyy/mm/dd' };
+    $('#datepicker').datepicker(datepicker_options);
+    $("#excelexport").click(function () {
+      o.downloadLiveCSV(dataTable);
     });
-   }
+
+  }
   );
+
 };
-App.prototype.paintDetailByPassPeriod = function( indicator ) {
+App.prototype.paintDetailByPassPeriod = function (indicator) {
   var o = this;
   var m = this.measures[$(indicator).attr("id")];
-  var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
-  strHTML ="<div  class='btn-group'>"+
-           "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>"+
-           "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>"+
-           "</div>"+
-           "</div>";
-  strHTML +="<font size='2'><strong><div id='div_loading_1'>"+
-            "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
-            "</div></strong></font>";
+  var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND = "";
+  strHTML = "<div  class='btn-group'>" +
+    "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>" +
+    "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>" +
+    "</div>" +
+    "</div>";
+  strHTML += "<font size='2'><strong><div id='div_loading_1'>" +
+    "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>" +
+    "</div></strong></font>";
   strHTML += "<div class='analysis'>";
-  strHTML += "<div class='table-responsive'>" + sHTMLTREND  + "</div>";
+  strHTML += "<div class='table-responsive'>" + sHTMLTREND + "</div>";
   strHTML += (m.cp == "") ? "" : "<p class='cityperspective'>" + m.cp + "</p>";
   strHTML += "</div>";
   var strCl = "col-xs-12 col-md-12";
   //loop from 'chartSerial' property of 'm'
   var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
-   if (!$.isEmptyObject(m.chartTypeSerial)){
-     var dataArray=m.chartTypeSerial;
-     $.each(dataArray, function() {
-      var type,icon;
-       $.each(this, function(key, value){
-         if (key=='type')
-             type=value;
-         else if (key=='icon')
-              icon=value;
-       });
-       strType += '<label onclick="o.changegraphtypeByPassPeriod('+'\''+type+'\')'+'" '+
-                  'class="btn btn-default"'+
-                  ' title="Change the chart below to a '+type+
-                  ' Chart"><input type="radio" name="options" id="linechart" autocomplete="off">'+
-                  '<img src="'+
-                     icon+'"'+
-                  ' alt="'+
-                   type+
-                  ' chart icon"/></label>';
-     });
-   }
+  if (!$.isEmptyObject(m.chartTypeSerial)) {
+    var dataArray = m.chartTypeSerial;
+    $.each(dataArray, function () {
+      var type, icon;
+      $.each(this, function (key, value) {
+        if (key == 'type')
+          type = value;
+        else if (key == 'icon')
+          icon = value;
+      });
+      strType += '<label onclick="o.changegraphtypeByPassPeriod(' + '\'' + type + '\')' + '" ' +
+        'class="btn btn-default"' +
+        ' title="Change the chart below to a ' + type +
+        ' Chart"><input type="radio" name="options" id="linechart" autocomplete="off">' +
+        '<img src="' +
+        icon + '"' +
+        ' alt="' +
+        type +
+        ' chart icon"/></label>';
+    });
+  }
   strType += '</div></div>';
   var strContext = "";
- 
- strContext += '<div class="' + strCl + '">' + strType + '</div>';
- var sChartTitle =m.chartTitle;
-  if (m.showOptions=="True"){
-    strHTML += '<h4 class="controlstitle">Chart Options</h4><section id="chartcontrols"><div class="col-xs-12">' + strContext + '</div><div class="col-xs-12">' + ''+ '</div></section>';
+
+  strContext += '<div class="' + strCl + '">' + strType + '</div>';
+  var sChartTitle = m.chartTitle;
+  if (m.showOptions == "True") {
+    strHTML += '<h4 class="controlstitle">Chart Options</h4><section id="chartcontrols"><div class="col-xs-12">' + strContext + '</div><div class="col-xs-12">' + '' + '</div></section>';
   }
-    strHTML += "<h4 class='charttitle'>Chart: " + sChartTitle + "</h4>"+
-               "<div id='measurechart_gauge'>"+
-               "</div>";
-    strHTML += (m.ds=="") ? "" : "<p class='datasource'>" + m.ds + "</p>";
-    strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle +"</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
-    strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
-  $( ".aindicator.active" ).animate({
+  strHTML += "<h4 class='charttitle'>Chart: " + sChartTitle + "</h4>" +
+    "<div id='measurechart_gauge'>" +
+    "</div>";
+  strHTML += (m.ds == "") ? "" : "<p class='datasource'>" + m.ds + "</p>";
+  strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle + "</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
+  strHTML += (o.narratives[m.id] != null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
+  $(".aindicator.active").animate({
     width: "100%"
-  }, 1000, function() {
-    o.createGraphByPassPeriod( m ,m.chartType);
-    $('#div_loading_1').text("As of: "+getCurrentTime());
+  }, 1000, function () {
+    o.createGraphByPassPeriod(m, m.chartType);
+    $('#div_loading_1').text("As of: " + getCurrentTime());
     $('#closeDetail').prop('disabled', false);
   });
-  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
+  $(".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav").animate({
     opacity: 0,
     height: 1
-  }, 900 );
-  $( ".aindicator.active .measuredetail" ).html( strHTML );
-  $( ".aindicator.active .measuredetail" ).animate({
+  }, 900);
+  $(".aindicator.active .measuredetail").html(strHTML);
+  $(".aindicator.active .measuredetail").animate({
     opacity: 1
-  }, 1000 );
+  }, 1000);
 };
 
 
-App.prototype.paintDetail = function( indicator ) {
+App.prototype.paintDetail = function (indicator) {
   var o = this;
   var m = this.measures[$(indicator).attr("id")];
-  var isDailyChart=(m.it==="d")?true:false;
-  strHTML ="<div  class='btn-group'>"+
-  "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>"+
-  "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>"+
-  "</div>"+
-  "</div>";
-  strHTML +="<font size='2'><strong><div id='div_loading_1'>"+
-           "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>"+
-           "</div></strong></font>";
-  var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND="";
- 
+  var isDailyChart = (m.it === "d") ? true : false;
+  strHTML = "<div  class='btn-group'>" +
+    "<div id ='div_btn_closeDetail' class='col-xs-12 col-md-6'>" +
+    "<button id='closeDetail' disabled disabled class='btn btn-primary' type='button' onclick='window.dashboardapp.closeDetail()'><span class='glyphicon glyphicon-arrow-left'></span><span class='btntext'>Back</span></button>" +
+    "</div>" +
+    "</div>";
+  strHTML += "<font size='2'><strong><div id='div_loading_1'>" +
+    "<img src='/resources/dashboard/img/Spinner.svg' width=32 height=32/>" +
+    "</div></strong></font>";
+  var compVal1, compVal2, sPOSNEG, sDIRECTION, sCHANGE, sHTMLTREND = "";
+
   strHTML += "<div class='analysis'>";
-  strHTML += "<div class='table-responsive'>" + sHTMLTREND  + "</div>";
+  strHTML += "<div class='table-responsive'>" + sHTMLTREND + "</div>";
   strHTML += (m.cp == "") ? "" : "<p class='cityperspective'>" + m.cp + "</p>";
   strHTML += "</div>";
 
-  var strP = (getType(m)=="MONTHLY") ? "Month" : (getType(m)=="QUARTERLY") ? "Quarter" : (getType(m)=="SEASONAL") ? "Season" :(getType(m)=="HOURLY") ? "Hour" :(getType(m)=="DAILY") ? "Day" : "Year";
-  var strCl = isDailyChart?"col-xs-12 col-md-12":((m.ytd=="True") ? "col-xs-12 col-md-4" : "col-xs-12 col-md-6");
-//need loop from 'chartSerial' property of 'm'
+  var strP = (getType(m) == "MONTHLY") ? "Month" : (getType(m) == "QUARTERLY") ? "Quarter" : (getType(m) == "SEASONAL") ? "Season" : (getType(m) == "HOURLY") ? "Hour" : (getType(m) == "DAILY") ? "Day" : "Year";
+  var strCl = isDailyChart ? "col-xs-12 col-md-12" : ((m.ytd == "True") ? "col-xs-12 col-md-4" : "col-xs-12 col-md-6");
+  //need loop from 'chartSerial' property of 'm'
   var strType = '<div id="graphtype"><label>Chart Type</label><div class="btn-group" data-toggle="buttons">';
-   if ($.isEmptyObject(m.chartTypeSerial)){
-       strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
-       strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
-   }
-   else {
+  if ($.isEmptyObject(m.chartTypeSerial)) {
     strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
     strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
-     var dataArray=m.chartTypeSerial;
-     $.each(dataArray, function() {
-      var type,icon;
-       $.each(this, function(key, value){
-         if (key=='type')
-             type=value;
-         else if (key=='icon')
-              icon=value;
-       });
-       strType += '<label onclick="o.changegraphtype('+'\''+type+'\')'+'" '+
-       'class="btn btn-default"'+
-       ' title="Change the chart below to a '+type+
-        ' Chart"><input type="radio" name="options" id="linechart" autocomplete="off">'+
-       '<img src="'+
-        icon+'"'+
-       ' alt="'+
-       type+
-       ' chart icon"/></label>';
-     });
-   }
+  }
+  else {
+    strType += '<label onclick="o.changegraphtype(\'bars\');" class="btn btn-default active" title="Change the chart below to a Bar Chart"><input type="radio" name="options" id="barchart" autocomplete="off" checked><img src="/resources/dashboard/img/combo.png" alt="Bar chart icon"/></label>';
+    strType += '<label onclick="o.changegraphtype(\'line\')" class="btn btn-default" title="Change the chart below to a Line Chart"><input type="radio" name="options" id="linechart" autocomplete="off"><img src="/resources/dashboard/img/line.png" alt="Line chart icon"/></label>';
+    var dataArray = m.chartTypeSerial;
+    $.each(dataArray, function () {
+      var type, icon;
+      $.each(this, function (key, value) {
+        if (key == 'type')
+          type = value;
+        else if (key == 'icon')
+          icon = value;
+      });
+      strType += '<label onclick="o.changegraphtype(' + '\'' + type + '\')' + '" ' +
+        'class="btn btn-default"' +
+        ' title="Change the chart below to a ' + type +
+        ' Chart"><input type="radio" name="options" id="linechart" autocomplete="off">' +
+        '<img src="' +
+        icon + '"' +
+        ' alt="' +
+        type +
+        ' chart icon"/></label>';
+    });
+  }
   strType += '</div></div>';
   var strContext = "";
-  if(!isDailyChart){
-   strContext += '<div class="' + strCl + ' groupbyperiod"><label for="groupbyperiod">Group by ' + strP + '</label><input type="checkbox" id="groupbyperiod" name="groupbyperiod" data-on-text="Yes" data-off-text="No" data-handle-width="50" checked></div>';
-    strContext += (m.ytd=="True") ? '<div class="' + strCl + '"><label for="showytdvalues">Show Year-To-Date Values</label><input type="checkbox" id="showytdvalues" name="showytdvalues" data-on-text="Yes" data-off-text="No"  data-handle-width="50" checked></div>' : '';
+  if (!isDailyChart) {
+    strContext += '<div class="' + strCl + ' groupbyperiod"><label for="groupbyperiod">Group by ' + strP + '</label><input type="checkbox" id="groupbyperiod" name="groupbyperiod" data-on-text="Yes" data-off-text="No" data-handle-width="50" checked></div>';
+    strContext += (m.ytd == "True") ? '<div class="' + strCl + '"><label for="showytdvalues">Show Year-To-Date Values</label><input type="checkbox" id="showytdvalues" name="showytdvalues" data-on-text="Yes" data-off-text="No"  data-handle-width="50" checked></div>' : '';
   }
   strContext += '<div class="' + strCl + '">' + strType + '</div>';
   var strYears = '<div id="graphyear"><p>Years to Display on Chart</p><div class="btn-group" data-toggle="buttons"></div></div>';
 
-  var sChartTitle = properCase(getType(m)) + ((this.contexttype=="ytd") ? " (Year-To-Date) " : " ") + "Values for " + m.m.replace(/\n/g,' - ');
+  var sChartTitle = properCase(getType(m)) + ((this.contexttype == "ytd") ? " (Year-To-Date) " : " ") + "Values for " + m.m.replace(/\n/g, ' - ');
   strHTML += '<h4 class="controlstitle">Chart Options</h4><section id="chartcontrols"><div class="col-xs-12">' + strContext + '</div><div class="col-xs-12">' + strYears + '</div></section>';
   strHTML += "<h4 class='charttitle'>Chart: " + sChartTitle + "</h4><div id='measurechart'></div>";
-  strHTML += (m.ds=="") ? "" : "<p class='datasource'>" + m.ds + "</p>";
-  strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle +"</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
-  strHTML += (o.narratives[m.id]!= null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
-  o.charttype="bars";
+  strHTML += (m.ds == "") ? "" : "<p class='datasource'>" + m.ds + "</p>";
+  strHTML += "<div class='tabletitle'><h4>Data Table: " + sChartTitle + "</h4><button id='excelexport' onclick='o.downloadCSV();' class='btnbs btn-primary popoverbs' title='Export this data into an excel spreadsheet' data-placement='top'><img src='/resources/dashboard/img/csv.png' alt='Excel Icon'/> Export Data</button></div><div id='measuretable'></div>";
+  strHTML += (o.narratives[m.id] != null) ? "<section id='narrative'><h4 class='narrative'>Notes</h4>" + o.narratives[m.id] + "</section>" : "";
+  o.charttype = "bars";
   m.activeYears = {};
-  var intLoop = (getType(m)=="YEARLY" || o.contexttype=="seq") ? 15 : 3;
-  if(isDailyChart){
-    o.contexttype="seq";
-    m.activeYears[new Date().getFullYear() ] = true;
-  }else{
-    if (m.ytd=="True") {o.contexttype="ytd";} else {o.contexttype="period";}
+  var intLoop = (getType(m) == "YEARLY" || o.contexttype == "seq") ? 15 : 3;
+  if (isDailyChart) {
+    o.contexttype = "seq";
+    m.activeYears[new Date().getFullYear()] = true;
+  } else {
+    if (m.ytd == "True") { o.contexttype = "ytd"; } else { o.contexttype = "period"; }
     for (var x = 0; x < intLoop; x++) {
-        m.activeYears[new Date().getFullYear() - x] = true;
+      m.activeYears[new Date().getFullYear() - x] = true;
     }
   }
 
-  $( ".aindicator.active" ).animate({
+  $(".aindicator.active").animate({
     width: "100%"
-  }, 1000, function() {
-    o.createGraph( m );
-    $('#div_loading_1').text("As of: "+getCurrentTime());
+  }, 1000, function () {
+    o.createGraph(m);
+    $('#div_loading_1').text("As of: " + getCurrentTime());
     $('#closeDetail').prop('disabled', false);
   });
-  
-  $( ".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav" ).animate({
+
+  $(".aindicator.active .indicator .measurevalue, .aindicator.active .indicator .measureperiod, .aindicator.active .indicator .row, #dashboard_categorytabs, #dashboard_search .col-sm-8, #dashboard_nav").animate({
     opacity: 0,
     height: 1
-  }, 900 );
-  $( ".aindicator.active .measuredetail" ).html( strHTML );
-  $( ".aindicator.active .measuredetail" ).animate({
+  }, 900);
+  $(".aindicator.active .measuredetail").html(strHTML);
+  $(".aindicator.active .measuredetail").animate({
     opacity: 1
-  }, 1000 );
-  
-  
+  }, 1000);
+
+
   //ACTIVATE SWITCHES
   $("#groupbyperiod, #showytdvalues").bootstrapSwitch();
-  
-  $('#groupbyperiod').on('switchChange.bootstrapSwitch', function(event, state) {
+
+  $('#groupbyperiod').on('switchChange.bootstrapSwitch', function (event, state) {
     o.selectGroupByPeriod();
   });
-  
-  $('#showytdvalues').on('switchChange.bootstrapSwitch', function(event, state) {
+
+  $('#showytdvalues').on('switchChange.bootstrapSwitch', function (event, state) {
     o.selectYTD();
   });
-  
+
 };
 function getType(measure) {
-  return  (measure.it=="m") ? "MONTHLY" : (measure.it=="q") ? "QUARTERLY" : (measure.it=="y") ? "YEARLY" :(measure.it=="h") ? "HOURLY":(measure.it=="d") ? "DAILY":"SEASONAL";
-  
+  return (measure.it == "m") ? "MONTHLY" : (measure.it == "q") ? "QUARTERLY" : (measure.it == "y") ? "YEARLY" : (measure.it == "h") ? "HOURLY" : (measure.it == "d") ? "DAILY" : "SEASONAL";
+
 };
 function hasTarget(measure) {
-  return (measure.ht=="True") ? true : false;
+  return (measure.ht == "True") ? true : false;
 };
 function properCase(s) {
-  var rVal = (s =="N/A") ? "N/A" : s.charAt(0).toUpperCase() + (s.slice(1)).toLowerCase();
+  var rVal = (s == "N/A") ? "N/A" : s.charAt(0).toUpperCase() + (s.slice(1)).toLowerCase();
   return rVal;
 };
 function getPeriodName(measure, period) {
   var strReturn = "";
-  switch(getType(measure)) {
+  switch (getType(measure)) {
     case "MONTHLY":
       strReturn = arrMM[period];
       break;
@@ -1434,7 +1486,7 @@ function getPeriodName(measure, period) {
     case "SEASONAL":
       strReturn = arrSeason[period];
       break;
-     case "HOULY":
+    case "HOULY":
       strReturn = arrHH[period];
       break;
     case "DAILY":
@@ -1445,83 +1497,83 @@ function getPeriodName(measure, period) {
   }
   return strReturn;
 };
-App.prototype.setDataRows = function(mm) {
+App.prototype.setDataRows = function (mm) {
   var o = this;
   var intDA;
-  var arrRows = [], oData = {}, fmt, intTarget, intSumTarget= 0;
+  var arrRows = [], oData = {}, fmt, intTarget, intSumTarget = 0;
 
-  intDA = (mm.da=="") ? 0 : parseInt(mm.da);
-  
-  mm.vs.sort(function(a, b){	return ( ((a.p * 1000) + a.y) - ((b.p *1000) + b.y));});
-  if (this.contexttype=="ytd") {
-    for (var i = 0; i < mm.vs.length; i++ ) {
-      if (oData[mm.vs[i].y]==null) {
+  intDA = (mm.da == "") ? 0 : parseInt(mm.da);
+
+  mm.vs.sort(function (a, b) { return (((a.p * 1000) + a.y) - ((b.p * 1000) + b.y)); });
+  if (this.contexttype == "ytd") {
+    for (var i = 0; i < mm.vs.length; i++) {
+      if (oData[mm.vs[i].y] == null) {
         oData[mm.vs[i].y] = [];
-        oData[mm.vs[i].y].push( mm.vs[i].y + " YTD Actual" );
+        oData[mm.vs[i].y].push(mm.vs[i].y + " YTD Actual");
       }
       if (mm.activeYears[mm.vs[i].y] != null) {
-        fmt = (mm.vt=="c") ? "$" + numberWithCommas(mm.ytds[mm.vs[i].y][mm.vs[i].p], intDA) : numberWithCommas(mm.ytds[mm.vs[i].y][mm.vs[i].p], intDA);
-        oData[mm.vs[i].y].push( {v: mm.ytds[mm.vs[i].y][mm.vs[i].p], f: fmt} );
+        fmt = (mm.vt == "c") ? "$" + numberWithCommas(mm.ytds[mm.vs[i].y][mm.vs[i].p], intDA) : numberWithCommas(mm.ytds[mm.vs[i].y][mm.vs[i].p], intDA);
+        oData[mm.vs[i].y].push({ v: mm.ytds[mm.vs[i].y][mm.vs[i].p], f: fmt });
       }
     }
-    if ( hasTarget( mm ) ) {
+    if (hasTarget(mm)) {
       intTarget = o.targets[mm.id].length - 1;
       oData.target = [];
-      oData.target.push( o.targets[mm.id][intTarget].y + " Target");
-      $.each (o.targets[mm.id], function(i,item) {
+      oData.target.push(o.targets[mm.id][intTarget].y + " Target");
+      $.each(o.targets[mm.id], function (i, item) {
         if (item.y == o.targets[mm.id][intTarget].y) {
           intSumTarget += item.v;
-          fmt = (mm.vt=="c") ? "$" + numberWithCommas(intSumTarget, intDA) : numberWithCommas(intSumTarget, intDA);
-          oData.target.push( {v: intSumTarget, f: fmt} );
+          fmt = (mm.vt == "c") ? "$" + numberWithCommas(intSumTarget, intDA) : numberWithCommas(intSumTarget, intDA);
+          oData.target.push({ v: intSumTarget, f: fmt });
         }
       });
     }
-  } else if (this.contexttype=="seq") {
-    mm.vs.sort(function(a, b){	return ( ((a.y * 1000) + a.p) - ((b.y *1000) + b.p));});
-    for (var i = 0; i < mm.vs.length; i++ ) {
-      if (oData[(mm.vs[i].y * 1000 + mm.vs[i].p).toString()]==null) {
+  } else if (this.contexttype == "seq") {
+    mm.vs.sort(function (a, b) { return (((a.y * 1000) + a.p) - ((b.y * 1000) + b.p)); });
+    for (var i = 0; i < mm.vs.length; i++) {
+      if (oData[(mm.vs[i].y * 1000 + mm.vs[i].p).toString()] == null) {
         oData[(mm.vs[i].y * 1000 + mm.vs[i].p).toString()] = [];
-        oData[(mm.vs[i].y * 1000 + mm.vs[i].p).toString()].push( getPeriodName(mm, mm.vs[i].p) + " " + mm.vs[i].y.toString());
+        oData[(mm.vs[i].y * 1000 + mm.vs[i].p).toString()].push(getPeriodName(mm, mm.vs[i].p) + " " + mm.vs[i].y.toString());
       }
       if (mm.activeYears[mm.vs[i].y] != null) {
-        fmt = (mm.vt=="c") ? "$" + numberWithCommas(mm.vs[i].v, intDA) : (mm.vt=="p") ? ( mm.vs[i].v * 100 ).toFixed(intDA) + "%" : numberWithCommas(mm.vs[i].v, intDA);
-        oData[(mm.vs[i].y * 1000 + mm.vs[i].p).toString()].push( {v: mm.vs[i].v, f: fmt} );
+        fmt = (mm.vt == "c") ? "$" + numberWithCommas(mm.vs[i].v, intDA) : (mm.vt == "p") ? (mm.vs[i].v * 100).toFixed(intDA) + "%" : numberWithCommas(mm.vs[i].v, intDA);
+        oData[(mm.vs[i].y * 1000 + mm.vs[i].p).toString()].push({ v: mm.vs[i].v, f: fmt });
       }
     }
-  } else 	{
+  } else {
     //LOAD PERIOD VALUES
-    for (var i = 0; i < mm.vs.length; i++ ) {
-      if (oData[mm.vs[i].y]==null) {
+    for (var i = 0; i < mm.vs.length; i++) {
+      if (oData[mm.vs[i].y] == null) {
         oData[mm.vs[i].y] = [];
-        oData[mm.vs[i].y].push( mm.vs[i].y + " Actual" );
+        oData[mm.vs[i].y].push(mm.vs[i].y + " Actual");
       }
       if (mm.activeYears[mm.vs[i].y] != null) {
-        fmt = (mm.vt=="c") ? "$" + numberWithCommas(mm.vs[i].v, intDA) : (mm.vt=="p") ? ( mm.vs[i].v * 100 ).toFixed(intDA) + "%" : numberWithCommas(mm.vs[i].v, intDA);
-        oData[mm.vs[i].y].push( {v: mm.vs[i].v, f: fmt} );
+        fmt = (mm.vt == "c") ? "$" + numberWithCommas(mm.vs[i].v, intDA) : (mm.vt == "p") ? (mm.vs[i].v * 100).toFixed(intDA) + "%" : numberWithCommas(mm.vs[i].v, intDA);
+        oData[mm.vs[i].y].push({ v: mm.vs[i].v, f: fmt });
       }
     }
     //LOAD TARGET VALUES
-    if ( hasTarget( mm ) ) {
+    if (hasTarget(mm)) {
       intTarget = o.targets[mm.id].length - 1;
       oData.target = [];
-      oData.target.push( o.targets[mm.id][intTarget].y + " Target");
-      $.each (o.targets[mm.id], function(i,item) {
+      oData.target.push(o.targets[mm.id][intTarget].y + " Target");
+      $.each(o.targets[mm.id], function (i, item) {
         if (item.y == o.targets[mm.id][intTarget].y) {
-          fmt = (mm.vt=="c") ? "$" + numberWithCommas(item.v, intDA) : (mm.vt=="p") ? ( item.v * 100 ).toFixed(intDA) + "%" : numberWithCommas(item.v, intDA);
-          oData.target.push( {v: item.v, f: fmt} );
+          fmt = (mm.vt == "c") ? "$" + numberWithCommas(item.v, intDA) : (mm.vt == "p") ? (item.v * 100).toFixed(intDA) + "%" : numberWithCommas(item.v, intDA);
+          oData.target.push({ v: item.v, f: fmt });
         }
       });
     }
   }
 
 
-  var reqLen =(mm.it=="m") ? 13 : (mm.it=="y") ? 2 : 5;
-  reqLen = (this.contexttype=="seq") ? 2 : reqLen;
+  var reqLen = (mm.it == "m") ? 13 : (mm.it == "y") ? 2 : 5;
+  reqLen = (this.contexttype == "seq") ? 2 : reqLen;
   var blnDelete;
   for (var z = 0; z < Object.keys(oData).length; z++) {
     blnDelete = false;
     //MARK ROWS WHERE THERE ARE NO VALUES FOR DELETION
-    if (oData[Object.keys(oData)[z]].length == 1) {blnDelete = true;}
+    if (oData[Object.keys(oData)[z]].length == 1) { blnDelete = true; }
     //ADD NULLS TO YEAR ROWS WITH IMCOMPLETE DATA
     if (oData[Object.keys(oData)[z]].length < reqLen) {
       for (var q = oData[Object.keys(oData)[z]].length + 1; q <= reqLen; q++) {
@@ -1535,74 +1587,77 @@ App.prototype.setDataRows = function(mm) {
   }
   this.datarows = arrRows;
 };
-App.prototype.setChartRows = function( mm ) {
+App.prototype.setChartRows = function (mm) {
   var arrRows = this.datarows;
-  arrRows = transpose( arrRows );
+  arrRows = transpose(arrRows);
   arrRows.splice(0, 1);
-  if (getType(mm)=="MONTHLY" && this.contexttype != "seq") {for (var z = 0; z <= 11; z++) {arrRows[z].unshift(arrMM[z+1]);}}
-  if (getType(mm)=="QUARTERLY" && this.contexttype != "seq") {for (var z = 0; z <= 3; z++) {arrRows[z].unshift("Q" + (z+1));}}
-  if (getType(mm)=="HOURLY" && this.contexttype != "seq") {for (var z = 0; z <= 23; z++) {arrRows[z].unshift(arrHH[z+1]);}}
-  if (getType(mm)=="DAILY" && this.contexttype != "seq") {for (var z = 0; z < arrRows.length; z++) {arrRows[z].unshift(arrDD[z+1]);}}
- 
-  if (getType(mm)=="SEASONAL" && this.contexttype != "seq") {arrRows[0].unshift("Winter");arrRows[1].unshift("Spring");arrRows[2].unshift("Summer");arrRows[3].unshift("Fall");}
-  if (getType(mm)=="YEARLY" || this.contexttype == "seq") {arrRows[0].unshift("Year");}
+  if (getType(mm) == "MONTHLY" && this.contexttype != "seq") { for (var z = 0; z <= 11; z++) { arrRows[z].unshift(arrMM[z + 1]); } }
+  if (getType(mm) == "QUARTERLY" && this.contexttype != "seq") { for (var z = 0; z <= 3; z++) { arrRows[z].unshift("Q" + (z + 1)); } }
+  if (getType(mm) == "HOURLY" && this.contexttype != "seq") { for (var z = 0; z <= 23; z++) { arrRows[z].unshift(arrHH[z + 1]); } }
+  if (getType(mm) == "DAILY" && this.contexttype != "seq") { for (var z = 0; z < arrRows.length; z++) { arrRows[z].unshift(arrDD[z + 1]); } }
+
+  if (getType(mm) == "SEASONAL" && this.contexttype != "seq") { arrRows[0].unshift("Winter"); arrRows[1].unshift("Spring"); arrRows[2].unshift("Summer"); arrRows[3].unshift("Fall"); }
+  if (getType(mm) == "YEARLY" || this.contexttype == "seq") { arrRows[0].unshift("Year"); }
   this.chartrows = arrRows;
 };
-function getGraphOptionsByType(type,List){
-  for (var key in List){
-      if (List.hasOwnProperty(key)){
-          var  cellType= List[key].type;
-      if  (cellType==type)
-           return List[key].options
-  }
+function getGraphOptionsByType(type, List) {
+  for (var key in List) {
+    if (List.hasOwnProperty(key)) {
+      var cellType = List[key].type;
+      if (cellType == type)
+        return List[key].options
+    }
   }
 }
-App.prototype.drawChart =function (cType,dataTable,options,containerID) {
+App.prototype.drawChart = function (cType, dataTable, options, containerID) {
   // Draw a column chart
-    wrapper = new google.visualization.ChartWrapper({
-      chartType: cType,
-      dataTable:dataTable ,
-      options: options,
-      containerId: containerID
-    });
-    wrapper.draw();
-  }
-App.prototype.createGraphByPassPeriod = function(mm,defaultChartType) {
+  wrapper = new google.visualization.ChartWrapper({
+    chartType: cType,
+    dataTable: dataTable,
+    options: options,
+    containerId: containerID
+  });
+  wrapper.draw();
+}
+App.prototype.createGraphByPassPeriod = function (mm, defaultChartType) {
   var o = this;
   var dt = new google.visualization.DataTable(mm.vs);
   var dtChart = new google.visualization.DataTable(mm.vs);
- //BUILD DATA TABLE STRUCTURE
-  $( "#graphyear .btn-group" ).html("");
-  o.charttype=defaultChartType;
- //CREATE THE CHART AND TABLE
- var chartoptions = {};
- var cssClassNames = {
-  'headerRow': '',
-  'tableRow': '',
-  'oddTableRow': '',
-  'selectedTableRow': '',
-  'hoverTableRow': '',
-  'headerCell': 'bold_column_font',
-  'tableCell': 'data_cell_font',
-  'rowNumberCell': ''};
-  chartoptions=getGraphOptionsByType(o.charttype,mm["chartTypeSerial"]);
-      //DRAW THE CHART 
-      o.drawChart(o.charttype,mm.vs,chartoptions,'measurechart_gauge');
-      //DRAW THE CHART AND TABLE
-      this.table = new google.visualization.Table(document.getElementById("measuretable"));
-      var tableoptions = {title: mm.m, showRowNumber: false, width: '100%', height: '100%',
-      allowHtml: true,
-      cssClassNames:cssClassNames};
-      this.mTitle = mm.m.replace(/\n/g,' ');
-      this.table.draw(dt,tableoptions);
-      //set dataTable of App
-      this.dt = dt;
-      this.dtChart= dtChart
+  //BUILD DATA TABLE STRUCTURE
+  $("#graphyear .btn-group").html("");
+  o.charttype = defaultChartType;
+  //CREATE THE CHART AND TABLE
+  var chartoptions = {};
+  var cssClassNames = {
+    'headerRow': '',
+    'tableRow': '',
+    'oddTableRow': '',
+    'selectedTableRow': '',
+    'hoverTableRow': '',
+    'headerCell': 'bold_column_font',
+    'tableCell': 'data_cell_font',
+    'rowNumberCell': ''
   };
-App.prototype.createGraph = function(mm) {
+  chartoptions = getGraphOptionsByType(o.charttype, mm["chartTypeSerial"]);
+  //DRAW THE CHART 
+  o.drawChart(o.charttype, mm.vs, chartoptions, 'measurechart_gauge');
+  //DRAW THE CHART AND TABLE
+  this.table = new google.visualization.Table(document.getElementById("measuretable"));
+  var tableoptions = {
+    title: mm.m, showRowNumber: false, width: '100%', height: '100%',
+    allowHtml: true,
+    cssClassNames: cssClassNames
+  };
+  this.mTitle = mm.m.replace(/\n/g, ' ');
+  this.table.draw(dt, tableoptions);
+  //set dataTable of App
+  this.dt = dt;
+  this.dtChart = dtChart
+};
+App.prototype.createGraph = function (mm) {
   var o = this;
   var arrRows = [];
-  var oSeries = {}, oAxes = {}, intRows=0;
+  var oSeries = {}, oAxes = {}, intRows = 0;
   var dt = new google.visualization.DataTable();
   var dtChart = new google.visualization.DataTable();
   var transposeTitles = [];
@@ -1615,32 +1670,33 @@ App.prototype.createGraph = function(mm) {
     'hoverTableRow': '',
     'headerCell': 'bold_column_font',
     'tableCell': 'data_cell_font',
-    'rowNumberCell': ''};
+    'rowNumberCell': ''
+  };
   //BUILD DATA TABLE STRUCTURE
-  dt.addColumn( 'string', 'Year' );
-  dtChart.addColumn( 'string', 'Period' );
-  if (getType(mm)=="MONTHLY" && this.contexttype != "seq") {for (var x = 1; x <= 12; x++) {dt.addColumn('number', arrMM[x]);}}
-  if (getType(mm)=="QUARTERLY" && this.contexttype != "seq") {for (var x = 1; x <= 4; x++) {dt.addColumn('number', "Q" + x);}}
-  if (getType(mm)=="HOURLY" && this.contexttype != "seq") {for (var z = 0; z <= 23; z++) {dt.addColumn('number',arrHH[z+1]);}}
-  if (getType(mm)=="DAILY" && this.contexttype != "seq") {for (var z = 0; z <= 365; z++) {dt.addColumn('number',arrDD[z+1]);}}
-  if (getType(mm)=="YEARLY" || o.contexttype=="seq") {dt.addColumn('number', mm.m.replace(/\n/g,' '));}
-  if (getType(mm)=="SEASONAL" && this.contexttype != "seq") {dt.addColumn('number', "Winter");dt.addColumn('number', "Spring");dt.addColumn('number', "Summer");dt.addColumn('number', "Fall");}
+  dt.addColumn('string', 'Year');
+  dtChart.addColumn('string', 'Period');
+  if (getType(mm) == "MONTHLY" && this.contexttype != "seq") { for (var x = 1; x <= 12; x++) { dt.addColumn('number', arrMM[x]); } }
+  if (getType(mm) == "QUARTERLY" && this.contexttype != "seq") { for (var x = 1; x <= 4; x++) { dt.addColumn('number', "Q" + x); } }
+  if (getType(mm) == "HOURLY" && this.contexttype != "seq") { for (var z = 0; z <= 23; z++) { dt.addColumn('number', arrHH[z + 1]); } }
+  if (getType(mm) == "DAILY" && this.contexttype != "seq") { for (var z = 0; z <= 365; z++) { dt.addColumn('number', arrDD[z + 1]); } }
+  if (getType(mm) == "YEARLY" || o.contexttype == "seq") { dt.addColumn('number', mm.m.replace(/\n/g, ' ')); }
+  if (getType(mm) == "SEASONAL" && this.contexttype != "seq") { dt.addColumn('number', "Winter"); dt.addColumn('number', "Spring"); dt.addColumn('number', "Summer"); dt.addColumn('number', "Fall"); }
 
   //SETUP THE GRAPH SERIES, AXES, CONTROLS/////////////////////////////////////////////////////////////////////////////
-  $( "#graphyear .btn-group" ).html("");
-  fmt = (mm.vt=="p") ? '#.#%' : 'short';
-  oAxes[Object.keys(oAxes).length] = {title: '', format: fmt, minValue: 0};
+  $("#graphyear .btn-group").html("");
+  fmt = (mm.vt == "p") ? '#.#%' : 'short';
+  oAxes[Object.keys(oAxes).length] = { title: '', format: fmt, minValue: 0 };
   var YY = {};
-  mm.vs.sort(function(a, b){	return (a.p + (a.y*100)) - (b.p + (b.y*100));});
-  for (var i = 0; i < mm.vs.length; i++ ) {
-    if (YY[mm.vs[i].y]==null) {
+  mm.vs.sort(function (a, b) { return (a.p + (a.y * 100)) - (b.p + (b.y * 100)); });
+  for (var i = 0; i < mm.vs.length; i++) {
+    if (YY[mm.vs[i].y] == null) {
       YY[mm.vs[i].y] = "1";
       if (mm.activeYears[mm.vs[i].y] != null) {
         intRows++;
-        $( "#graphyear .btn-group" ).append('<label class="btn btn-default active" onclick="o.yearselect(this, null);" title="Hide this year on the chart below"><input type="checkbox" autocomplete="off" checked>' + mm.vs[i].y + '</label>');
-        oSeries[Object.keys(oSeries).length] = {targetAxisIndex: 0, color: arrColors[intRows]};
+        $("#graphyear .btn-group").append('<label class="btn btn-default active" onclick="o.yearselect(this, null);" title="Hide this year on the chart below"><input type="checkbox" autocomplete="off" checked>' + mm.vs[i].y + '</label>');
+        oSeries[Object.keys(oSeries).length] = { targetAxisIndex: 0, color: arrColors[intRows] };
       } else {
-        $( "#graphyear .btn-group" ).append('<label class="btn btn-default" onclick="o.yearselect(this, true);" title="Show this year on the chart below"><input type="checkbox" autocomplete="off">' + mm.vs[i].y + '</label>');
+        $("#graphyear .btn-group").append('<label class="btn btn-default" onclick="o.yearselect(this, true);" title="Show this year on the chart below"><input type="checkbox" autocomplete="off">' + mm.vs[i].y + '</label>');
       }
     }
   }
@@ -1649,49 +1705,51 @@ App.prototype.createGraph = function(mm) {
     oSeries[i].color = arrColors[j];
     j++;
   }
-  if (mm.ht=='True') {intRows++;oSeries[Object.keys(oSeries).length] = {type: "line", targetAxisIndex:intRows, color: 'SaddleBrown', pointShape: 'circle', pointSize: 5};oAxes[Object.keys(oAxes).length] = { gridlines : {count: 0 }};}
+  if (mm.ht == 'True') { intRows++; oSeries[Object.keys(oSeries).length] = { type: "line", targetAxisIndex: intRows, color: 'SaddleBrown', pointShape: 'circle', pointSize: 5 }; oAxes[Object.keys(oAxes).length] = { gridlines: { count: 0 } }; }
 
 
   //GET THE DATA ROWS FOR THE TABLE
   o.setDataRows(mm);
   o.setChartRows(mm);
   for (var z = 0; z < o.datarows.length; z++) {
-    dtChart.addColumn( 'number', o.datarows[z][0] );
+    dtChart.addColumn('number', o.datarows[z][0]);
   }
   dt.addRows(o.datarows);
   dtChart.addRows(o.chartrows);
   //CREATE THE CHART AND TABLE
-     if (o.charttype=='pie')
-         this.chart = new google.visualization.PieChart(document.getElementById("measurechart"));
-     else if (o.charttype=='pie3D')
-         this.chart = new google.visualization.PieChart(document.getElementById("measurechart"));
-     else if (o.charttype=='gauge')
-         this.chart = new google.visualization.Gauge(document.getElementById("measurechart"));
-     else   
-         this.chart = new google.visualization.ComboChart(document.getElementById("measurechart"));
+  if (o.charttype == 'pie')
+    this.chart = new google.visualization.PieChart(document.getElementById("measurechart"));
+  else if (o.charttype == 'pie3D')
+    this.chart = new google.visualization.PieChart(document.getElementById("measurechart"));
+  else if (o.charttype == 'gauge')
+    this.chart = new google.visualization.Gauge(document.getElementById("measurechart"));
+  else
+    this.chart = new google.visualization.ComboChart(document.getElementById("measurechart"));
   this.table = new google.visualization.Table(document.getElementById("measuretable"));
-  var strYTD = (this.contexttype=="ytd") ? " (Year-To-Date) " : " ";
+  var strYTD = (this.contexttype == "ytd") ? " (Year-To-Date) " : " ";
   var chartoptions = {};
-  if (o.charttype=='pie'){
-      chartoptions={};
+  if (o.charttype == 'pie') {
+    chartoptions = {};
   }
-   else if (o.charttype=='pie3D')
-      chartoptions={is3D: true};
-   else if (o.charttype=='gauge'){
-      chartoptions=getGraphOptionsByType("gauge",mm["chartTypeSerial"]);
-        }    
-   else 
-      chartoptions = {animation: {duration: 1000, easing: 'linear' },seriesType: o.charttype, series: oSeries, height: 400,width: "100%",hAxis: { title: (mm.it=="m") ? "Month" :(mm.it=="d") ? "Day":(mm.it=="h") ? "Hour": "Quarter" },vAxes:oAxes};
-  var tableoptions = {title: mm.m, showRowNumber: false, width: '100%', height: '100%',
-  allowHtml: true,
-  cssClassNames:cssClassNames};
-  this.mTitle = mm.m.replace(/\n/g,' ');
+  else if (o.charttype == 'pie3D')
+    chartoptions = { is3D: true };
+  else if (o.charttype == 'gauge') {
+    chartoptions = getGraphOptionsByType("gauge", mm["chartTypeSerial"]);
+  }
+  else
+    chartoptions = { animation: { duration: 1000, easing: 'linear' }, seriesType: o.charttype, series: oSeries, height: 400, width: "100%", hAxis: { title: (mm.it == "m") ? "Month" : (mm.it == "d") ? "Day" : (mm.it == "h") ? "Hour" : "Quarter" }, vAxes: oAxes };
+  var tableoptions = {
+    title: mm.m, showRowNumber: false, width: '100%', height: '100%',
+    allowHtml: true,
+    cssClassNames: cssClassNames
+  };
+  this.mTitle = mm.m.replace(/\n/g, ' ');
   //DRAW THE CHART AND TABLE
-  if (getType(mm)=="YEARLY" && o.contexttype!="seq") {
+  if (getType(mm) == "YEARLY" && o.contexttype != "seq") {
     this.chart.draw(dt, google.charts.Bar.convertOptions(chartoptions));
     this.table.draw(dtChart, tableoptions);
     this.dt = dtChart;
-  } else if (o.contexttype=="seq") {
+  } else if (o.contexttype == "seq") {
     this.chart.draw(dt, google.charts.Bar.convertOptions(chartoptions));
     this.table.draw(dt, tableoptions);
     this.dt = dt;
@@ -1701,18 +1759,18 @@ App.prototype.createGraph = function(mm) {
     this.dt = dt;
   }
   //gauge not support on getImageURI()
-  if (o.charttype!='gauge'){
-    $( "" ).html("<img src='" + this.chart.getImageURI() + "'/>");
+  if (o.charttype != 'gauge') {
+    $("").html("<img src='" + this.chart.getImageURI() + "'/>");
   }
-  
+
 };
-App.prototype.yearselect = function(o, v) {
+App.prototype.yearselect = function (o, v) {
   var m = this.measures[$(".aindicator.active").attr("id")];
   var y = $(o).html().substring($(o).html().length - 4, $(o).html().length);
   m.activeYears[y] = v;
   this.createGraph(m);
 };
-App.prototype.selectYTD = function() {
+App.prototype.selectYTD = function () {
   var m = this.measures[$(".aindicator.active").attr("id")];
 
   if ($('#showytdvalues').bootstrapSwitch('state')) {
@@ -1731,17 +1789,17 @@ App.prototype.dataTableToCSV = function () {
   var csv_cols = [];
   var csv_out;
 
-  for (var i=0; i<dt_cols; i++) {
-    csv_cols.push(this.dt.getColumnLabel(i).replace(/,/g,""));
+  for (var i = 0; i < dt_cols; i++) {
+    csv_cols.push(this.dt.getColumnLabel(i).replace(/,/g, ""));
   }
 
-  csv_out = csv_cols.join(",")+"\r\n";
-  for (i=0; i<dt_rows; i++) {
+  csv_out = csv_cols.join(",") + "\r\n";
+  for (i = 0; i < dt_rows; i++) {
     var raw_col = [];
-    for (var j=0; j<dt_cols; j++) {
-      raw_col.push(this.dt.getFormattedValue(i, j, 'label').replace(/,/g,""));
+    for (var j = 0; j < dt_cols; j++) {
+      raw_col.push(this.dt.getFormattedValue(i, j, 'label').replace(/,/g, ""));
     }
-    csv_out += raw_col.join(",")+"\r\n";
+    csv_out += raw_col.join(",") + "\r\n";
   }
   return csv_out;
 };
@@ -1752,52 +1810,52 @@ function dataTableLiveToCSV_Map(dataTable) {
   var csv_cols = [];
   var csv_out;
   //alert("dt_rows"+dt_rows);
-  for (var i=0; i<dt_cols; i++) {
-    csv_cols.push(dataTable.getColumnLabel(i).replace(/,/g,""));
+  for (var i = 0; i < dt_cols; i++) {
+    csv_cols.push(dataTable.getColumnLabel(i).replace(/,/g, ""));
   }
 
-  csv_out = csv_cols.join(",")+"\r\n";
-  for (i=0; i<dt_rows; i++) {
+  csv_out = csv_cols.join(",") + "\r\n";
+  for (i = 0; i < dt_rows; i++) {
     var raw_col = [];
-    for (var j=0; j<dt_cols; j++) {
-      raw_col.push(dataTable.getFormattedValue(i, j, 'label').replace(/,/g,""));
+    for (var j = 0; j < dt_cols; j++) {
+      raw_col.push(dataTable.getFormattedValue(i, j, 'label').replace(/,/g, ""));
     }
-    csv_out += raw_col.join(",")+"\r\n";
+    csv_out += raw_col.join(",") + "\r\n";
   }
- // alert(JSON.stringify(csv_out));
+  // alert(JSON.stringify(csv_out));
   return csv_out;
 };
 App.prototype.dataTableLiveToCSV = function (dataTable) {
-    var dt_cols = dataTable.getNumberOfColumns();
-    var dt_rows = dataTable.getNumberOfRows();
-    var csv_cols = [];
-    var csv_out;
-  
-    for (var i=0; i<dt_cols; i++) {
-      csv_cols.push(dataTable.getColumnLabel(i).replace(/,/g,""));
+  var dt_cols = dataTable.getNumberOfColumns();
+  var dt_rows = dataTable.getNumberOfRows();
+  var csv_cols = [];
+  var csv_out;
+
+  for (var i = 0; i < dt_cols; i++) {
+    csv_cols.push(dataTable.getColumnLabel(i).replace(/,/g, ""));
+  }
+
+  csv_out = csv_cols.join(",") + "\r\n";
+  for (i = 0; i < dt_rows; i++) {
+    var raw_col = [];
+    for (var j = 0; j < dt_cols; j++) {
+      raw_col.push(dataTable.getFormattedValue(i, j, 'label').replace(/,/g, ""));
     }
-  
-    csv_out = csv_cols.join(",")+"\r\n";
-    for (i=0; i<dt_rows; i++) {
-      var raw_col = [];
-      for (var j=0; j<dt_cols; j++) {
-        raw_col.push(dataTable.getFormattedValue(i, j, 'label').replace(/,/g,""));
-      }
-      csv_out += raw_col.join(",")+"\r\n";
-    }
-    return csv_out;
-  };
-App.prototype.downloadCSV = function() {
+    csv_out += raw_col.join(",") + "\r\n";
+  }
+  return csv_out;
+};
+App.prototype.downloadCSV = function () {
   var csv_out = this.dataTableToCSV();
 
   var browser = navigator.userAgent;
   var IEversion = 99;
-  if (browser.indexOf("MSIE") > 1) {IEversion = parseInt(browser.substr(browser.indexOf("MSIE")+5, 5));}
+  if (browser.indexOf("MSIE") > 1) { IEversion = parseInt(browser.substr(browser.indexOf("MSIE") + 5, 5)); }
   if (IEversion < 10) {
 
   } else {
-    var blob = new Blob([csv_out], {type: 'text/csv;charset=utf-8'});
-    var url  = window.URL || window.webkitURL;
+    var blob = new Blob([csv_out], { type: 'text/csv;charset=utf-8' });
+    var url = window.URL || window.webkitURL;
     var link = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
     link.href = url.createObjectURL(blob);
     link.download = this.mTitle + ".csv";
@@ -1806,17 +1864,17 @@ App.prototype.downloadCSV = function() {
     link.dispatchEvent(event);
   }
 };
-function downloadLiveCSV_Map (dataTable) {
+function downloadLiveCSV_Map(dataTable) {
   //var csv_out = this.dataTableToCSV();
   var csv_out = dataTableLiveToCSV_Map(dataTable);
   var browser = navigator.userAgent;
   var IEversion = 99;
-  if (browser.indexOf("MSIE") > 1) {IEversion = parseInt(browser.substr(browser.indexOf("MSIE")+5, 5));}
+  if (browser.indexOf("MSIE") > 1) { IEversion = parseInt(browser.substr(browser.indexOf("MSIE") + 5, 5)); }
   if (IEversion < 10) {
 
   } else {
-    var blob = new Blob([csv_out], {type: 'text/csv;charset=utf-8'});
-    var url  = window.URL || window.webkitURL;
+    var blob = new Blob([csv_out], { type: 'text/csv;charset=utf-8' });
+    var url = window.URL || window.webkitURL;
     var link = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
     link.href = url.createObjectURL(blob);
     link.download = this.mTitle + ".csv";
@@ -1824,19 +1882,19 @@ function downloadLiveCSV_Map (dataTable) {
     event.initEvent("click", true, false);
     link.dispatchEvent(event);
   }
-  
+
 };
-App.prototype.downloadLiveCSV = function(dataTable) {
+App.prototype.downloadLiveCSV = function (dataTable) {
   //var csv_out = this.dataTableToCSV();
   var csv_out = this.dataTableLiveToCSV(dataTable);
   var browser = navigator.userAgent;
   var IEversion = 99;
-  if (browser.indexOf("MSIE") > 1) {IEversion = parseInt(browser.substr(browser.indexOf("MSIE")+5, 5));}
+  if (browser.indexOf("MSIE") > 1) { IEversion = parseInt(browser.substr(browser.indexOf("MSIE") + 5, 5)); }
   if (IEversion < 10) {
 
   } else {
-    var blob = new Blob([csv_out], {type: 'text/csv;charset=utf-8'});
-    var url  = window.URL || window.webkitURL;
+    var blob = new Blob([csv_out], { type: 'text/csv;charset=utf-8' });
+    var url = window.URL || window.webkitURL;
     var link = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
     link.href = url.createObjectURL(blob);
     link.download = this.mTitle + ".csv";
@@ -1847,7 +1905,7 @@ App.prototype.downloadLiveCSV = function(dataTable) {
 };
 
 
-App.prototype.selectGroupByPeriod = function() {
+App.prototype.selectGroupByPeriod = function () {
 
   if (!$('#groupbyperiod').bootstrapSwitch('state')) {
     $('#showytdvalues').bootstrapSwitch('state', false);
@@ -1858,184 +1916,184 @@ App.prototype.selectGroupByPeriod = function() {
     this.changecontexttype('val');
   }
 };
-App.prototype.changecontexttype = function(sContext) {
+App.prototype.changecontexttype = function (sContext) {
   this.contexttype = sContext;
   var m = this.measures[$(".aindicator.active").attr("id")];
   this.createGraph(m);
 };
-App.prototype.changegraphtypeByPassPeriod = function(sType) {
+App.prototype.changegraphtypeByPassPeriod = function (sType) {
   var m = this.measures[$(".aindicator.active").attr("id")];
   this.charttype = sType;
-  this.createGraphByPassPeriod(m,this.charttype);
+  this.createGraphByPassPeriod(m, this.charttype);
 };
 
-App.prototype.changegraphtype = function(sType) {
+App.prototype.changegraphtype = function (sType) {
   var m = this.measures[$(".aindicator.active").attr("id")];
   this.charttype = sType;
   this.createGraph(m);
 };
-App.prototype.failGET = function() {
-  alert( "Error" );
+App.prototype.failGET = function () {
+  alert("Error");
 };
-App.prototype.drawSymbol = function(sPOSNEG, sDIRECTION) {
-  var sReturn = (sPOSNEG=="N/A") ? "" : (sDIRECTION == "Up") ? '<span class="glyphicon glyphicon-arrow-up ' + sPOSNEG + '"></span>' : (sDIRECTION == "Down") ? '<span class="glyphicon glyphicon-arrow-down ' + sPOSNEG + '"></span>' : '<span class="glyphicon glyphicon-minus ' + sPOSNEG + '"></span>';
+App.prototype.drawSymbol = function (sPOSNEG, sDIRECTION) {
+  var sReturn = (sPOSNEG == "N/A") ? "" : (sDIRECTION == "Up") ? '<span class="glyphicon glyphicon-arrow-up ' + sPOSNEG + '"></span>' : (sDIRECTION == "Down") ? '<span class="glyphicon glyphicon-arrow-down ' + sPOSNEG + '"></span>' : '<span class="glyphicon glyphicon-minus ' + sPOSNEG + '"></span>';
   return sReturn;
 };
-App.prototype.drawMeasure = function(m, cat,bDraw) {
-  
+App.prototype.drawMeasure = function (m, cat, bDraw) {
+
   var o = this;
   var sKEYWORDS, sMEASURE, sVALUE, sINTERVAL, sPOSNEG, sPERIOD, sDIRECTION, sCHANGE, sID, sIcon, lastVal, lastYear, lastPeriod, intDA;
   var compVal1, compVal2;
   sMEASURE = m.m;
   sKEYWORDS = m.kw;
-  sIcon=m.icon;
-  intDA = (m.da=="") ? 0 : parseInt(m.da);
+  sIcon = m.icon;
+  intDA = (m.da == "") ? 0 : parseInt(m.da);
 
   //CREATE YTD VALUES FOR NUMERIC AND CURRENCY MEASURES
   m.ytds = {};
   lastVal = 0
-  if (m.byPassPeriod!="True"){
-  if (m.ytd=="True") {
-    m.vs.sort(function(a, b){	return (a.p + (a.y*100)) - (b.p + (b.y*100));});
+  if (m.byPassPeriod != "True") {
+    if (m.ytd == "True") {
+      m.vs.sort(function (a, b) { return (a.p + (a.y * 100)) - (b.p + (b.y * 100)); });
 
-    $.each( m.vs, function(j,vitem) {
-      if (m.ytds[vitem.y]==null) { m.ytds[vitem.y] = {}; m.ytds[vitem.y].value = 0;lastVal = 0; }
-      if (m.ytds[vitem.y][vitem.p]==null) { m.ytds[vitem.y][vitem.p] = {}; m.ytds[vitem.y][vitem.p] = 0; }
-      m.ytds[vitem.y].value += vitem.v;
-      m.ytds[vitem.y][vitem.p] += vitem.v + lastVal;
-      lastVal = m.ytds[vitem.y][vitem.p];
-      lastYear = vitem.y;
-      lastPeriod = vitem.p;
-    });
+      $.each(m.vs, function (j, vitem) {
+        if (m.ytds[vitem.y] == null) { m.ytds[vitem.y] = {}; m.ytds[vitem.y].value = 0; lastVal = 0; }
+        if (m.ytds[vitem.y][vitem.p] == null) { m.ytds[vitem.y][vitem.p] = {}; m.ytds[vitem.y][vitem.p] = 0; }
+        m.ytds[vitem.y].value += vitem.v;
+        m.ytds[vitem.y][vitem.p] += vitem.v + lastVal;
+        lastVal = m.ytds[vitem.y][vitem.p];
+        lastYear = vitem.y;
+        lastPeriod = vitem.p;
+      });
 
-    m.vs.sort(function(a, b){	return (b.p + (b.y*100)) - (a.p + (a.y*100));});
-    m.ytds.curYear = lastYear;
-    m.ytds.curPeriod = lastPeriod;
-    compVal1 = m.ytds[lastYear][lastPeriod];
-    compVal2 = m.ytds[lastYear - 1][lastPeriod];
-    sVALUE = (m.vt=="n") ? numberWithCommasAbbr(compVal1, intDA) : "$" + numberWithCommasAbbr(compVal1, intDA);
-    if (m.it=="m") {
-      sPERIOD = m.vs[0].y + " " + arrMM[m.vs[0].p] + " Year-To-Date Result";
+      m.vs.sort(function (a, b) { return (b.p + (b.y * 100)) - (a.p + (a.y * 100)); });
+      m.ytds.curYear = lastYear;
+      m.ytds.curPeriod = lastPeriod;
+      compVal1 = m.ytds[lastYear][lastPeriod];
+      compVal2 = m.ytds[lastYear - 1][lastPeriod];
+      sVALUE = (m.vt == "n") ? numberWithCommasAbbr(compVal1, intDA) : "$" + numberWithCommasAbbr(compVal1, intDA);
+      if (m.it == "m") {
+        sPERIOD = m.vs[0].y + " " + arrMM[m.vs[0].p] + " Year-To-Date Result";
+      } else {
+        sPERIOD = m.vs[0].y + " Q" + m.vs[0].p + " Year-To-Date Result";
+      }
+      sINTERVAL = "year";
     } else {
-      sPERIOD = m.vs[0].y + " Q" + m.vs[0].p + " Year-To-Date Result";
-    }
-    sINTERVAL = "year";
-  } else {
-    m.vs.sort(function(a, b){	return (b.p + (b.y*100)) - (a.p + (a.y*100));});
-    compVal1 = m.vs[0].v;
-    compVal2 = (m.it=="m") ? m.vs[12].v : (m.it=="y") ? m.vs[1].v : m.vs[4].v;
+      m.vs.sort(function (a, b) { return (b.p + (b.y * 100)) - (a.p + (a.y * 100)); });
+      compVal1 = m.vs[0].v;
+      compVal2 = (m.it == "m") ? m.vs[12].v : (m.it == "y") ? m.vs[1].v : m.vs[4].v;
 
-    sVALUE = (m.vt=="n") ? numberWithCommasAbbr(compVal1, intDA) : (m.vt=="c") ? "$" + numberWithCommasAbbr(compVal1, intDA) : (m.vs[0].v * 100).toFixed(intDA) + "%";
-    if (m.it=="m") {
-      sPERIOD = m.vs[0].y + " " + arrMM[m.vs[0].p] + " Result";
-      sINTERVAL = "year";
-    }
-    if (m.it=="q") {
-      sPERIOD = m.vs[0].y + " Q" + m.vs[0].p + " Result";
-      sINTERVAL = "year";
-    }
-    if (m.it=="y") {
-      sPERIOD = m.vs[0].y + " Result";
-      sINTERVAL = "year";
-    }
-    if (m.it=="s") {
-      sPERIOD = m.vs[0].y + " " + arrSeason[m.vs[0].p] + " Result";
-      sINTERVAL = "year";
-    }
-    if (m.it=="h") {
-      sPERIOD = m.vs[0].y + " " + arrHH[m.vs[0].p] + " Result";
-      sINTERVAL = "year";
-    }
-    if (m.it=="d") {
-      sPERIOD = m.vs[0].y + " " + arrDD[m.vs[0].p] + " Result";
-      sINTERVAL = "year";
-    }
+      sVALUE = (m.vt == "n") ? numberWithCommasAbbr(compVal1, intDA) : (m.vt == "c") ? "$" + numberWithCommasAbbr(compVal1, intDA) : (m.vs[0].v * 100).toFixed(intDA) + "%";
+      if (m.it == "m") {
+        sPERIOD = m.vs[0].y + " " + arrMM[m.vs[0].p] + " Result";
+        sINTERVAL = "year";
+      }
+      if (m.it == "q") {
+        sPERIOD = m.vs[0].y + " Q" + m.vs[0].p + " Result";
+        sINTERVAL = "year";
+      }
+      if (m.it == "y") {
+        sPERIOD = m.vs[0].y + " Result";
+        sINTERVAL = "year";
+      }
+      if (m.it == "s") {
+        sPERIOD = m.vs[0].y + " " + arrSeason[m.vs[0].p] + " Result";
+        sINTERVAL = "year";
+      }
+      if (m.it == "h") {
+        sPERIOD = m.vs[0].y + " " + arrHH[m.vs[0].p] + " Result";
+        sINTERVAL = "year";
+      }
+      if (m.it == "d") {
+        sPERIOD = m.vs[0].y + " " + arrDD[m.vs[0].p] + " Result";
+        sINTERVAL = "year";
+      }
 
-  }
-}//end of bypassperiod
+    }
+  }//end of bypassperiod
 
-  if (Math.abs(compVal1 - compVal2) <= Math.abs(compVal2 * (1+parseFloat(m.v)) - compVal2)) {
+  if (Math.abs(compVal1 - compVal2) <= Math.abs(compVal2 * (1 + parseFloat(m.v)) - compVal2)) {
     sPOSNEG = "STABLE";
     sDIRECTION = "STABLE";
   } else {
-    if ( compVal1 > compVal2) {
+    if (compVal1 > compVal2) {
       sDIRECTION = "Up";
     } else {
       sDIRECTION = "Down";
     }
 
-    if ( compVal1 > compVal2 && m.dd=="Up" ) {
+    if (compVal1 > compVal2 && m.dd == "Up") {
       sPOSNEG = "POSITIVE";
-    } else if (compVal1 < compVal2 && m.dd=="Down") {
+    } else if (compVal1 < compVal2 && m.dd == "Down") {
       sPOSNEG = "POSITIVE";
     } else {
       sPOSNEG = "NEGATIVE";
     }
   }
 
-  if (m.dd=="None") {sPOSNEG = "N/A";}
-  sCHANGE = (compVal1/compVal2-1) * 100;
+  if (m.dd == "None") { sPOSNEG = "N/A"; }
+  sCHANGE = (compVal1 / compVal2 - 1) * 100;
   sCHANGE = Math.abs(sCHANGE.toFixed(2)) + "%";
-  sCHANGE = (m.vt=="p") ? ((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
+  sCHANGE = (m.vt == "p") ? ((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
   sID = m.id;
   if (bDraw)
-      $( "#cat" + cat.replace(/\W+/g, '')).append( this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID, sIcon, m) );
+    $("#cat" + cat.replace(/\W+/g, '')).append(this.createMeasure(sPOSNEG, sKEYWORDS, sMEASURE, sVALUE, sPERIOD, sDIRECTION, sINTERVAL, sCHANGE, sID, sIcon, m));
 
 };
-App.prototype.createTab = function (sTabName, index){
+App.prototype.createTab = function (sTabName, index) {
   var o = this;
   if (index == 0) {
-    $( o.selectors.tabs ).append( '<li class="active"><a href="#cat' + sTabName.replace(/\W+/g, '') + '" data-toggle="tab">' + sTabName + '<span class="sr-only">(current)</span></a></li>' );
-    $( o.selectors.indicators ).append( '<section class="tab-pane active" id="cat' + sTabName.replace(/\W+/g, '') + '"></section>' );
+    $(o.selectors.tabs).append('<li class="active"><a href="#cat' + sTabName.replace(/\W+/g, '') + '" data-toggle="tab">' + sTabName + '<span class="sr-only">(current)</span></a></li>');
+    $(o.selectors.indicators).append('<section class="tab-pane active" id="cat' + sTabName.replace(/\W+/g, '') + '"></section>');
   } else {
-    $( o.selectors.tabs ).append( '<li><a href="#cat' + sTabName.replace(/\W+/g, '') + '" data-toggle="tab">' + sTabName + '</a></li>' );
-    $( o.selectors.indicators ).append( '<section class="tab-pane" id="cat' + sTabName.replace(/\W+/g, '') + '"></section>' );
+    $(o.selectors.tabs).append('<li><a href="#cat' + sTabName.replace(/\W+/g, '') + '" data-toggle="tab">' + sTabName + '</a></li>');
+    $(o.selectors.indicators).append('<section class="tab-pane" id="cat' + sTabName.replace(/\W+/g, '') + '"></section>');
   }
 };
-App.prototype.createMeasure = function(strPSN, strKW, strTitle, strVal,strPeriod, strDirection, strInterval, strChangeVal, strID, strIcon, m) {
+App.prototype.createMeasure = function (strPSN, strKW, strTitle, strVal, strPeriod, strDirection, strInterval, strChangeVal, strID, strIcon, m) {
   var o = this;
   var strHTML = "";
   strHTML += '<div class="aindicator nonactive" href="#" id="' + strID + '"><div class="indicator ' + strPSN + '">';
   strHTML += '<div class="hide keywords">' + strKW + '</div>';
-  strHTML += '<h3>' + strTitle.replace(/\n/g,'<br/>') + '</h3>';
+  strHTML += '<h3>' + strTitle.replace(/\n/g, '<br/>') + '</h3>';
   strHTML += '<div class="measure">';
   strHTML += '<section class="measuredetail hide"></section>';
-   /* hide measure detail section - replace with icon */
-   if (m.byPassPeriod!="True"){
-     if(!strIcon || 0 === strIcon.length){
-         if (m.chartType=='RYG'){
-               var category = m.c[0];
-               if (category=='Nightly Summary')
-                   o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
-               else if (category=='Historical Demand')
-                   o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
-       var data=trafficlightData["RYG"];
-       var dataset=data["dataset"];
-       var value_R=dataset['R'];
-       var value_Y=dataset['Y'];
-       var value_G=dataset['G'];
-       strHTML += '<br><p class="measurevalue">' +
-                  '<font color="#cc0000">'+value_R+'</font>'+'&nbsp;/'+
-                  '<font color="#FFA500">'+'&nbsp;'+value_Y+'</font>'+'&nbsp;/'+
-                  '<font color="#008000">'+'&nbsp;'+value_G+'</font>'+'</p>'+
-                  '<p class="measureperiod">' + 'Red / Yellow / Green'+'</p>';
-     }else {   
+  /* hide measure detail section - replace with icon */
+  if (m.byPassPeriod != "True") {
+    if (!strIcon || 0 === strIcon.length) {
+      if (m.chartType == 'RYG') {
+        var category = m.c[0];
+        if (category == 'Nightly Summary')
+          o.loadTrafficLightData(o.urls.jsonlnightlysummarytrafficlightData);
+        else if (category == 'Historical Demand')
+          o.loadTrafficLightData(o.urls.jsonlhistoricaldemandtrafficlightData);
+        var data = trafficlightData["RYG"];
+        var dataset = data["dataset"];
+        var value_R = dataset['R'];
+        var value_Y = dataset['Y'];
+        var value_G = dataset['G'];
+        strHTML += '<br><p class="measurevalue">' +
+          '<font color="#cc0000">' + value_R + '</font>' + '&nbsp;/' +
+          '<font color="#FFA500">' + '&nbsp;' + value_Y + '</font>' + '&nbsp;/' +
+          '<font color="#008000">' + '&nbsp;' + value_G + '</font>' + '</p>' +
+          '<p class="measureperiod">' + 'Red / Yellow / Green' + '</p>';
+      } else {
         strHTML += '<br><p class="measurevalue"><span>' + strVal + '</span></p>';
         strHTML += '<p class="measureperiod">' + strPeriod + '</p>';
-     }
-  }else {
-    strHTML += '<br><p class="measurevalue"><img src="/resources/dashboard/img/'+strIcon+'" alt="An icon"/></p><br>';
+      }
+    } else {
+      strHTML += '<br><p class="measurevalue"><img src="/resources/dashboard/img/' + strIcon + '" alt="An icon"/></p><br>';
+    }
   }
-}
-else {
-  if(!strIcon || 0 === strIcon.length){
-  strHTML += '<br><p class="measurevalue"><span>' + m.measureValue + '</span></p>';
-  strHTML += '<p class="measureperiod">'  +m.measureTitle +'&nbsp;&nbsp;&nbsp;'+ '</p>';
-  }
-  else 
-  strHTML += '<br><p class="measurevalue"><img src="/resources/dashboard/img/'+strIcon+'" alt="An icon"/></p><br>';
+  else {
+    if (!strIcon || 0 === strIcon.length) {
+      strHTML += '<br><p class="measurevalue"><span>' + m.measureValue + '</span></p>';
+      strHTML += '<p class="measureperiod">' + m.measureTitle + '&nbsp;&nbsp;&nbsp;' + '</p>';
+    }
+    else
+      strHTML += '<br><p class="measurevalue"><img src="/resources/dashboard/img/' + strIcon + '" alt="An icon"/></p><br>';
 
-}
+  }
   strHTML += '<div class="row">';
   strHTML += '<div class="col-xs-12 explanation"><div>';
   strHTML += '</div>';
@@ -2043,73 +2101,73 @@ else {
   strHTML += '</div>';
   strHTML += '</div>';
   strHTML += '</div></div>';
- return strHTML;
+  return strHTML;
 };
-App.prototype.search = function( q ) {
+App.prototype.search = function (q) {
   o = this;
   q = q.toLowerCase();
   var strHTML = "", intCount = 0;
-  $( "#dashboard_searchresults" ).html( "" );
-  if ( q == "" ) {
-    $( "#searcherror" ).removeClass( "hide" );
+  $("#dashboard_searchresults").html("");
+  if (q == "") {
+    $("#searcherror").removeClass("hide");
     return;
   } else {
-    $( "#searcherror" ).addClass( "hide" );
-    $.each( $("div.aindicator"), function(j,item) {
-      $( "#dashboard_indicatortabs, #dashboard_nav" ).addClass( 'hide' );
-      if ( $( item ).html().toLowerCase().indexOf(q) >= 0) {
-        $( "#dashboard_searchresults" ).append( $( item ).clone() );
+    $("#searcherror").addClass("hide");
+    $.each($("div.aindicator"), function (j, item) {
+      $("#dashboard_indicatortabs, #dashboard_nav").addClass('hide');
+      if ($(item).html().toLowerCase().indexOf(q) >= 0) {
+        $("#dashboard_searchresults").append($(item).clone());
         intCount++;
       }
     });
-    $( "#dashboard_searchresults" ).html( "<p class='searchTotal'>" + intCount + " Results Found</p>" + $( "#dashboard_searchresults" ).html());
-    $( "#dashboard_searchresults, #searchreset" ).removeClass( 'hide' );
-    $( "#dashboard_searchresults .aindicator.nonactive" ).click(function() {
+    $("#dashboard_searchresults").html("<p class='searchTotal'>" + intCount + " Results Found</p>" + $("#dashboard_searchresults").html());
+    $("#dashboard_searchresults, #searchreset").removeClass('hide');
+    $("#dashboard_searchresults .aindicator.nonactive").click(function () {
       o.measureClick(this);
     });
   }
 };
-App.prototype.resetsearch = function( oSearch ) {
-  $( "#dashboard_searchresults, #searchreset, #searcherror" ).addClass( 'hide' );
-  $( "#dashboard_indicatortabs, #dashboard_nav" ).removeClass( 'hide' );
-  $( oSearch ).val("");
+App.prototype.resetsearch = function (oSearch) {
+  $("#dashboard_searchresults, #searchreset, #searcherror").addClass('hide');
+  $("#dashboard_indicatortabs, #dashboard_nav").removeClass('hide');
+  $(oSearch).val("");
 };
-App.prototype.generateExcel = function(strID) {
+App.prototype.generateExcel = function (strID) {
   var csv_cols = [], csv_out, m, sPeriod;
   csv_cols.push("Measure Name");
   csv_cols.push("Year");
   csv_cols.push("Period");
   csv_cols.push("Value");
-  csv_out = csv_cols.join(",")+"\r\n";
+  csv_out = csv_cols.join(",") + "\r\n";
 
 
-  $.each( $(strID + " select"), function(i,item) {
-    $.each(item, function(j, subitem) {
+  $.each($(strID + " select"), function (i, item) {
+    $.each(item, function (j, subitem) {
       if ($(subitem).is(':checked')) {
         m = dashboard.measures[$(subitem).val()];
-        m.vs.sort(function(a, b){	return ( ((a.y * 1000) + a.p) - ((b.y *1000) + b.p));});
-        $.each( m.vs, function (k, vsitem) {
-          sPeriod = (m.it=="m") ? arrMM[vsitem.p] : (m.it=="q") ? "Q" + vsitem.p : (m.it=="s") ? arrSeason[vsitem.p] :          sPeriod = (m.it=="m") ? arrMM[vsitem.p] : (m.it=="q") ? "Q" + vsitem.p : (m.it=="s") ? arrSeason[vsitem.p] : (m.it=="h") ? arrHH[vsitem.p]:(m.it=="d") ? arrDD[vsitem.p]:"";
+        m.vs.sort(function (a, b) { return (((a.y * 1000) + a.p) - ((b.y * 1000) + b.p)); });
+        $.each(m.vs, function (k, vsitem) {
+          sPeriod = (m.it == "m") ? arrMM[vsitem.p] : (m.it == "q") ? "Q" + vsitem.p : (m.it == "s") ? arrSeason[vsitem.p] : sPeriod = (m.it == "m") ? arrMM[vsitem.p] : (m.it == "q") ? "Q" + vsitem.p : (m.it == "s") ? arrSeason[vsitem.p] : (m.it == "h") ? arrHH[vsitem.p] : (m.it == "d") ? arrDD[vsitem.p] : "";
           "";
 
           csv_cols = [];
-          csv_cols.push( m.m.replace(/\n/g,' ').replace(/,/g,"") );
-          csv_cols.push( vsitem.y );
-          csv_cols.push( sPeriod );
-          csv_cols.push( vsitem.v );
-          csv_out += csv_cols.join(",")+"\r\n";
+          csv_cols.push(m.m.replace(/\n/g, ' ').replace(/,/g, ""));
+          csv_cols.push(vsitem.y);
+          csv_cols.push(sPeriod);
+          csv_cols.push(vsitem.v);
+          csv_out += csv_cols.join(",") + "\r\n";
         });
       }
     });
   });
   var browser = navigator.userAgent;
   var IEversion = 99;
-  if (browser.indexOf("MSIE") > 1) {IEversion = parseInt(browser.substr(browser.indexOf("MSIE")+5, 5));}
+  if (browser.indexOf("MSIE") > 1) { IEversion = parseInt(browser.substr(browser.indexOf("MSIE") + 5, 5)); }
   if (IEversion < 10) {
     alert("You are using an old version of Internet Explorer that does not allow for file export.  Please upgrade to a more up to date browser in order to use this feature.");
   } else {
-    var blob = new Blob([csv_out], {type: 'text/csv;charset=utf-8'});
-    var url  = window.URL || window.webkitURL;
+    var blob = new Blob([csv_out], { type: 'text/csv;charset=utf-8' });
+    var url = window.URL || window.webkitURL;
     var link = document.createElementNS("http://www.w3.org/1999/xhtml", "a");
     link.href = url.createObjectURL(blob);
     link.download = "TorontoMeasureData.csv";
@@ -2185,10 +2243,10 @@ App.prototype.generatePDF = function(strID) {
 
 };
 */
-App.prototype.getAnalysisTable = function(dd, m, scIndex) {
+App.prototype.getAnalysisTable = function (dd, m, scIndex) {
   var o = this, arrSC = [], aRow, strUpDown;
-  arrSC[0] = {text: m.m.replace(/\n/g,' '), alignment: 'left', fontSize: 8};
-  for (var i = 1; i <=5; i++) {arrSC[i] = {text: 'N/A', style: 'none', alignment: 'center', fillColor: '#eee', fontSize: 8};}
+  arrSC[0] = { text: m.m.replace(/\n/g, ' '), alignment: 'left', fontSize: 8 };
+  for (var i = 1; i <= 5; i++) { arrSC[i] = { text: 'N/A', style: 'none', alignment: 'center', fillColor: '#eee', fontSize: 8 }; }
 
   var ret = {}
   ret.style = 'trendanalysis';
@@ -2197,153 +2255,153 @@ App.prototype.getAnalysisTable = function(dd, m, scIndex) {
   ret.table.headerRows = 1;
   ret.table.body = [];
   ret.table.body[0] = [];
-  ret.table.body[0].push({text: 'Trend', style: 'tableheader'});
-  ret.table.body[0].push({text: 'Current Value', style: 'tableheader'});
-  ret.table.body[0].push({text: 'Comparison Value', style: 'tableheader'});
-  ret.table.body[0].push({text: '% Changed', style: 'tableheader'});
-  ret.table.body[0].push({text: 'Analysis', style: 'tableheader'});
+  ret.table.body[0].push({ text: 'Trend', style: 'tableheader' });
+  ret.table.body[0].push({ text: 'Current Value', style: 'tableheader' });
+  ret.table.body[0].push({ text: 'Comparison Value', style: 'tableheader' });
+  ret.table.body[0].push({ text: '% Changed', style: 'tableheader' });
+  ret.table.body[0].push({ text: 'Analysis', style: 'tableheader' });
 
   var compVal1, compVal2;
-  m.vs.sort(function(a, b){	return ( ((b.y * 1000) + b.p) - ((a.y *1000) + a.p));});
-  if (m.ytd=="True") {
+  m.vs.sort(function (a, b) { return (((b.y * 1000) + b.p) - ((a.y * 1000) + a.p)); });
+  if (m.ytd == "True") {
     compVal1 = m.ytds[m.ytds.curYear][m.ytds.curPeriod]; compVal2 = m.ytds[m.ytds.curYear - 1][m.ytds.curPeriod];
     aRow = o.getTrendRow(m, compVal1, compVal2, "Current Year-To-Date vs. Previous Year", false, true, false, false);
     ret.table.body.push(aRow);
-    strUpDown = ((aRow[4].text=="Positive" && m.dd=="Up") || (aRow[4].text=="Negative" && m.dd=="Down")) ? "Increase" : ((aRow[4].text=="Positive" && m.dd=="Down") || (aRow[4].text=="Negative" && m.dd=="Up")) ? "Decrease" : aRow[4].text;
-    arrSC[4] = {text: strUpDown, style: aRow[4].style, alignment: 'center', fontSize: 8};
+    strUpDown = ((aRow[4].text == "Positive" && m.dd == "Up") || (aRow[4].text == "Negative" && m.dd == "Down")) ? "Increase" : ((aRow[4].text == "Positive" && m.dd == "Down") || (aRow[4].text == "Negative" && m.dd == "Up")) ? "Decrease" : aRow[4].text;
+    arrSC[4] = { text: strUpDown, style: aRow[4].style, alignment: 'center', fontSize: 8 };
 
-    if (m.ht=="True") {
+    if (m.ht == "True") {
       compVal1 = m.ytds[m.vs[0].y][m.vs[0].p]; compVal2 = 0;
-      $.each (this.targets[m.id], function(i,item) {if (item.y == m.vs[0].y && item.p <= m.vs[0].p) {compVal2 += item.v;}});
+      $.each(this.targets[m.id], function (i, item) { if (item.y == m.vs[0].y && item.p <= m.vs[0].p) { compVal2 += item.v; } });
       if (compVal2 != 0) {
         aRow = o.getTrendRow(m, compVal1, compVal2, "Current Year-To-Date vs. Budget/Target", true, true, false, false)
         ret.table.body.push(aRow);
-        strUpDown = ((aRow[4].text=="Positive" && m.dd=="Up") || (aRow[4].text=="Negative" && m.dd=="Down")) ? "Increase" : ((aRow[4].text=="Positive" && m.dd=="Down") || (aRow[4].text=="Negative" && m.dd=="Up")) ? "Decrease" : aRow[4].text;
-        arrSC[5] = {text: strUpDown, style: aRow[4].style, alignment: 'center', fontSize: 8};
+        strUpDown = ((aRow[4].text == "Positive" && m.dd == "Up") || (aRow[4].text == "Negative" && m.dd == "Down")) ? "Increase" : ((aRow[4].text == "Positive" && m.dd == "Down") || (aRow[4].text == "Negative" && m.dd == "Up")) ? "Decrease" : aRow[4].text;
+        arrSC[5] = { text: strUpDown, style: aRow[4].style, alignment: 'center', fontSize: 8 };
       }
     }
   }
-  if (m.it!="y") {
-    compVal1 = m.vs[0].v; compVal2 = (m.it=="m") ? m.vs[12].v : m.vs[4].v;
+  if (m.it != "y") {
+    compVal1 = m.vs[0].v; compVal2 = (m.it == "m") ? m.vs[12].v : m.vs[4].v;
     aRow = o.getTrendRow(m, compVal1, compVal2, "Current Period vs. Last Year At This Time", false, false, true, false);
     ret.table.body.push(aRow);
-    strUpDown = ((aRow[4].text=="Positive" && m.dd=="Up") || (aRow[4].text=="Negative" && m.dd=="Down")) ? "Increase" : ((aRow[4].text=="Positive" && m.dd=="Down") || (aRow[4].text=="Negative" && m.dd=="Up")) ? "Decrease" : aRow[4].text;
-    arrSC[2] = {text: strUpDown, style: aRow[4].style, alignment: 'center', fontSize: 8};
+    strUpDown = ((aRow[4].text == "Positive" && m.dd == "Up") || (aRow[4].text == "Negative" && m.dd == "Down")) ? "Increase" : ((aRow[4].text == "Positive" && m.dd == "Down") || (aRow[4].text == "Negative" && m.dd == "Up")) ? "Decrease" : aRow[4].text;
+    arrSC[2] = { text: strUpDown, style: aRow[4].style, alignment: 'center', fontSize: 8 };
   }
 
   compVal1 = m.vs[0].v; compVal2 = m.vs[1].v;
   aRow = o.getTrendRow(m, compVal1, compVal2, "Current Period vs. Last Period", false, false, false, true);
   ret.table.body.push(aRow);
-  strUpDown = ((aRow[4].text=="Positive" && m.dd=="Up") || (aRow[4].text=="Negative" && m.dd=="Down")) ? "Increase" : ((aRow[4].text=="Positive" && m.dd=="Down") || (aRow[4].text=="Negative" && m.dd=="Up")) ? "Decrease" : aRow[4].text;
-  arrSC[1] = {text: strUpDown, style: aRow[4].style, alignment: 'center', fontSize: 8};
+  strUpDown = ((aRow[4].text == "Positive" && m.dd == "Up") || (aRow[4].text == "Negative" && m.dd == "Down")) ? "Increase" : ((aRow[4].text == "Positive" && m.dd == "Down") || (aRow[4].text == "Negative" && m.dd == "Up")) ? "Decrease" : aRow[4].text;
+  arrSC[1] = { text: strUpDown, style: aRow[4].style, alignment: 'center', fontSize: 8 };
 
-  if (m.ht=="True") {
+  if (m.ht == "True") {
     compVal1 = m.vs[0].v; compVal2 = "";
-    $.each (this.targets[m.id], function(i,item) {if (item.y == m.vs[0].y && item.p == m.vs[0].p) {compVal2 = item.v;}});
+    $.each(this.targets[m.id], function (i, item) { if (item.y == m.vs[0].y && item.p == m.vs[0].p) { compVal2 = item.v; } });
     if (compVal2 != "") {
       aRow = o.getTrendRow(m, compVal1, compVal2, "Current Period vs. Budget/Target", true, false, false, true);
-      ret.table.body.push( aRow );
-      strUpDown = ((aRow[4].text=="Positive" && m.dd=="Up") || (aRow[4].text=="Negative" && m.dd=="Down")) ? "Increase" : ((aRow[4].text=="Positive" && m.dd=="Down") || (aRow[4].text=="Negative" && m.dd=="Up")) ? "Decrease" : aRow[4].text;
-      arrSC[3] = {text: strUpDown, style: aRow[4].style, alignment: 'center', fontSize: 8};
+      ret.table.body.push(aRow);
+      strUpDown = ((aRow[4].text == "Positive" && m.dd == "Up") || (aRow[4].text == "Negative" && m.dd == "Down")) ? "Increase" : ((aRow[4].text == "Positive" && m.dd == "Down") || (aRow[4].text == "Negative" && m.dd == "Up")) ? "Decrease" : aRow[4].text;
+      arrSC[3] = { text: strUpDown, style: aRow[4].style, alignment: 'center', fontSize: 8 };
     }
   }
 
   dd.content.push(ret);
-  dd.content[7][scIndex].table.body.push( arrSC );
+  dd.content[7][scIndex].table.body.push(arrSC);
 };
-App.prototype.getTrendRow = function(m, compVal1, compVal2, strTitle, blnTarget, blnYTD, blnYear, blnPeriod) {
+App.prototype.getTrendRow = function (m, compVal1, compVal2, strTitle, blnTarget, blnYTD, blnYear, blnPeriod) {
   var ret = [];
 
   var sPOSNEG, sDIRECTION, sCHANGE, sCURPER, sLASTPER, sCURVAL, sLASTVAL, intDA;
 
-  intDA = (m.da=="") ? 0 : parseInt(m.da);
+  intDA = (m.da == "") ? 0 : parseInt(m.da);
 
-  if (Math.abs(compVal1 - compVal2) <= Math.abs(compVal2 * (1+parseFloat(m.v)) - compVal2)) {
+  if (Math.abs(compVal1 - compVal2) <= Math.abs(compVal2 * (1 + parseFloat(m.v)) - compVal2)) {
     sPOSNEG = "stable";
     sDIRECTION = "STABLE";
   } else {
-    if ( compVal1 > compVal2) {sDIRECTION = "Up";} else {sDIRECTION = "Down";}
-    if ( compVal1 > compVal2 && m.dd=="Up" ) {sPOSNEG = "positive";} else if (compVal1 < compVal2 && m.dd=="Down") {sPOSNEG = "positive";} else {sPOSNEG = "negative";}
+    if (compVal1 > compVal2) { sDIRECTION = "Up"; } else { sDIRECTION = "Down"; }
+    if (compVal1 > compVal2 && m.dd == "Up") { sPOSNEG = "positive"; } else if (compVal1 < compVal2 && m.dd == "Down") { sPOSNEG = "positive"; } else { sPOSNEG = "negative"; }
   }
-  sCHANGE = (compVal1/compVal2-1) * 100;
+  sCHANGE = (compVal1 / compVal2 - 1) * 100;
   sCHANGE = sCHANGE.toFixed(2) + "%";
-  sCHANGE = (m.vt=="p") ? ((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
+  sCHANGE = (m.vt == "p") ? ((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
   //sCHANGE = Math.abs(sCHANGE.toFixed(2)) + "%";
   //sCHANGE = (m.vt=="p") ? Math.abs((compVal1 - compVal2) * 100).toFixed(2) + "%" : sCHANGE;
-  if (m.dd=="None") {sPOSNEG = "N/A";}
+  if (m.dd == "None") { sPOSNEG = "N/A"; }
 
   if (blnYTD) {
     sCURPER = m.ytds.curYear + " ";
-    sCURPER += (m.it=="m") ? arrMMM[m.ytds.curPeriod] : (m.it=="q") ? "Q" + m.ytds.curPeriod : (m.it=="s") ? arrSeason[m.ytds.curPeriod] :     sCURPER += (m.it=="m") ? arrMMM[m.ytds.curPeriod] : (m.it=="q") ? "Q" + m.ytds.curPeriod : (m.it=="s") ? arrSeason[m.ytds.curPeriod] : (m.it=="h") ? arrHH[m.ytds.curPeriod] :(m.it=="d") ? arrDD[m.ytds.curPeriod] :"";
+    sCURPER += (m.it == "m") ? arrMMM[m.ytds.curPeriod] : (m.it == "q") ? "Q" + m.ytds.curPeriod : (m.it == "s") ? arrSeason[m.ytds.curPeriod] : sCURPER += (m.it == "m") ? arrMMM[m.ytds.curPeriod] : (m.it == "q") ? "Q" + m.ytds.curPeriod : (m.it == "s") ? arrSeason[m.ytds.curPeriod] : (m.it == "h") ? arrHH[m.ytds.curPeriod] : (m.it == "d") ? arrDD[m.ytds.curPeriod] : "";
     "";
     sCURPER += (blnYTD) ? " YTD" : "";
   } else {
     sCURPER = m.vs[0].y + " ";
-    sCURPER += (m.it=="m") ? arrMMM[m.vs[0].p] : (m.it=="q") ? "Q" + m.vs[0].p : (m.it=="s") ? arrSeason[m.vs[0].p] :     sCURPER += (m.it=="m") ? arrMMM[m.vs[0].p] : (m.it=="q") ? "Q" + m.vs[0].p : (m.it=="s") ? arrSeason[m.vs[0].p] : (m.it=="h") ? arrHH[m.vs[0].p] :(m.it=="d") ? arrDD[m.vs[0].p] :"";
+    sCURPER += (m.it == "m") ? arrMMM[m.vs[0].p] : (m.it == "q") ? "Q" + m.vs[0].p : (m.it == "s") ? arrSeason[m.vs[0].p] : sCURPER += (m.it == "m") ? arrMMM[m.vs[0].p] : (m.it == "q") ? "Q" + m.vs[0].p : (m.it == "s") ? arrSeason[m.vs[0].p] : (m.it == "h") ? arrHH[m.vs[0].p] : (m.it == "d") ? arrDD[m.vs[0].p] : "";
     "";
   }
 
   if (blnTarget) {
     sLASTPER = "Budget/Target";
   } else {
-    sLASTPER = (blnYear || blnYTD) ? "Previous Year" : (blnPeriod && m.it=="m") ? "Previous Month" : (blnPeriod && m.it=="q") ? "Previous Quarter" : (blnPeriod && m.it=="s") ? "Previous Season" :    sLASTPER = (blnYear || blnYTD) ? "Previous Year" : (blnPeriod && m.it=="m") ? "Previous Month" : (blnPeriod && m.it=="q") ? "Previous Quarter" : (blnPeriod && m.it=="s") ? "Previous Season" : (blnPeriod && m.it=="h") ? "Previous Hour" :(blnPeriod && m.it=="d") ? "Previous Day" :"Previous Year";
+    sLASTPER = (blnYear || blnYTD) ? "Previous Year" : (blnPeriod && m.it == "m") ? "Previous Month" : (blnPeriod && m.it == "q") ? "Previous Quarter" : (blnPeriod && m.it == "s") ? "Previous Season" : sLASTPER = (blnYear || blnYTD) ? "Previous Year" : (blnPeriod && m.it == "m") ? "Previous Month" : (blnPeriod && m.it == "q") ? "Previous Quarter" : (blnPeriod && m.it == "s") ? "Previous Season" : (blnPeriod && m.it == "h") ? "Previous Hour" : (blnPeriod && m.it == "d") ? "Previous Day" : "Previous Year";
     "Previous Year";
   }
 
-  sCURVAL = (m.vt=="n") ? numberWithCommasAbbr(compVal1, intDA) : (m.vt=="c") ? "$" + numberWithCommasAbbr(compVal1, intDA) : (compVal1 * 100).toFixed(intDA) + "%";
-  sLASTVAL = (m.vt=="n") ? numberWithCommasAbbr(compVal2, intDA) : (m.vt=="c") ? "$" + numberWithCommasAbbr(compVal2, intDA) : (compVal2 * 100).toFixed(intDA) + "%";
+  sCURVAL = (m.vt == "n") ? numberWithCommasAbbr(compVal1, intDA) : (m.vt == "c") ? "$" + numberWithCommasAbbr(compVal1, intDA) : (compVal1 * 100).toFixed(intDA) + "%";
+  sLASTVAL = (m.vt == "n") ? numberWithCommasAbbr(compVal2, intDA) : (m.vt == "c") ? "$" + numberWithCommasAbbr(compVal2, intDA) : (compVal2 * 100).toFixed(intDA) + "%";
 
-  var strUpDown = ((sPOSNEG=="positive" && m.dd=="Up") || (sPOSNEG=="negative" && m.dd=="Down")) ? "Increase" : ((sPOSNEG=="positive" && m.dd=="Down") || (sPOSNEG=="negative" && m.dd=="Up")) ? "Decrease" : properCase(sPOSNEG);
+  var strUpDown = ((sPOSNEG == "positive" && m.dd == "Up") || (sPOSNEG == "negative" && m.dd == "Down")) ? "Increase" : ((sPOSNEG == "positive" && m.dd == "Down") || (sPOSNEG == "negative" && m.dd == "Up")) ? "Decrease" : properCase(sPOSNEG);
 
-  ret.push({text: strTitle, style: sPOSNEG});
-  ret.push({text: sCURPER + ": " + sCURVAL, style: sPOSNEG});
-  ret.push({text: sLASTPER + ": " + sLASTVAL, style: sPOSNEG});
-  ret.push({text: sCHANGE, style: sPOSNEG});
-  ret.push({text: strUpDown, style: sPOSNEG});
+  ret.push({ text: strTitle, style: sPOSNEG });
+  ret.push({ text: sCURPER + ": " + sCURVAL, style: sPOSNEG });
+  ret.push({ text: sLASTPER + ": " + sLASTVAL, style: sPOSNEG });
+  ret.push({ text: sCHANGE, style: sPOSNEG });
+  ret.push({ text: strUpDown, style: sPOSNEG });
 
   return ret;
 };
-App.prototype.getPeriodChart = function(mm, strPer, strType, w) {
+App.prototype.getPeriodChart = function (mm, strPer, strType, w) {
   //var arrColors = ["#8B4513", "#FFAD5B", "#D8D8D8", "#82C1FF"]; 191970
   var arrColors = ["#8B4513", "#FFA500", "#808080", "#191970"];
-  if (mm.it=="y") {arrColors = ["#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF"];}
+  if (mm.it == "y") { arrColors = ["#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF", "#82C1FF"]; }
   var o = this;
   o.contexttype = strType;
   o.charttype = "bars";
   var arrRows = [];
-  var oSeries = {}, oAxes = {}, intRows=0;
+  var oSeries = {}, oAxes = {}, intRows = 0;
   var dt = new google.visualization.DataTable();
   var dtChart = new google.visualization.DataTable();
   var fmt;
 
   mm.activeYears = {};
-  var intLoop = (getType(mm)=="YEARLY") ? 15 : 3;
+  var intLoop = (getType(mm) == "YEARLY") ? 15 : 3;
   for (var x = 0; x < intLoop; x++) {
     mm.activeYears[new Date().getFullYear() - x] = true;
   }
 
   //BUILD DATA TABLE STRUCTURE
-  dt.addColumn( 'string', 'Year' );
-  dtChart.addColumn( 'string', 'Period' );
-  if (getType(mm)=="MONTHLY" && this.contexttype != "seq") {for (var x = 1; x <= 12; x++) {dt.addColumn('number', arrMM[x]);}}
-  if (getType(mm)=="QUARTERLY" && this.contexttype != "seq") {for (var x = 1; x <= 4; x++) {dt.addColumn('number', "Q" + x);}}
-  if (getType(mm)=="HOURLY" && this.contexttype != "seq") {for (var x = 1; x <= 24; x++) {dt.addColumn('number', arrHH[x]);}}
-  if (getType(mm)=="DAILY" && this.contexttype != "seq") {for (var x = 1; x <= 366; x++) {dt.addColumn('number', arrDD[x]);}}
-   if (getType(mm)=="YEARLY" || o.contexttype=="seq") {dt.addColumn('number', mm.m.replace(/\n/g,' '));}
-  if (getType(mm)=="SEASONAL" && this.contexttype != "seq") {dt.addColumn('number', "Winter");dt.addColumn('number', "Spring");dt.addColumn('number', "Summer");dt.addColumn('number', "Fall");}
+  dt.addColumn('string', 'Year');
+  dtChart.addColumn('string', 'Period');
+  if (getType(mm) == "MONTHLY" && this.contexttype != "seq") { for (var x = 1; x <= 12; x++) { dt.addColumn('number', arrMM[x]); } }
+  if (getType(mm) == "QUARTERLY" && this.contexttype != "seq") { for (var x = 1; x <= 4; x++) { dt.addColumn('number', "Q" + x); } }
+  if (getType(mm) == "HOURLY" && this.contexttype != "seq") { for (var x = 1; x <= 24; x++) { dt.addColumn('number', arrHH[x]); } }
+  if (getType(mm) == "DAILY" && this.contexttype != "seq") { for (var x = 1; x <= 366; x++) { dt.addColumn('number', arrDD[x]); } }
+  if (getType(mm) == "YEARLY" || o.contexttype == "seq") { dt.addColumn('number', mm.m.replace(/\n/g, ' ')); }
+  if (getType(mm) == "SEASONAL" && this.contexttype != "seq") { dt.addColumn('number', "Winter"); dt.addColumn('number', "Spring"); dt.addColumn('number', "Summer"); dt.addColumn('number', "Fall"); }
 
   //SETUP THE GRAPH SERIES, AXES, CONTROLS/////////////////////////////////////////////////////////////////////////////
-  $( "#graphyear .btn-group" ).html("");
-  fmt = (mm.vt=="p") ? '#.#%' : 'short';
-  oAxes[Object.keys(oAxes).length] = {title: '', format: fmt, minValue: 0};
+  $("#graphyear .btn-group").html("");
+  fmt = (mm.vt == "p") ? '#.#%' : 'short';
+  oAxes[Object.keys(oAxes).length] = { title: '', format: fmt, minValue: 0 };
   var YY = {};
-  mm.vs.sort(function(a, b){	return (a.p + (a.y*100)) - (b.p + (b.y*100));});
-  for (var i = 0; i < mm.vs.length; i++ ) {
-    if (YY[mm.vs[i].y]==null) {
+  mm.vs.sort(function (a, b) { return (a.p + (a.y * 100)) - (b.p + (b.y * 100)); });
+  for (var i = 0; i < mm.vs.length; i++) {
+    if (YY[mm.vs[i].y] == null) {
       YY[mm.vs[i].y] = "1";
       if (mm.activeYears[mm.vs[i].y] != null) {
         intRows++;
-        oSeries[Object.keys(oSeries).length] = {targetAxisIndex: 0, color: arrColors[intRows]};
+        oSeries[Object.keys(oSeries).length] = { targetAxisIndex: 0, color: arrColors[intRows] };
       }
     }
   }
@@ -2352,45 +2410,45 @@ App.prototype.getPeriodChart = function(mm, strPer, strType, w) {
     oSeries[i].color = arrColors[j];
     j++;
   }
-  if (mm.ht=='True') {
+  if (mm.ht == 'True') {
     intRows++;
-    oSeries[Object.keys(oSeries).length] = {type: "line", targetAxisIndex:0, color: '#8B4513', pointShape: 'circle', pointSize: 5};
-    oAxes[Object.keys(oAxes).length] = { gridlines : {count: 0 }, format: fmt, minValue: 0};
+    oSeries[Object.keys(oSeries).length] = { type: "line", targetAxisIndex: 0, color: '#8B4513', pointShape: 'circle', pointSize: 5 };
+    oAxes[Object.keys(oAxes).length] = { gridlines: { count: 0 }, format: fmt, minValue: 0 };
   }
 
   //GET THE DATA ROWS FOR THE TABLE
   o.setDataRows(mm);
   o.setChartRows(mm);
   for (var z = 0; z < o.datarows.length; z++) {
-    dtChart.addColumn( 'number', o.datarows[z][0] );
+    dtChart.addColumn('number', o.datarows[z][0]);
   }
   dt.addRows(o.datarows);
   dtChart.addRows(o.chartrows);
 
- // for (var i = 0; i < dt.getNumberOfRows(); i++) {
- //   if (i != 3 || dt.getNumberOfRows()!=4) {dt.setValue(i,0, dt.getFormattedValue(i, 0, 'label').substring(0,4) );}
- // }
+  // for (var i = 0; i < dt.getNumberOfRows(); i++) {
+  //   if (i != 3 || dt.getNumberOfRows()!=4) {dt.setValue(i,0, dt.getFormattedValue(i, 0, 'label').substring(0,4) );}
+  // }
 
- // if (dtChart.getNumberOfRows()==12) {
- //   for ( var i = 0; i < 12; i++ ) {
- //     dtChart.setValue(i, 0, dtChart.getFormattedValue(i, 0, 'label').substring(0,1));
- //   }
- // }
+  // if (dtChart.getNumberOfRows()==12) {
+  //   for ( var i = 0; i < 12; i++ ) {
+  //     dtChart.setValue(i, 0, dtChart.getFormattedValue(i, 0, 'label').substring(0,1));
+  //   }
+  // }
 
   //CREATE THE CHART AND TABLE
-  if (!this.chart && o.contexttype!="data") {this.chart = new google.visualization.ComboChart(document.getElementById("rptchart"))};
-  var chartoptions = {animation: {duration: 1000, easing: 'linear' }, seriesType: o.charttype, series: oSeries, height: 130,width: w,vAxes:oAxes, legend: {position: 'none'}};
+  if (!this.chart && o.contexttype != "data") { this.chart = new google.visualization.ComboChart(document.getElementById("rptchart")) };
+  var chartoptions = { animation: { duration: 1000, easing: 'linear' }, seriesType: o.charttype, series: oSeries, height: 130, width: w, vAxes: oAxes, legend: { position: 'none' } };
 
   //DRAW THE CHART AND TABLE
   var ret = [];
-  if (o.contexttype=="ytd") {
+  if (o.contexttype == "ytd") {
     this.chart.draw(dtChart, google.charts.Bar.convertOptions(chartoptions));
-    ret.push({text: "Year-to-Date Results", style: "graphtitle", width: w});
-    ret.push({image: this.chart.getImageURI(), width: w, height: 130, alignment: 'justified'});
+    ret.push({ text: "Year-to-Date Results", style: "graphtitle", width: w });
+    ret.push({ image: this.chart.getImageURI(), width: w, height: 130, alignment: 'justified' });
   } else {
     this.chart.draw(dtChart, google.charts.Bar.convertOptions(chartoptions));
-    ret.push({text: strPer + " Results", style: "graphtitle", width: w});
-    ret.push({image: this.chart.getImageURI(), width: w, height: 130, alignment: 'justified'});
+    ret.push({ text: strPer + " Results", style: "graphtitle", width: w });
+    ret.push({ image: this.chart.getImageURI(), width: w, height: 130, alignment: 'justified' });
   }
   this.dt = dt;
   var tbl = {};
@@ -2402,49 +2460,49 @@ App.prototype.getPeriodChart = function(mm, strPer, strType, w) {
 
   var dt_cols = this.dt.getNumberOfColumns();
   var dt_rows = this.dt.getNumberOfRows();
-  for ( var i = 0; i < dt_cols; i++ ) {
-    tbl.table.body[0].push({text: this.dt.getColumnLabel(i).replace(/,/g,""), style: 'tableheader'});
+  for (var i = 0; i < dt_cols; i++) {
+    tbl.table.body[0].push({ text: this.dt.getColumnLabel(i).replace(/,/g, ""), style: 'tableheader' });
     tbl.table.widths.push('*');
   }
 
   for (i = 0; i < dt_rows; i++) {
-    tbl.table.body[i+1] = [];
-    for (var j=1; j<dt_cols; j++) {
-      if (j==0 && mm.it!="y") {
-        tbl.table.body[i+1].push( {text: this.dt.getFormattedValue(i, j, 'label'), bold: true, color: "#ffffff", style: strPer, fillColor: arrColors[3-i]} );
+    tbl.table.body[i + 1] = [];
+    for (var j = 1; j < dt_cols; j++) {
+      if (j == 0 && mm.it != "y") {
+        tbl.table.body[i + 1].push({ text: this.dt.getFormattedValue(i, j, 'label'), bold: true, color: "#ffffff", style: strPer, fillColor: arrColors[3 - i] });
       } else {
-        tbl.table.body[i+1].push( {text: this.dt.getFormattedValue(i, j, 'label'), style: strPer} );
+        tbl.table.body[i + 1].push({ text: this.dt.getFormattedValue(i, j, 'label'), style: strPer });
       }
     }
   }
   ret.push(tbl);
-  if (o.contexttype=="val") {
-    ret.push({text: mm.ds, alignment: 'center', style: 'datasource', width: w});
+  if (o.contexttype == "val") {
+    ret.push({ text: mm.ds, alignment: 'center', style: 'datasource', width: w });
     if (o.narratives[mm.id] != null) {
-      var arrHTML = $.parseHTML( dashboard.narratives[mm.id] );
-      $.each(arrHTML, function(i, item) {
-        ret.push({text: $(arrHTML[i]).text(), alignment: 'center', style: 'narrative'});
+      var arrHTML = $.parseHTML(dashboard.narratives[mm.id]);
+      $.each(arrHTML, function (i, item) {
+        ret.push({ text: $(arrHTML[i]).text(), alignment: 'center', style: 'narrative' });
       });
     }
   }
   return ret;
 };
-App.prototype.openPDFCreator = function() {
+App.prototype.openPDFCreator = function () {
   $.getJSON("/app_content/progress-portal-latest-mgmtinforpt-pdf/", function (data) {
-      window.location.href = data.url;
+    window.location.href = data.url;
   });
 };
-App.prototype.openEXCELCreator = function() {
+App.prototype.openEXCELCreator = function () {
   var arrIDs = [];
-  if (!$("#dashboard_searchresults").hasClass("hide")) {$.each($("#dashboard_searchresults .aindicator"), function(i, item) {arrIDs.push(item.id);});}
-  if ($(".aindicator.active").length> 0) {arrIDs.push($(".aindicator.active")[0].id)}
+  if (!$("#dashboard_searchresults").hasClass("hide")) { $.each($("#dashboard_searchresults .aindicator"), function (i, item) { arrIDs.push(item.id); }); }
+  if ($(".aindicator.active").length > 0) { arrIDs.push($(".aindicator.active")[0].id) }
   $('#excelcat').multiselect('deselectAll', true);
   $('#excelcat').multiselect('select', arrIDs);
   $('#excelcat').multiselect('updateButtonText');
 
   var browser = navigator.userAgent;
   var IEversion = 99;
-  if (browser.indexOf("MSIE") > 1) {IEversion = parseInt(browser.substr(browser.indexOf("MSIE")+5, 5));}
+  if (browser.indexOf("MSIE") > 1) { IEversion = parseInt(browser.substr(browser.indexOf("MSIE") + 5, 5)); }
   var is_touch_device = ("ontouchstart" in window) || window.DocumentTouch && document instanceof DocumentTouch;
   if (IEversion < 10 || is_touch_device) {
     window.location.href = '/City Of Toronto/City Managers Office/Toronto Progress Portal/Files/TorontoMeasureData.xls';
@@ -2452,8 +2510,8 @@ App.prototype.openEXCELCreator = function() {
     $('#modalExcel').modal();
   }
 };
-function reportIndex( dd, arrIDS ) {
-  dd.content.push({text: 'Trend Analysis Overview',style: 'measuretitle', pageBreak: 'before'});
+function reportIndex(dd, arrIDS) {
+  dd.content.push({ text: 'Trend Analysis Overview', style: 'measuretitle', pageBreak: 'before' });
   var tbl = {}
   tbl.style = 'scorecard';
   tbl.table = {};
@@ -2461,13 +2519,13 @@ function reportIndex( dd, arrIDS ) {
   tbl.table.headerRows = 1;
   tbl.table.body = [];
   tbl.table.body[0] = [];
-  tbl.table.body[0].push({text: 'Measure Name', style: 'tableheader'});
-  tbl.table.body[0].push({text: 'Current Period\nvs.\nLast Period', style: 'tableheader'});
-  tbl.table.body[0].push({text: 'Current Period\nvs.\nLast Year at This Time', style: 'tableheader'});
-  tbl.table.body[0].push({text: 'Current Period\nvs.\nBudget/Target', style: 'tableheader'});
-  tbl.table.body[0].push({text: 'Current YTD\nvs.\nPrevious Year', style: 'tableheader'});
-  tbl.table.body[0].push({text: 'Current YTD\nvs.\nBudget/Target', style: 'tableheader'});
-  dd.content.push( tbl );
+  tbl.table.body[0].push({ text: 'Measure Name', style: 'tableheader' });
+  tbl.table.body[0].push({ text: 'Current Period\nvs.\nLast Period', style: 'tableheader' });
+  tbl.table.body[0].push({ text: 'Current Period\nvs.\nLast Year at This Time', style: 'tableheader' });
+  tbl.table.body[0].push({ text: 'Current Period\nvs.\nBudget/Target', style: 'tableheader' });
+  tbl.table.body[0].push({ text: 'Current YTD\nvs.\nPrevious Year', style: 'tableheader' });
+  tbl.table.body[0].push({ text: 'Current YTD\nvs.\nBudget/Target', style: 'tableheader' });
+  dd.content.push(tbl);
 };
 /*
 function reportMeasure (dd, arrIDS, measure, section, progress, lastCat, scIndex) {
@@ -2546,12 +2604,12 @@ function reportMeasure (dd, arrIDS, measure, section, progress, lastCat, scIndex
 };
 */
 function getImageFromUrl(url, callback) {
-  var img = new Image, data, ret={data: null, pending: true};
+  var img = new Image, data, ret = { data: null, pending: true };
 
-  img.onError = function() {
-    throw new Error('Cannot load image: "'+url+'"');
+  img.onError = function () {
+    throw new Error('Cannot load image: "' + url + '"');
   }
-  img.onload = function() {
+  img.onload = function () {
     var canvas = document.createElement('canvas');
     document.body.appendChild(canvas);
     canvas.width = img.width;
@@ -2568,19 +2626,19 @@ function getImageFromUrl(url, callback) {
     //ret['data'] = data;
     //ret['pending'] = false;
     if (typeof callback === 'function') {
-         callback(data);
+      callback(data);
     }
   }
   img.src = url;
   return ret;
 };
 function numberWithCommasAbbr(x, p) {
-  if (x==null) {return "";}
+  if (x == null) { return ""; }
   x = parseFloat(x);
   var factor = '';
   if (x > 1000000) {
     factor = "M";
-    x = x/1000000;
+    x = x / 1000000;
     x = x.toFixed(2);
   } else {
     x = x.toFixed(p);
@@ -2590,7 +2648,7 @@ function numberWithCommasAbbr(x, p) {
   return parts.join(".") + factor;
 };
 function numberWithCommas(x, p) {
-  if (x==null) {return "";}
+  if (x == null) { return ""; }
   x = parseFloat(x).toFixed(p);
   var parts = x.toString().split(".");
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -2600,26 +2658,26 @@ function setConsistentHeightDASHBOARD(strParentSelector, strChildSelector) {
   var itemsParent = $(strParentSelector);
   var heights = [];
   var tallest;
-  itemsParent.each (
+  itemsParent.each(
     function () {
       var items = $(this).find(strChildSelector);
       if (items.length) {
         //alert(JSON.stringify(items));
-        items.each( function () {$(this).css('height','auto');});
-        items.each( function () { heights.push($(this).height()); });
+        items.each(function () { $(this).css('height', 'auto'); });
+        items.each(function () { heights.push($(this).height()); });
         tallest = Math.max.apply(null, heights);
-        items.each( function () {$(this).css('height',tallest + 'px'); });
+        items.each(function () { $(this).css('height', tallest + 'px'); });
       }
     })
 };
 function transpose(a) {
   var w = a.length ? a.length : 0,
     h = a[0] instanceof Array ? a[0].length : 0;
-  if(h === 0 || w === 0) { return []; }
+  if (h === 0 || w === 0) { return []; }
   var i, j, t = [];
-  for(i=0; i<h; i++) {
+  for (i = 0; i < h; i++) {
     t[i] = [];
-    for(j=0; j<w; j++) {
+    for (j = 0; j < w; j++) {
       t[i][j] = a[j][i];
     }
   }
@@ -2628,37 +2686,37 @@ function transpose(a) {
 function AddZero(num) {
   return (num >= 0 && num < 10) ? "0" + num : num + "";
 };
-function getCurrentTime(){
+function getCurrentTime() {
   var now = new Date();
   var hour = now.getHours() - (now.getHours() >= 12 ? 12 : 0);
-  return [[now.getFullYear(),AddZero(now.getMonth() + 1),AddZero(now.getDate())].join("/"), [AddZero(hour), AddZero(now.getMinutes()),AddZero(now.getSeconds())].join(":"), now.getHours() >= 12 ? "PM" : "AM"].join(" ");
+  return [[now.getFullYear(), AddZero(now.getMonth() + 1), AddZero(now.getDate())].join("/"), [AddZero(hour), AddZero(now.getMinutes()), AddZero(now.getSeconds())].join(":"), now.getHours() >= 12 ? "PM" : "AM"].join(" ");
 };
 
 //****************************************  MAIN RUN **********************************************************************
-$(document).ready(function() {
+$(document).ready(function () {
   $.ajaxSetup({ cache: false });
   var sJSONMeasures = '/*@echo JSON_MEASURES*/';
   var sJSONNarratives = '/*@echo JSON_NARRATIVES*/';
   var sJSON_SSHA_LiveData = '/*@echo JSON_SSHA_LiveData*/';
-  var sJSON_SSHA_HistoricalDemandTrafficlightData='/*@echo JSON_SSHA_HistoricalDemandTrafficLightData*/';
-  var sJSON_SSHA_NightlySummaryTrafficlightData='/*@echo JSON_SSHA_NightlySummaryTrafficLightData*/';
+  var sJSON_SSHA_HistoricalDemandTrafficlightData = '/*@echo JSON_SSHA_HistoricalDemandTrafficLightData*/';
+  var sJSON_SSHA_NightlySummaryTrafficlightData = '/*@echo JSON_SSHA_NightlySummaryTrafficLightData*/';
   var sHTMLSource = '/resources/dashboard/html/dashboard.html';
-  dashboard = new App('#dashboard_container','#dashboard_categorytabs','#dashboard_indicatortabs','#dashboard_index',sHTMLSource, sJSONMeasures, sJSONNarratives,
-  sJSON_SSHA_LiveData,
-  sJSON_SSHA_HistoricalDemandTrafficlightData,
-  sJSON_SSHA_NightlySummaryTrafficlightData
-);
+  dashboard = new App('#dashboard_container', '#dashboard_categorytabs', '#dashboard_indicatortabs', '#dashboard_index', sHTMLSource, sJSONMeasures, sJSONNarratives,
+    sJSON_SSHA_LiveData,
+    sJSON_SSHA_HistoricalDemandTrafficlightData,
+    sJSON_SSHA_NightlySummaryTrafficlightData
+  );
   window.dashboardapp = dashboard;
   dashboard.loadHTML();
-  $( window ).resize(function() {
-    var obj =$('#div_livedemandstream_mxgraph').get(0);
-     if (obj!=null){
-        $('#div_livedemandstream_mxgraph').html("");
-        var data_mxgraph=(liveDemandStreamData['LSD'])['LSD_MXGRAPH'];
-        drawmxgraph(obj,data_mxgraph);
-     }
+  $(window).resize(function () {
+    var obj = $('#div_livedemandstream_mxgraph').get(0);
+    if (obj != null) {
+      $('#div_livedemandstream_mxgraph').html("");
+      var data_mxgraph = (liveDemandStreamData['LSD'])['LSD_MXGRAPH'];
+      drawmxgraph(obj, data_mxgraph);
+    }
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".indicator h3");
     setConsistentHeightDASHBOARD("#dashboard_indicators", ".explanation");
   });
-  });
-google.load('visualization', '1', {packages: ['wordtree','PieChart','gauge','corechart', 'bar', 'table']});
+});
+google.load('visualization', '1', { packages: ['wordtree', 'PieChart', 'gauge', 'corechart', 'bar', 'table'] });
